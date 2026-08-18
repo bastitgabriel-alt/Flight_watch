@@ -24,8 +24,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          ANOMALY_RATIO: ${{ vars.ANOMALY_RATIO }}
-          DELAY_SECONDS: ${{ vars.DELAY_SECONDS }}
+          
         run: python flight_watch.py
 
       - name: Sauvegarder l'historique
