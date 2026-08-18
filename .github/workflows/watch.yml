@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - run: pip install fast-flights requests
+      - run: pip install fast-flights requests typing_extensions
 
       - name: Scan des prix
         env:
