@@ -1,6 +1,0 @@
-[
-  { "origin": "CDG", "destination": "NRT", "label": "Tokyo" },
-  { "origin": "CDG", "destination": "JFK", "label": "New York" },
-  { "origin": "CDG", "destination": "BKK", "label": "Bangkok" },
-  { "origin": "ORY", "destination": "PTP", "label": "Pointe-à-Pitre" }
-]
