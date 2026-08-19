@@ -189,6 +189,62 @@
         "price": 2169.0,
         "airlines": "Malaysia Airlines",
         "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:06",
+        "departure_date": "2026-11-11",
+        "price": 2138.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:10",
+        "departure_date": "2026-12-02",
+        "price": 2212.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:15",
+        "departure_date": "2026-12-23",
+        "price": 2212.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:19",
+        "departure_date": "2027-01-13",
+        "price": 2169.0,
+        "airlines": "Malaysia Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:23",
+        "departure_date": "2027-02-03",
+        "price": 2267.0,
+        "airlines": "Air France, China Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:19:28",
+        "departure_date": "2027-02-24",
+        "price": 1925.0,
+        "airlines": "Brussels Airlines, Hainan",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:19:32",
+        "departure_date": "2027-03-17",
+        "price": 2713.0,
+        "airlines": "Air France, China Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:19:41",
+        "departure_date": "2027-04-28",
+        "price": 2169.0,
+        "airlines": "Malaysia Airlines",
+        "stops": 1
       }
     ]
   },
@@ -455,6 +511,104 @@
       },
       {
         "date": "2026-08-19T07:59:50",
+        "departure_date": "2027-06-09",
+        "price": 1725.0,
+        "airlines": "Air France, Azores Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:20:56",
+        "departure_date": "2026-09-09",
+        "price": 1475.0,
+        "airlines": "Air France, Azores Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:21:01",
+        "departure_date": "2026-09-30",
+        "price": 1475.0,
+        "airlines": "Air France, Azores Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:21:05",
+        "departure_date": "2026-10-21",
+        "price": 1767.0,
+        "airlines": "Icelandair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:10",
+        "departure_date": "2026-11-11",
+        "price": 1685.0,
+        "airlines": "Air Serbia",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:14",
+        "departure_date": "2026-12-02",
+        "price": 1475.0,
+        "airlines": "Air Serbia",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:18",
+        "departure_date": "2026-12-23",
+        "price": 1475.0,
+        "airlines": "Air Serbia",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:23",
+        "departure_date": "2027-01-13",
+        "price": 1475.0,
+        "airlines": "Air Serbia",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:27",
+        "departure_date": "2027-02-03",
+        "price": 1475.0,
+        "airlines": "Air France, Azores Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:21:31",
+        "departure_date": "2027-02-24",
+        "price": 1475.0,
+        "airlines": "Air France, Azores Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:21:36",
+        "departure_date": "2027-03-17",
+        "price": 1377.0,
+        "airlines": "Icelandair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:40",
+        "departure_date": "2027-04-07",
+        "price": 1377.0,
+        "airlines": "Icelandair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:45",
+        "departure_date": "2027-04-28",
+        "price": 1377.0,
+        "airlines": "Icelandair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:21:49",
+        "departure_date": "2027-05-19",
+        "price": 1381.0,
+        "airlines": "Air France, Azores Airlines",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:21:54",
         "departure_date": "2027-06-09",
         "price": 1725.0,
         "airlines": "Air France, Azores Airlines",
@@ -757,6 +911,104 @@
         "price": 1787.0,
         "airlines": "Scandinavian Airlines, THAI",
         "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:55",
+        "departure_date": "2026-09-09",
+        "price": 1971.0,
+        "airlines": "Brussels Airlines, THAI",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:19:59",
+        "departure_date": "2026-09-30",
+        "price": 1864.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:03",
+        "departure_date": "2026-10-21",
+        "price": 1969.0,
+        "airlines": "LOT",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:08",
+        "departure_date": "2026-11-11",
+        "price": 2023.0,
+        "airlines": "Etihad",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:12",
+        "departure_date": "2026-12-02",
+        "price": 1979.0,
+        "airlines": "Etihad",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:16",
+        "departure_date": "2026-12-23",
+        "price": 2389.0,
+        "airlines": "LOT",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:21",
+        "departure_date": "2027-01-13",
+        "price": 1940.0,
+        "airlines": "Scandinavian Airlines, THAI",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:25",
+        "departure_date": "2027-02-03",
+        "price": 2150.0,
+        "airlines": "Kuwait Airways",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:30",
+        "departure_date": "2027-02-24",
+        "price": 1979.0,
+        "airlines": "Etihad",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:34",
+        "departure_date": "2027-03-17",
+        "price": 1786.0,
+        "airlines": "Scandinavian Airlines, THAI",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:39",
+        "departure_date": "2027-04-07",
+        "price": 1786.0,
+        "airlines": "Scandinavian Airlines, THAI",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:43",
+        "departure_date": "2027-04-28",
+        "price": 1786.0,
+        "airlines": "Scandinavian Airlines, THAI",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:47",
+        "departure_date": "2027-05-19",
+        "price": 1786.0,
+        "airlines": "Scandinavian Airlines, THAI",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:20:52",
+        "departure_date": "2027-06-09",
+        "price": 1787.0,
+        "airlines": "Scandinavian Airlines, THAI",
+        "stops": 1
       }
     ]
   },
@@ -971,6 +1223,312 @@
         "price": 1734.0,
         "airlines": "Corsair",
         "stops": 0
+      }
+    ]
+  },
+  "CDG-LAX": {
+    "observations": [
+      {
+        "date": "2026-08-19T09:21:58",
+        "departure_date": "2026-09-09",
+        "price": 2188.0,
+        "airlines": "Avianca",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:22:03",
+        "departure_date": "2026-09-30",
+        "price": 2226.0,
+        "airlines": "British Airways",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:07",
+        "departure_date": "2026-10-21",
+        "price": 2248.0,
+        "airlines": "British Airways",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:12",
+        "departure_date": "2026-11-11",
+        "price": 2192.0,
+        "airlines": "American",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:16",
+        "departure_date": "2026-12-02",
+        "price": 2189.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:20",
+        "departure_date": "2026-12-23",
+        "price": 2215.0,
+        "airlines": "American",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:25",
+        "departure_date": "2027-01-13",
+        "price": 2215.0,
+        "airlines": "American",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:29",
+        "departure_date": "2027-02-03",
+        "price": 2188.0,
+        "airlines": "Avianca",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:22:34",
+        "departure_date": "2027-02-24",
+        "price": 2188.0,
+        "airlines": "Avianca",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:22:38",
+        "departure_date": "2027-03-17",
+        "price": 2192.0,
+        "airlines": "American",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:43",
+        "departure_date": "2027-04-07",
+        "price": 2175.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:47",
+        "departure_date": "2027-04-28",
+        "price": 2181.0,
+        "airlines": "British Airways",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:22:51",
+        "departure_date": "2027-05-19",
+        "price": 2188.0,
+        "airlines": "Avianca",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:22:56",
+        "departure_date": "2027-06-09",
+        "price": 2188.0,
+        "airlines": "Avianca",
+        "stops": 2
+      }
+    ]
+  },
+  "CDG-DXB": {
+    "observations": [
+      {
+        "date": "2026-08-19T09:23:00",
+        "departure_date": "2026-09-09",
+        "price": 1317.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:05",
+        "departure_date": "2026-09-30",
+        "price": 1317.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:09",
+        "departure_date": "2026-10-21",
+        "price": 1317.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:14",
+        "departure_date": "2026-11-11",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:18",
+        "departure_date": "2026-12-02",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:22",
+        "departure_date": "2026-12-23",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:27",
+        "departure_date": "2027-01-13",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:31",
+        "departure_date": "2027-02-03",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:36",
+        "departure_date": "2027-02-24",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:40",
+        "departure_date": "2027-03-17",
+        "price": 1024.0,
+        "airlines": "Finnair",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:44",
+        "departure_date": "2027-04-07",
+        "price": 1466.0,
+        "airlines": "Lufthansa, Oman Air",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:23:49",
+        "departure_date": "2027-04-28",
+        "price": 1382.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:53",
+        "departure_date": "2027-05-19",
+        "price": 1382.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:23:58",
+        "departure_date": "2027-06-09",
+        "price": 1382.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      }
+    ]
+  },
+  "CDG-JNB": {
+    "observations": [
+      {
+        "date": "2026-08-19T09:24:02",
+        "departure_date": "2026-09-09",
+        "price": 2090.0,
+        "airlines": "Air France, Air Europa",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:07",
+        "departure_date": "2026-09-30",
+        "price": 1756.0,
+        "airlines": "Kenya Airways",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:11",
+        "departure_date": "2026-10-21",
+        "price": 1647.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:16",
+        "departure_date": "2026-11-11",
+        "price": 1647.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:20",
+        "departure_date": "2026-12-02",
+        "price": 1689.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:24",
+        "departure_date": "2026-12-23",
+        "price": 2171.0,
+        "airlines": "Ethiopian",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:29",
+        "departure_date": "2027-01-13",
+        "price": 2080.0,
+        "airlines": "Air France, Air Europa",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:33",
+        "departure_date": "2027-02-03",
+        "price": 1689.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:37",
+        "departure_date": "2027-02-24",
+        "price": 2048.0,
+        "airlines": "Turkish Airlines",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:42",
+        "departure_date": "2027-03-17",
+        "price": 2041.0,
+        "airlines": "EgyptAir",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:46",
+        "departure_date": "2027-04-07",
+        "price": 2969.0,
+        "airlines": "Lufthansa",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:51",
+        "departure_date": "2027-04-28",
+        "price": 1553.0,
+        "airlines": "Turkish Airlines, Airlink",
+        "stops": 2
+      },
+      {
+        "date": "2026-08-19T09:24:55",
+        "departure_date": "2027-05-19",
+        "price": 1756.0,
+        "airlines": "Kenya Airways",
+        "stops": 1
+      },
+      {
+        "date": "2026-08-19T09:24:59",
+        "departure_date": "2027-06-09",
+        "price": 2040.0,
+        "airlines": "EgyptAir",
+        "stops": 1
       }
     ]
   }
