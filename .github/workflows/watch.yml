@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - run: pip install fast-flights requests 
+      - run: pip install fast-flights requests typing_extensions
 
       - name: Test Telegram
         env:
@@ -34,8 +34,6 @@ jobs:
           print(r.status_code, r.text)
           "
 
-
-      
       - name: Scan des prix
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
