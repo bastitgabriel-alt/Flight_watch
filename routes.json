@@ -1,6 +1,9 @@
 [
   { "origin": "CDG", "destination": "NRT", "label": "Tokyo" },
-  { "origin": "CDG", "destination": "JFK", "label": "New York" },
   { "origin": "CDG", "destination": "BKK", "label": "Bangkok" },
-  { "origin": "ORY", "destination": "PTP", "label": "Pointe-à-Pitre" }
+  { "origin": "CDG", "destination": "JFK", "label": "New York" },
+  { "origin": "CDG", "destination": "LAX", "label": "Los Angeles" },
+  { "origin": "CDG", "destination": "DXB", "label": "Dubaï" },
+  { "origin": "CDG", "destination": "JNB", "label": "Johannesburg" }
 ]
+
