@@ -3,11 +3,16 @@ Veille de prix billets Business au départ de Paris (CDG / ORY).
 
 Source : Google Flights, via la lib `fast-flights`. Aucune clé API, aucun quota.
 
-Principe : on relève les prix tous les jours pour un échantillon de dates de
-départ, on stocke l'historique, et on alerte uniquement quand le prix est
-ANORMALEMENT bas par rapport à la médiane historique de la route.
+DEUX MODES, selon ce que contient routes.json :
 
-Un prix bas ne vaut rien en soi. Ce qui compte, c'est l'écart à la normale.
+1. MODE VEILLE (pas de champ "depart")
+   On échantillonne des dates sur 10 mois et on alerte quand un prix est
+   ANORMALEMENT bas par rapport à la médiane historique de la route.
+   Sert à repérer les opportunités quand on n'a pas de projet précis.
+
+2. MODE VOYAGE PRECIS (champ "depart" présent)
+   On surveille des dates fixes (± flexibilité) et on alerte dès que le prix
+   passe sous "prix_max". Sert quand on sait où et quand on veut partir.
 """
 
 import json
@@ -26,41 +31,49 @@ ROOT = Path(__file__).parent
 ROUTES_FILE = ROOT / "routes.json"
 HISTORY_FILE = ROOT / "data" / "prices.json"
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 
-# Seuil de déclenchement : alerte si prix < 60 % de la médiane de la route
-ANOMALY_RATIO = float(os.environ.get("ANOMALY_RATIO", "0.60"))
-# Nombre minimum d'observations avant de pouvoir juger d'une anomalie
-MIN_OBSERVATIONS = 12
-# Fenêtre de scan : dates de départ échantillonnées
-SCAN_START_DAYS = 21        # on commence à J+21
-SCAN_HORIZON_DAYS = 300     # jusqu'à J+300
-SCAN_STEP_DAYS = 21         # une date tous les 21 jours
-# Pause entre deux requêtes, pour ne pas se faire bloquer par Google
-DELAY_SECONDS = float(os.environ.get("DELAY_SECONDS", "4"))
+
+def env_float(name, default):
+    """Lit une variable d'environnement en tolérant qu'elle soit vide."""
+    raw = os.environ.get(name, "").strip()
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+# Mode veille : alerte si prix < 60 % de la médiane de la route
+ANOMALY_RATIO = env_float("ANOMALY_RATIO", 0.60)
+MIN_OBSERVATIONS = 12          # observations requises avant de juger
+SCAN_START_DAYS = 21           # on commence à J+21
+SCAN_HORIZON_DAYS = 300        # jusqu'à J+300
+SCAN_STEP_DAYS = 21            # une date tous les 21 jours
+DELAY_SECONDS = env_float("DELAY_SECONDS", 4)
 
 
 # --- Récupération des prix -------------------------------------------------
 
-def search_offer(origin, destination, departure_date):
-    """Retourne la meilleure offre business trouvée, ou None."""
+def search_offer(origin, destination, depart, retour=None):
+    """Meilleure offre business pour une date (ou un aller-retour). None si rien."""
+    legs = [FlightQuery(date=depart, from_airport=origin, to_airport=destination)]
+    trip = "one-way"
+    if retour:
+        legs.append(FlightQuery(date=retour, from_airport=destination, to_airport=origin))
+        trip = "round-trip"
+
     try:
-        query = create_query(
-            flights=[FlightQuery(
-                date=departure_date,
-                from_airport=origin,
-                to_airport=destination,
-            )],
-            trip="one-way",
+        results = get_flights(create_query(
+            flights=legs,
+            trip=trip,
             seat="business",
             passengers=Passengers(adults=1),
             currency="EUR",
             language="fr",
-        )
-        results = get_flights(query)
+        ))
     except Exception as exc:
-        print(f"  ! {origin}->{destination} {departure_date} : {type(exc).__name__} {exc}")
+        print(f"  ! {origin}->{destination} {depart} : {type(exc).__name__} {exc}")
         return None
 
     offers = [f for f in results if getattr(f, "price", None)]
@@ -68,16 +81,15 @@ def search_offer(origin, destination, departure_date):
         return None
 
     best = min(offers, key=lambda f: f.price)
-    legs = best.flights
+    segments = best.flights
     return {
         "price": float(best.price),
         "airlines": ", ".join(best.airlines) if best.airlines else "?",
-        "stops": max(len(legs) - 1, 0),
-        "duration": legs[0].duration if legs else "?",
+        "stops": max(len(segments) - 1, 0),
     }
 
 
-# --- Historique et détection ----------------------------------------------
+# --- Historique ------------------------------------------------------------
 
 def load_history():
     if HISTORY_FILE.exists():
@@ -90,20 +102,12 @@ def save_history(history):
     HISTORY_FILE.write_text(json.dumps(history, indent=2, ensure_ascii=False))
 
 
-def is_anomaly(history_prices, price):
-    """Un prix est une anomalie s'il casse nettement la médiane historique."""
-    if len(history_prices) < MIN_OBSERVATIONS:
-        return False, None
-    median = statistics.median(history_prices)
-    return price < median * ANOMALY_RATIO, median
-
-
 # --- Notification ----------------------------------------------------------
 
 def notify(message):
     print(message)
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        print("  (Telegram non configuré — alerte affichée dans les logs uniquement)")
+        print("  (Telegram non configuré — alerte visible dans les logs seulement)")
         return
     try:
         requests.post(
@@ -120,23 +124,14 @@ def notify(message):
         print(f"  ! Telegram injoignable : {exc}")
 
 
-def build_alert(origin, destination, dep_date, offer, median):
-    reduction = round((1 - offer["price"] / median) * 100)
-    gflights = (
-        f"https://www.google.com/travel/flights?q=Flights%20to%20{destination}"
-        f"%20from%20{origin}%20on%20{dep_date}%20business"
-    )
-    stops = "direct" if offer["stops"] == 0 else f"{offer['stops']} escale(s)"
+def google_link(origin, destination, depart):
     return (
-        f"*Alerte Business — {origin} → {destination}*\n"
-        f"Prix : *{offer['price']:.0f} €* (médiane : {median:.0f} €, soit -{reduction} %)\n"
-        f"Départ : {dep_date} · {offer['airlines']} · {stops}\n\n"
-        f"[Vérifier sur Google Flights]({gflights})\n"
-        f"_Les tarifs anormaux tiennent rarement plus de quelques heures._"
+        f"https://www.google.com/travel/flights?q=Flights%20to%20{destination}"
+        f"%20from%20{origin}%20on%20{depart}%20business"
     )
 
 
-# --- Boucle principale -----------------------------------------------------
+# --- Mode 1 : veille sur anomalie -----------------------------------------
 
 def scan_dates():
     today = date.today()
@@ -147,49 +142,128 @@ def scan_dates():
         d += timedelta(days=SCAN_STEP_DAYS)
 
 
+def run_veille(route, history):
+    origin, destination = route["origin"], route["destination"]
+    key = f"{origin}-{destination}"
+    history.setdefault(key, {"observations": []})
+    prices = [o["price"] for o in history[key]["observations"]]
+    found = alerts = 0
+
+    print(f"\n=== VEILLE {key} ({route.get('label', '')}) ===")
+    for depart in scan_dates():
+        offer = search_offer(origin, destination, depart)
+        time.sleep(DELAY_SECONDS)
+        if not offer:
+            continue
+
+        found += 1
+        print(f"  {depart} : {offer['price']:.0f} € ({offer['airlines']})")
+
+        if len(prices) >= MIN_OBSERVATIONS:
+            median = statistics.median(prices)
+            if offer["price"] < median * ANOMALY_RATIO:
+                reduction = round((1 - offer["price"] / median) * 100)
+                stops = "direct" if offer["stops"] == 0 else f"{offer['stops']} escale(s)"
+                notify(
+                    f"*Prix anormal — {origin} → {destination}*\n"
+                    f"*{offer['price']:.0f} €* (médiane {median:.0f} €, -{reduction} %)\n"
+                    f"Départ {depart} · {offer['airlines']} · {stops}\n\n"
+                    f"[Vérifier sur Google Flights]({google_link(origin, destination, depart)})\n"
+                    f"_Un tarif anormal tient rarement plus de quelques heures._"
+                )
+                alerts += 1
+
+        history[key]["observations"].append({
+            "date": datetime.utcnow().isoformat(timespec="seconds"),
+            "departure_date": depart,
+            "price": offer["price"],
+            "airlines": offer["airlines"],
+        })
+
+    history[key]["observations"] = history[key]["observations"][-400:]
+    return found, alerts
+
+
+# --- Mode 2 : voyage précis -----------------------------------------------
+
+def date_window(iso_date, flex):
+    """Génère les dates autour d'une date cible."""
+    base = datetime.fromisoformat(iso_date).date()
+    for delta in range(-flex, flex + 1):
+        d = base + timedelta(days=delta)
+        if d > date.today():
+            yield d.isoformat(), delta
+
+
+def run_voyage(route, history):
+    origin, destination = route["origin"], route["destination"]
+    label = route.get("label", f"{origin}-{destination}")
+    depart_cible = route["depart"]
+    retour_cible = route.get("retour")
+    flex = int(route.get("flex_jours", 0))
+    prix_max = float(route["prix_max"])
+
+    key = f"voyage:{origin}-{destination}:{depart_cible}"
+    history.setdefault(key, {"meilleure_alerte": None})
+    found = alerts = 0
+
+    print(f"\n=== VOYAGE {label} (cible ≤ {prix_max:.0f} €) ===")
+    for depart, delta in date_window(depart_cible, flex):
+        retour = None
+        if retour_cible:
+            r = datetime.fromisoformat(retour_cible).date() + timedelta(days=delta)
+            retour = r.isoformat()
+
+        offer = search_offer(origin, destination, depart, retour)
+        time.sleep(DELAY_SECONDS)
+        if not offer:
+            continue
+
+        found += 1
+        trajet = f"{depart}" + (f" → {retour}" if retour else "")
+        print(f"  {trajet} : {offer['price']:.0f} € ({offer['airlines']})")
+
+        if offer["price"] > prix_max:
+            continue
+
+        # On n'alerte que si c'est mieux que la dernière alerte envoyée,
+        # sinon on recevrait le même message tous les jours.
+        deja = history[key]["meilleure_alerte"]
+        if deja is not None and offer["price"] >= deja * 0.97:
+            continue
+
+        stops = "direct" if offer["stops"] == 0 else f"{offer['stops']} escale(s)"
+        notify(
+            f"*Objectif atteint — {label}*\n"
+            f"*{offer['price']:.0f} €* (cible : {prix_max:.0f} €)\n"
+            f"{trajet} · {offer['airlines']} · {stops}\n\n"
+            f"[Réserver via Google Flights]({google_link(origin, destination, depart)})"
+        )
+        history[key]["meilleure_alerte"] = offer["price"]
+        alerts += 1
+
+    return found, alerts
+
+
+# --- Boucle principale -----------------------------------------------------
+
 def main():
     routes = json.loads(ROUTES_FILE.read_text())
     history = load_history()
-    alerts = 0
-    found = 0
+    total_found = total_alerts = 0
 
     for route in routes:
-        origin = route["origin"]
-        destination = route["destination"]
-        key = f"{origin}-{destination}"
-        history.setdefault(key, {"observations": []})
-        prices = [o["price"] for o in history[key]["observations"]]
-
-        print(f"\n=== {key} ({route.get('label', '')}) ===")
-        for dep_date in scan_dates():
-            offer = search_offer(origin, destination, dep_date)
-            time.sleep(DELAY_SECONDS)
-            if not offer:
-                continue
-
-            found += 1
-            print(f"  {dep_date} : {offer['price']:.0f} € ({offer['airlines']})")
-
-            anomaly, median = is_anomaly(prices, offer["price"])
-            if anomaly:
-                notify(build_alert(origin, destination, dep_date, offer, median))
-                alerts += 1
-
-            history[key]["observations"].append({
-                "date": datetime.utcnow().isoformat(timespec="seconds"),
-                "departure_date": dep_date,
-                "price": offer["price"],
-                "airlines": offer["airlines"],
-                "stops": offer["stops"],
-            })
-
-        # On ne garde que les 400 dernières observations par route
-        history[key]["observations"] = history[key]["observations"][-400:]
+        if route.get("depart"):
+            f, a = run_voyage(route, history)
+        else:
+            f, a = run_veille(route, history)
+        total_found += f
+        total_alerts += a
 
     save_history(history)
-    print(f"\nTerminé : {found} prix relevés, {alerts} alerte(s).")
+    print(f"\nTerminé : {total_found} prix relevés, {total_alerts} alerte(s).")
 
-    if found == 0:
+    if total_found == 0:
         print("Aucun prix relevé — Google a probablement bloqué les requêtes. "
               "Augmente DELAY_SECONDS ou réduis le nombre de routes.")
 
