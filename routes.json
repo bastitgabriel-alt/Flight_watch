@@ -3,7 +3,14 @@
   { "origin": "CDG", "destination": "BKK", "label": "Bangkok" },
   { "origin": "CDG", "destination": "JFK", "label": "New York" },
   { "origin": "CDG", "destination": "LAX", "label": "Los Angeles" },
-  { "origin": "CDG", "destination": "DXB", "label": "Dubaï" },
-  { "origin": "CDG", "destination": "JNB", "label": "Johannesburg" }
+  { "origin": "CDG", "destination": "DXB", "label": "Dubai" },
+  { "origin": "CDG", "destination": "JNB", "label": "Johannesburg" },
+  {
+    "origin": "CDG",
+    "destination": "JFK",
+    "label": "New York - Noel",
+    "depart": "2026-12-23",
+    "flex_jours": 3,
+    "prix_max": 1300
+  }
 ]
-
