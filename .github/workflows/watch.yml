@@ -20,20 +20,6 @@ jobs:
 
       - run: pip install fast-flights requests typing_extensions
 
-      - name: Test Telegram
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          python -c "
-          import os, requests
-          t = os.environ['TELEGRAM_BOT_TOKEN'].strip()
-          c = os.environ['TELEGRAM_CHAT_ID'].strip()
-          print('longueur token:', len(t), '| longueur chat_id:', len(c))
-          r = requests.post(f'https://api.telegram.org/bot{t}/sendMessage', json={'chat_id': c, 'text': 'Flight Watch operationnel'})
-          print(r.status_code, r.text)
-          "
-
       - name: Scan des prix
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
