@@ -1275,53 +1275,41 @@
         "departure_date": "2027-04-21",
         "price": 2378.0,
         "airlines": "THAI"
+      },
+      {
+        "date": "2026-10-15T10:31:15",
+        "departure_date": "2027-04-22",
+        "price": 2378.0,
+        "airlines": "THAI"
+      },
+      {
+        "date": "2026-10-15T10:31:20",
+        "departure_date": "2027-05-13",
+        "price": 2378.0,
+        "airlines": "THAI"
+      },
+      {
+        "date": "2026-10-15T10:31:24",
+        "departure_date": "2027-06-03",
+        "price": 2378.0,
+        "airlines": "THAI"
+      },
+      {
+        "date": "2026-10-15T10:31:29",
+        "departure_date": "2027-06-24",
+        "price": 2378.0,
+        "airlines": "THAI"
+      },
+      {
+        "date": "2026-10-15T10:31:33",
+        "departure_date": "2027-07-15",
+        "price": 2252.0,
+        "airlines": "Turkish Airlines"
       }
     ]
   },
   "CDG-JFK": {
     "observations": [
-      {
-        "date": "2026-09-11T10:12:15",
-        "departure_date": "2027-04-30",
-        "price": 1581.0,
-        "airlines": "Air France, Azores Airlines"
-      },
-      {
-        "date": "2026-09-11T10:12:19",
-        "departure_date": "2027-05-21",
-        "price": 1474.0,
-        "airlines": "Air France, Azores Airlines"
-      },
-      {
-        "date": "2026-09-11T10:12:24",
-        "departure_date": "2027-06-11",
-        "price": 1475.0,
-        "airlines": "Air Serbia"
-      },
-      {
-        "date": "2026-09-11T10:12:28",
-        "departure_date": "2027-07-02",
-        "price": 1475.0,
-        "airlines": "Air Serbia"
-      },
-      {
-        "date": "2026-09-12T09:45:43",
-        "departure_date": "2026-10-03",
-        "price": 1780.0,
-        "airlines": "Azores Airlines"
-      },
-      {
-        "date": "2026-09-12T09:45:47",
-        "departure_date": "2026-10-24",
-        "price": 1685.0,
-        "airlines": "Air Serbia"
-      },
-      {
-        "date": "2026-09-12T09:45:52",
-        "departure_date": "2026-11-14",
-        "price": 1378.0,
-        "airlines": "Icelandair"
-      },
       {
         "date": "2026-09-12T09:45:56",
         "departure_date": "2026-12-05",
@@ -3679,89 +3667,53 @@
         "departure_date": "2027-08-04",
         "price": 1485.0,
         "airlines": "Air France, Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:32:46",
+        "departure_date": "2026-11-05",
+        "price": 1384.0,
+        "airlines": "Air France, Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:32:50",
+        "departure_date": "2026-11-26",
+        "price": 1384.0,
+        "airlines": "Air France, Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:33:03",
+        "departure_date": "2027-01-28",
+        "price": 1391.0,
+        "airlines": "Air France, Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:33:21",
+        "departure_date": "2027-04-22",
+        "price": 1059.0,
+        "airlines": "Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:33:25",
+        "departure_date": "2027-05-13",
+        "price": 1059.0,
+        "airlines": "Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:33:30",
+        "departure_date": "2027-06-03",
+        "price": 1059.0,
+        "airlines": "Azores Airlines"
+      },
+      {
+        "date": "2026-10-15T10:33:43",
+        "departure_date": "2027-08-05",
+        "price": 1094.0,
+        "airlines": "Azores Airlines"
       }
     ]
   },
   "CDG-BKK": {
     "observations": [
-      {
-        "date": "2026-09-12T09:44:48",
-        "departure_date": "2026-11-14",
-        "price": 1864.0,
-        "airlines": "Finnair"
-      },
-      {
-        "date": "2026-09-12T09:44:53",
-        "departure_date": "2026-12-05",
-        "price": 1679.0,
-        "airlines": "Etihad"
-      },
-      {
-        "date": "2026-09-12T09:44:58",
-        "departure_date": "2026-12-26",
-        "price": 3504.0,
-        "airlines": "Emirates"
-      },
-      {
-        "date": "2026-09-12T09:45:02",
-        "departure_date": "2027-01-16",
-        "price": 1864.0,
-        "airlines": "Finnair"
-      },
-      {
-        "date": "2026-09-12T09:45:07",
-        "departure_date": "2027-02-06",
-        "price": 2382.0,
-        "airlines": "Kuwait Airways"
-      },
-      {
-        "date": "2026-09-12T09:45:11",
-        "departure_date": "2027-02-27",
-        "price": 1578.0,
-        "airlines": "ITA"
-      },
-      {
-        "date": "2026-09-12T09:45:16",
-        "departure_date": "2027-03-20",
-        "price": 1747.0,
-        "airlines": "LOT"
-      },
-      {
-        "date": "2026-09-12T09:45:20",
-        "departure_date": "2027-04-10",
-        "price": 1985.0,
-        "airlines": "LOT"
-      },
-      {
-        "date": "2026-09-12T09:45:25",
-        "departure_date": "2027-05-01",
-        "price": 1970.0,
-        "airlines": "Brussels Airlines, THAI"
-      },
-      {
-        "date": "2026-09-12T09:45:29",
-        "departure_date": "2027-05-22",
-        "price": 1970.0,
-        "airlines": "Brussels Airlines, THAI"
-      },
-      {
-        "date": "2026-09-12T09:45:34",
-        "departure_date": "2027-06-12",
-        "price": 1970.0,
-        "airlines": "Brussels Airlines, THAI"
-      },
-      {
-        "date": "2026-09-12T09:45:38",
-        "departure_date": "2027-07-03",
-        "price": 1985.0,
-        "airlines": "LOT"
-      },
-      {
-        "date": "2026-09-13T10:46:44",
-        "departure_date": "2026-10-04",
-        "price": 2541.0,
-        "airlines": "ITA"
-      },
       {
         "date": "2026-09-13T10:46:48",
         "departure_date": "2026-10-25",
@@ -6083,6 +6035,84 @@
         "departure_date": "2027-06-02",
         "price": 2018.0,
         "airlines": "Turkish Airlines"
+      },
+      {
+        "date": "2026-10-15T10:31:42",
+        "departure_date": "2026-11-05",
+        "price": 2103.0,
+        "airlines": "ITA"
+      },
+      {
+        "date": "2026-10-15T10:31:51",
+        "departure_date": "2026-12-17",
+        "price": 2250.0,
+        "airlines": "Lufthansa, Austrian"
+      },
+      {
+        "date": "2026-10-15T10:31:56",
+        "departure_date": "2027-01-07",
+        "price": 2002.0,
+        "airlines": "Qatar Airways, SriLankan"
+      },
+      {
+        "date": "2026-10-15T10:32:01",
+        "departure_date": "2027-01-28",
+        "price": 1864.0,
+        "airlines": "Finnair"
+      },
+      {
+        "date": "2026-10-15T10:32:05",
+        "departure_date": "2027-02-18",
+        "price": 2111.0,
+        "airlines": "SWISS, THAI"
+      },
+      {
+        "date": "2026-10-15T10:32:10",
+        "departure_date": "2027-03-11",
+        "price": 1864.0,
+        "airlines": "Finnair"
+      },
+      {
+        "date": "2026-10-15T10:32:14",
+        "departure_date": "2027-04-01",
+        "price": 2000.0,
+        "airlines": "Brussels Airlines, THAI"
+      },
+      {
+        "date": "2026-10-15T10:32:19",
+        "departure_date": "2027-04-22",
+        "price": 1592.0,
+        "airlines": "ITA"
+      },
+      {
+        "date": "2026-10-15T10:32:23",
+        "departure_date": "2027-05-13",
+        "price": 2000.0,
+        "airlines": "Brussels Airlines, THAI"
+      },
+      {
+        "date": "2026-10-15T10:32:28",
+        "departure_date": "2027-06-03",
+        "price": 1840.0,
+        "airlines": "Malaysia Airlines"
+      },
+      {
+        "date": "2026-10-15T10:32:32",
+        "departure_date": "2027-06-24",
+        "price": 1840.0,
+        "airlines": "Malaysia Airlines"
+      },
+      {
+        "date": "2026-10-15T10:32:37",
+        "departure_date": "2027-07-15",
+        "price": 2136.0,
+        "airlines": "SWISS, THAI"
+      },
+      {
+        "date": "2026-10-15T10:32:41",
+        "departure_date": "2027-08-05",
+        "price": 2038.0,
+        "airlines": "Turkish Airlines"
       }
     ]
   },
@@ -6302,60 +6332,6 @@
   },
   "CDG-LAX": {
     "observations": [
-      {
-        "date": "2026-09-11T10:12:55",
-        "departure_date": "2027-01-15",
-        "price": 2271.0,
-        "airlines": "LOT"
-      },
-      {
-        "date": "2026-09-11T10:12:59",
-        "departure_date": "2027-02-05",
-        "price": 2271.0,
-        "airlines": "LOT"
-      },
-      {
-        "date": "2026-09-11T10:13:04",
-        "departure_date": "2027-02-26",
-        "price": 2189.0,
-        "airlines": "Turkish Airlines"
-      },
-      {
-        "date": "2026-09-11T10:13:08",
-        "departure_date": "2027-03-19",
-        "price": 2327.0,
-        "airlines": "Icelandair, Alaska"
-      },
-      {
-        "date": "2026-09-11T10:13:12",
-        "departure_date": "2027-04-09",
-        "price": 2327.0,
-        "airlines": "Icelandair, Alaska"
-      },
-      {
-        "date": "2026-09-11T10:13:17",
-        "departure_date": "2027-04-30",
-        "price": 2327.0,
-        "airlines": "Icelandair, Alaska"
-      },
-      {
-        "date": "2026-09-11T10:13:21",
-        "departure_date": "2027-05-21",
-        "price": 2333.0,
-        "airlines": "Icelandair, Alaska"
-      },
-      {
-        "date": "2026-09-11T10:13:25",
-        "departure_date": "2027-06-11",
-        "price": 2315.0,
-        "airlines": "LOT"
-      },
-      {
-        "date": "2026-09-11T10:13:30",
-        "departure_date": "2027-07-02",
-        "price": 2423.0,
-        "airlines": "Royal Air Maroc"
-      },
       {
         "date": "2026-09-12T09:46:46",
         "departure_date": "2026-10-03",
@@ -8701,35 +8677,65 @@
         "departure_date": "2027-08-04",
         "price": 2366.0,
         "airlines": "LOT"
+      },
+      {
+        "date": "2026-10-15T10:33:48",
+        "departure_date": "2026-11-05",
+        "price": 2790.0,
+        "airlines": "Condor, JetBlue"
+      },
+      {
+        "date": "2026-10-15T10:33:52",
+        "departure_date": "2026-11-26",
+        "price": 2326.0,
+        "airlines": "Icelandair, Alaska"
+      },
+      {
+        "date": "2026-10-15T10:33:57",
+        "departure_date": "2026-12-17",
+        "price": 2322.0,
+        "airlines": "LOT"
+      },
+      {
+        "date": "2026-10-15T10:34:01",
+        "departure_date": "2027-01-07",
+        "price": 2322.0,
+        "airlines": "LOT"
+      },
+      {
+        "date": "2026-10-15T10:34:15",
+        "departure_date": "2027-03-11",
+        "price": 2322.0,
+        "airlines": "LOT"
+      },
+      {
+        "date": "2026-10-15T10:34:28",
+        "departure_date": "2027-05-13",
+        "price": 2332.0,
+        "airlines": "Icelandair, Alaska"
+      },
+      {
+        "date": "2026-10-15T10:34:37",
+        "departure_date": "2027-06-24",
+        "price": 2348.0,
+        "airlines": "Royal Air Maroc"
+      },
+      {
+        "date": "2026-10-15T10:34:41",
+        "departure_date": "2027-07-15",
+        "price": 2348.0,
+        "airlines": "Royal Air Maroc"
+      },
+      {
+        "date": "2026-10-15T10:34:47",
+        "departure_date": "2027-08-05",
+        "price": 2348.0,
+        "airlines": "Royal Air Maroc"
       }
     ]
   },
   "CDG-DXB": {
     "observations": [
-      {
-        "date": "2026-09-09T10:22:53",
-        "departure_date": "2026-11-11",
-        "price": 1328.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-09T10:22:58",
-        "departure_date": "2026-12-02",
-        "price": 1479.0,
-        "airlines": "ITA"
-      },
-      {
-        "date": "2026-09-09T10:23:02",
-        "departure_date": "2026-12-23",
-        "price": 2196.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-09T10:23:07",
-        "departure_date": "2027-01-13",
-        "price": 1382.0,
-        "airlines": "Turkish Airlines"
-      },
       {
         "date": "2026-09-09T10:23:11",
         "departure_date": "2027-02-03",
@@ -11105,71 +11111,35 @@
         "departure_date": "2027-06-02",
         "price": 1407.0,
         "airlines": "EgyptAir"
+      },
+      {
+        "date": "2026-10-15T10:35:09",
+        "departure_date": "2027-01-28",
+        "price": 1407.0,
+        "airlines": "EgyptAir"
+      },
+      {
+        "date": "2026-10-15T10:35:18",
+        "departure_date": "2027-03-11",
+        "price": 1407.0,
+        "airlines": "EgyptAir"
+      },
+      {
+        "date": "2026-10-15T10:35:27",
+        "departure_date": "2027-04-22",
+        "price": 1479.0,
+        "airlines": "ITA"
+      },
+      {
+        "date": "2026-10-15T10:35:44",
+        "departure_date": "2027-07-15",
+        "price": 1267.0,
+        "airlines": "Aegean"
       }
     ]
   },
   "CDG-JNB": {
     "observations": [
-      {
-        "date": "2026-09-11T10:15:12",
-        "departure_date": "2027-03-19",
-        "price": 2621.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-11T10:15:16",
-        "departure_date": "2027-04-09",
-        "price": 2052.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-11T10:15:21",
-        "departure_date": "2027-04-30",
-        "price": 3011.0,
-        "airlines": "Lufthansa"
-      },
-      {
-        "date": "2026-09-11T10:15:25",
-        "departure_date": "2027-05-21",
-        "price": 2050.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-11T10:15:30",
-        "departure_date": "2027-06-11",
-        "price": 2052.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-11T10:15:34",
-        "departure_date": "2027-07-02",
-        "price": 2050.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-12T09:48:52",
-        "departure_date": "2026-10-03",
-        "price": 2879.0,
-        "airlines": "RwandAir, Uganda Airlines"
-      },
-      {
-        "date": "2026-09-12T09:48:57",
-        "departure_date": "2026-10-24",
-        "price": 2538.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-12T09:49:01",
-        "departure_date": "2026-11-14",
-        "price": 1658.0,
-        "airlines": "EgyptAir"
-      },
-      {
-        "date": "2026-09-12T09:49:05",
-        "departure_date": "2026-12-05",
-        "price": 2020.0,
-        "airlines": "Ethiopian"
-      },
       {
         "date": "2026-09-12T09:49:10",
         "departure_date": "2026-12-26",
@@ -13509,6 +13479,66 @@
         "departure_date": "2027-07-14",
         "price": 2078.0,
         "airlines": "Air France, Air Europa"
+      },
+      {
+        "date": "2026-10-15T10:35:57",
+        "departure_date": "2026-11-26",
+        "price": 1689.0,
+        "airlines": "Turkish Airlines"
+      },
+      {
+        "date": "2026-10-15T10:36:06",
+        "departure_date": "2027-01-07",
+        "price": 1756.0,
+        "airlines": "Kenya Airways"
+      },
+      {
+        "date": "2026-10-15T10:36:10",
+        "departure_date": "2027-01-28",
+        "price": 1689.0,
+        "airlines": "Turkish Airlines"
+      },
+      {
+        "date": "2026-10-15T10:36:19",
+        "departure_date": "2027-03-11",
+        "price": 1689.0,
+        "airlines": "Turkish Airlines"
+      },
+      {
+        "date": "2026-10-15T10:36:23",
+        "departure_date": "2027-04-01",
+        "price": 1756.0,
+        "airlines": "Kenya Airways"
+      },
+      {
+        "date": "2026-10-15T10:36:32",
+        "departure_date": "2027-05-13",
+        "price": 1756.0,
+        "airlines": "Kenya Airways"
+      },
+      {
+        "date": "2026-10-15T10:36:37",
+        "departure_date": "2027-06-03",
+        "price": 1756.0,
+        "airlines": "Kenya Airways"
+      },
+      {
+        "date": "2026-10-15T10:36:41",
+        "departure_date": "2027-06-24",
+        "price": 1756.0,
+        "airlines": "Kenya Airways"
+      },
+      {
+        "date": "2026-10-15T10:36:45",
+        "departure_date": "2027-07-15",
+        "price": 1814.0,
+        "airlines": "Kenya Airways"
+      },
+      {
+        "date": "2026-10-15T10:36:50",
+        "departure_date": "2027-08-05",
+        "price": 1855.0,
+        "airlines": "Turkish Airlines, Airlink"
       }
     ]
   },
