@@ -11,9 +11,11 @@ local RunService = game:GetService("RunService")
 
 local FOLDER_NAME = "Remotes"
 
--- Client -> serveur ou serveur -> client, sans réponse
 local EVENT_NAMES: { string } = {
-	"ClientReady", -- le client a fini de charger
+	"Notify", -- serveur -> client : (text, kind) message à afficher
+	"ReceptionShow", -- serveur -> client : (ReceptionInfo) ouvre la réception
+	"ReceptionDecision", -- client -> serveur : (token, "Accept" | "Capture")
+	"ReceptionResult", -- serveur -> client : (token, outcome, details)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)

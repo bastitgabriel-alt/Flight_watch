@@ -1,12 +1,9 @@
-# Paquets installés par Wally (recréés avec « wally install »)
-/Packages
-/ServerPackages
-/DevPackages
-
 # Fichiers générés
 sourcemap.json
 *.rbxl
 *.rbxlx
+# ...sauf le fichier de jeu prêt à ouvrir
+!/build/StealAnAnomaly.rbxlx
 *.rbxl.lock
 *.rbxlx.lock
 
