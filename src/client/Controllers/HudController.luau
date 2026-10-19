@@ -38,11 +38,12 @@ local function buildGui()
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 
-	-- Panneau d'argent à gauche (le centre de l'écran reste libre pour voir le client)
+	-- Panneau d'argent en bas au centre : libre sur PC comme sur téléphone
+	-- (chat en haut à gauche, joystick en bas à gauche, saut en bas à droite)
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
-		AnchorPoint = Vector2.new(0, 0.5),
-		Position = UDim2.new(0, 10, 0.32, 0),
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -10),
 		Size = UDim2.new(0.3, 0, 0, 70),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
