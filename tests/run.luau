@@ -276,6 +276,14 @@ test("Événements et renaissances débloquent leurs anomalies", function()
 	assert(seen.MoonEye, "Œil de la Lune jamais vu")
 	assert(seen.Clockmaker and seen.WhiteLady and seen.DeadConductor and seen.EternalHost, "anomalies de renaissance absentes")
 	assert(mutations.Lunar, "mutation Lunaire absente")
+	-- L'anomalie vedette sort souvent pendant son événement
+	local banshees = 0
+	for _ = 1, 2000 do
+		if GuestGenerator.generate(rng, { ForceAnomaly = true, Event = "GhostRush" }).AnomalyId == "Banshee" then
+			banshees += 1
+		end
+	end
+	assert(banshees > 200, "Banshee trop rare pendant la Ruée fantôme : " .. banshees)
 	-- Sans renaissance : pas d'anomalie de renaissance
 	for _ = 1, 5000 do
 		local g = GuestGenerator.generate(rng, { ForceAnomaly = true, Event = "Blackout", RarityLuck = 5 })

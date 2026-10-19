@@ -9,6 +9,8 @@
 --   SpawnDelayMultiplier  < 1 = les clients arrivent plus vite
 --   TipMultiplier       multiplie les pourboires des vrais clients
 -- Les anomalies et mutations avec EventOnly = <Id> ne sortent que pendant l'événement.
+--   FeaturedChance      part des anomalies remplacées par l'anomalie vedette de
+--                       l'événement (EventOnly, hors Secrète) pour qu'on la voie vraiment
 
 export type EventDef = {
 	Id: string,
@@ -21,6 +23,7 @@ export type EventDef = {
 	IncomeMultiplier: number?,
 	SpawnDelayMultiplier: number?,
 	TipMultiplier: number?,
+	FeaturedChance: number?,
 }
 
 local EventConfig = {
@@ -37,6 +40,7 @@ local EventConfig = {
 			Color = Color3.fromRGB(255, 60, 70),
 			AnomalyChance = 0.55,
 			RarityLuck = 3,
+			FeaturedChance = 0.1,
 		},
 		{
 			Id = "Blackout",
@@ -46,6 +50,7 @@ local EventConfig = {
 			Color = Color3.fromRGB(150, 160, 255),
 			AnomalyChance = 0.5,
 			IncomeMultiplier = 2,
+			FeaturedChance = 0.1,
 		},
 		{
 			Id = "GhostRush",
@@ -56,6 +61,7 @@ local EventConfig = {
 			AnomalyChance = 0.5,
 			SpawnDelayMultiplier = 0.5,
 			TipMultiplier = 3,
+			FeaturedChance = 0.15,
 		},
 	} :: { EventDef },
 }

@@ -127,11 +127,18 @@ commands.tuto = function(player)
 end
 
 commands.event = function(player, args)
-	local id = args[1]
-	if id == "stop" then
+	local typed = string.lower(args[1] or "")
+	-- Majuscules ignorées : « !event bloodmoon » marche aussi
+	local id: string? = nil
+	for _, event in EventConfig.Events do
+		if string.lower(event.Id) == typed then
+			id = event.Id
+		end
+	end
+	if typed == "stop" then
 		EventService.Force(nil)
 		Notify.send(player, "Événement arrêté (debug)", "Info")
-	elseif id and EventConfig.get(id) then
+	elseif id then
 		EventService.Force(id)
 	else
 		Notify.send(player, "Usage : !event BloodMoon | Blackout | GhostRush | stop", "Bad")

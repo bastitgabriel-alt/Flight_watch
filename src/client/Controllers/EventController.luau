@@ -162,10 +162,11 @@ local function applyAmbience(eventId: string?)
 	local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
 	local color = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
 	if eventId == "BloodMoon" then
-		set(sky, { MoonAngularSize = 45 })
-		set(atmosphere, { Color = Color3.fromRGB(170, 50, 60), Decay = Color3.fromRGB(90, 10, 20) })
-		set(color, { TintColor = Color3.fromRGB(255, 180, 180) })
-		set(Lighting, { OutdoorAmbient = Color3.fromRGB(140, 60, 70) })
+		-- Tout devient rouge sang
+		set(sky, { MoonAngularSize = 50 })
+		set(atmosphere, { Density = 0.48, Haze = 2, Color = Color3.fromRGB(200, 40, 50), Decay = Color3.fromRGB(110, 10, 20) })
+		set(color, { TintColor = Color3.fromRGB(255, 150, 150), Saturation = 0.15, Contrast = 0.2 })
+		set(Lighting, { OutdoorAmbient = Color3.fromRGB(160, 50, 60), Ambient = Color3.fromRGB(120, 50, 60) })
 	elseif eventId == "Blackout" then
 		local map = workspace:FindFirstChild("Map")
 		if map then
@@ -188,8 +189,10 @@ local function applyAmbience(eventId: string?)
 		})
 		giveFlashlight()
 	elseif eventId == "GhostRush" then
-		set(atmosphere, { Color = Color3.fromRGB(110, 200, 150), Decay = Color3.fromRGB(30, 90, 60) })
-		set(color, { TintColor = Color3.fromRGB(220, 255, 230) })
+		-- Brume verte épaisse
+		set(atmosphere, { Density = 0.55, Haze = 2.5, Color = Color3.fromRGB(100, 220, 150), Decay = Color3.fromRGB(20, 100, 60) })
+		set(color, { TintColor = Color3.fromRGB(200, 255, 215), Saturation = 0.1 })
+		set(Lighting, { OutdoorAmbient = Color3.fromRGB(80, 150, 110) })
 	end
 end
 

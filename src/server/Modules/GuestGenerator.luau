@@ -12,6 +12,7 @@ local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
 local MutationConfig = require(Config:WaitForChild("MutationConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
+local EventConfig = require(Config:WaitForChild("EventConfig"))
 
 export type Options = {
 	AnomalyChance: number?, -- remplace GuestConfig.AnomalyChance
@@ -218,8 +219,22 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 	if opts.ForceAnomalyId and AnomalyConfig.ById[opts.ForceAnomalyId] then
 		def = AnomalyConfig.ById[opts.ForceAnomalyId]
 	else
-		local rarity = GuestGenerator.rollRarity(rng, opts.RarityLuck, opts.Rebirths, opts.Event)
-		def = GuestGenerator.pickAnomaly(rng, rarity, opts.Rebirths, opts.Event)
+		-- Anomalie vedette de l'événement en cours (le Loup-Garou pendant la Lune de Sang...)
+		local event = EventConfig.get(opts.Event)
+		local featured = {}
+		if event and event.FeaturedChance then
+			for _, candidate in AnomalyConfig.List do
+				if candidate.EventOnly == event.Id and candidate.Rarity ~= "Secret" then
+					table.insert(featured, candidate)
+				end
+			end
+		end
+		if #featured > 0 and rng:NextNumber() < (event :: any).FeaturedChance then
+			def = pick(rng, featured)
+		else
+			local rarity = GuestGenerator.rollRarity(rng, opts.RarityLuck, opts.Rebirths, opts.Event)
+			def = GuestGenerator.pickAnomaly(rng, rarity, opts.Rebirths, opts.Event)
+		end
 	end
 	local rarity = RarityConfig[def.Rarity]
 

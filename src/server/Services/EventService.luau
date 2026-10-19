@@ -50,6 +50,7 @@ local function runEvent(event: EventConfig.EventDef)
 	workspace:SetAttribute("EventEndsAt", now() + EventConfig.Duration)
 	workspace:SetAttribute("NextEventAt", nil)
 	Notify.sendAll(`{event.DisplayName} ! {event.Description}`, event.Color)
+	print(`[Événement] {event.Id} commence ({EventConfig.Duration} s)`)
 	EventService.Changed:Fire(event.Id)
 
 	local endsAt = now() + EventConfig.Duration

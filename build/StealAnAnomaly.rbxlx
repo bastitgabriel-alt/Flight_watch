@@ -546,6 +546,8 @@ return EconomyConfig
 --   SpawnDelayMultiplier  < 1 = les clients arrivent plus vite
 --   TipMultiplier       multiplie les pourboires des vrais clients
 -- Les anomalies et mutations avec EventOnly = <Id> ne sortent que pendant l'événement.
+--   FeaturedChance      part des anomalies remplacées par l'anomalie vedette de
+--                       l'événement (EventOnly, hors Secrète) pour qu'on la voie vraiment
 
 export type EventDef = {
 	Id: string,
@@ -558,6 +560,7 @@ export type EventDef = {
 	IncomeMultiplier: number?,
 	SpawnDelayMultiplier: number?,
 	TipMultiplier: number?,
+	FeaturedChance: number?,
 }
 
 local EventConfig = {
@@ -574,6 +577,7 @@ local EventConfig = {
 			Color = Color3.fromRGB(255, 60, 70),
 			AnomalyChance = 0.55,
 			RarityLuck = 3,
+			FeaturedChance = 0.1,
 		},
 		{
 			Id = "Blackout",
@@ -583,6 +587,7 @@ local EventConfig = {
 			Color = Color3.fromRGB(150, 160, 255),
 			AnomalyChance = 0.5,
 			IncomeMultiplier = 2,
+			FeaturedChance = 0.1,
 		},
 		{
 			Id = "GhostRush",
@@ -593,6 +598,7 @@ local EventConfig = {
 			AnomalyChance = 0.5,
 			SpawnDelayMultiplier = 0.5,
 			TipMultiplier = 3,
+			FeaturedChance = 0.15,
 		},
 	} :: { EventDef },
 }
@@ -2804,6 +2810,7 @@ local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
 local MutationConfig = require(Config:WaitForChild("MutationConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
+local EventConfig = require(Config:WaitForChild("EventConfig"))
 
 export type Options = {
 	AnomalyChance: number?, -- remplace GuestConfig.AnomalyChance
@@ -3010,8 +3017,22 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 	if opts.ForceAnomalyId and AnomalyConfig.ById[opts.ForceAnomalyId] then
 		def = AnomalyConfig.ById[opts.ForceAnomalyId]
 	else
-		local rarity = GuestGenerator.rollRarity(rng, opts.RarityLuck, opts.Rebirths, opts.Event)
-		def = GuestGenerator.pickAnomaly(rng, rarity, opts.Rebirths, opts.Event)
+		-- Anomalie vedette de l'événement en cours (le Loup-Garou pendant la Lune de Sang...)
+		local event = EventConfig.get(opts.Event)
+		local featured = {}
+		if event and event.FeaturedChance then
+			for _, candidate in AnomalyConfig.List do
+				if candidate.EventOnly == event.Id and candidate.Rarity ~= "Secret" then
+					table.insert(featured, candidate)
+				end
+			end
+		end
+		if #featured > 0 and rng:NextNumber() < (event :: any).FeaturedChance then
+			def = pick(rng, featured)
+		else
+			local rarity = GuestGenerator.rollRarity(rng, opts.RarityLuck, opts.Rebirths, opts.Event)
+			def = GuestGenerator.pickAnomaly(rng, rarity, opts.Rebirths, opts.Event)
+		end
 	end
 	local rarity = RarityConfig[def.Rarity]
 
@@ -5216,11 +5237,18 @@ commands.tuto = function(player)
 end
 
 commands.event = function(player, args)
-	local id = args[1]
-	if id == "stop" then
+	local typed = string.lower(args[1] or "")
+	-- Majuscules ignorées : « !event bloodmoon » marche aussi
+	local id: string? = nil
+	for _, event in EventConfig.Events do
+		if string.lower(event.Id) == typed then
+			id = event.Id
+		end
+	end
+	if typed == "stop" then
 		EventService.Force(nil)
 		Notify.send(player, "Événement arrêté (debug)", "Info")
-	elseif id and EventConfig.get(id) then
+	elseif id then
 		EventService.Force(id)
 	else
 		Notify.send(player, "Usage : !event BloodMoon | Blackout | GhostRush | stop", "Bad")
@@ -5320,6 +5348,7 @@ local function runEvent(event: EventConfig.EventDef)
 	workspace:SetAttribute("EventEndsAt", now() + EventConfig.Duration)
 	workspace:SetAttribute("NextEventAt", nil)
 	Notify.sendAll(`{event.DisplayName} ! {event.Description}`, event.Color)
+	print(`[Événement] {event.Id} commence ({EventConfig.Duration} s)`)
 	EventService.Changed:Fire(event.Id)
 
 	local endsAt = now() + EventConfig.Duration
@@ -10063,10 +10092,11 @@ local function applyAmbience(eventId: string?)
 	local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
 	local color = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
 	if eventId == "BloodMoon" then
-		set(sky, { MoonAngularSize = 45 })
-		set(atmosphere, { Color = Color3.fromRGB(170, 50, 60), Decay = Color3.fromRGB(90, 10, 20) })
-		set(color, { TintColor = Color3.fromRGB(255, 180, 180) })
-		set(Lighting, { OutdoorAmbient = Color3.fromRGB(140, 60, 70) })
+		-- Tout devient rouge sang
+		set(sky, { MoonAngularSize = 50 })
+		set(atmosphere, { Density = 0.48, Haze = 2, Color = Color3.fromRGB(200, 40, 50), Decay = Color3.fromRGB(110, 10, 20) })
+		set(color, { TintColor = Color3.fromRGB(255, 150, 150), Saturation = 0.15, Contrast = 0.2 })
+		set(Lighting, { OutdoorAmbient = Color3.fromRGB(160, 50, 60), Ambient = Color3.fromRGB(120, 50, 60) })
 	elseif eventId == "Blackout" then
 		local map = workspace:FindFirstChild("Map")
 		if map then
@@ -10089,8 +10119,10 @@ local function applyAmbience(eventId: string?)
 		})
 		giveFlashlight()
 	elseif eventId == "GhostRush" then
-		set(atmosphere, { Color = Color3.fromRGB(110, 200, 150), Decay = Color3.fromRGB(30, 90, 60) })
-		set(color, { TintColor = Color3.fromRGB(220, 255, 230) })
+		-- Brume verte épaisse
+		set(atmosphere, { Density = 0.55, Haze = 2.5, Color = Color3.fromRGB(100, 220, 150), Decay = Color3.fromRGB(20, 100, 60) })
+		set(color, { TintColor = Color3.fromRGB(200, 255, 215), Saturation = 0.1 })
+		set(Lighting, { OutdoorAmbient = Color3.fromRGB(80, 150, 110) })
 	end
 end
 
