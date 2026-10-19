@@ -5332,6 +5332,7 @@ return PromptController
 -- « Donner la clé » ou « Capturer ». Le serveur décide du résultat.
 
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
@@ -5380,7 +5381,7 @@ local function makeButton(name: string, text: string, color: Color3, position: U
 		Name = name,
 		AnchorPoint = Vector2.new(0, 1),
 		Position = position,
-		Size = UDim2.new(0.48, 0, 0.26, 0),
+		Size = UDim2.new(0.48, 0, 0.17, 0),
 		BackgroundColor3 = color,
 		AutoButtonColor = true,
 		Font = Enum.Font.FredokaOne,
@@ -5400,12 +5401,12 @@ local function buildGui()
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 
-	-- Panneau en bas de l'écran (le client reste visible au-dessus)
+	-- Panneau à droite de l'écran : le client reste bien visible à gauche
 	panel = UI.new("Frame", {
 		Name = "Panel",
-		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 1, -8),
-		Size = UDim2.new(0.96, 0, 0.46, 0),
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.new(1, -8, 0.5, 0),
+		Size = UDim2.new(0.42, 0, 0.94, 0),
 		BackgroundColor3 = Color3.fromRGB(25, 18, 30),
 		BackgroundTransparency = 0.1,
 		Parent = gui,
@@ -5413,14 +5414,15 @@ local function buildGui()
 		UI.corner(18),
 		UI.stroke(Color3.fromRGB(120, 80, 140), 2),
 		UI.padding(10),
-		UI.new("UISizeConstraint", { MaxSize = Vector2.new(640, 360), MinSize = Vector2.new(300, 240) }),
+		UI.new("UISizeConstraint", { MaxSize = Vector2.new(440, 600), MinSize = Vector2.new(250, 280) }),
 	})
 
 	speechLabel = UI.new("TextLabel", {
 		Name = "Speech",
 		BackgroundTransparency = 1,
-		Size = UDim2.new(0.88, 0, 0.13, 0),
+		Size = UDim2.new(0.86, 0, 0.11, 0),
 		Font = Enum.Font.GothamBold,
+		TextWrapped = true,
 		TextScaled = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Color3.new(1, 1, 1),
@@ -5432,7 +5434,7 @@ local function buildGui()
 		Name = "Close",
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.fromScale(1, 0),
-		Size = UDim2.new(0.1, 0, 0.13, 0),
+		Size = UDim2.new(0.12, 0, 0.09, 0),
 		BackgroundColor3 = Color3.fromRGB(70, 60, 80),
 		Font = Enum.Font.GothamBold,
 		TextScaled = true,
@@ -5446,8 +5448,8 @@ local function buildGui()
 	-- Barre de temps restant
 	local timerBack = UI.new("Frame", {
 		Name = "TimerBack",
-		Position = UDim2.fromScale(0, 0.15),
-		Size = UDim2.new(1, 0, 0.03, 0),
+		Position = UDim2.fromScale(0, 0.125),
+		Size = UDim2.new(1, 0, 0.02, 0),
 		BackgroundColor3 = Color3.fromRGB(50, 40, 55),
 		Parent = panel,
 	}, { UI.corner(4) })
@@ -5461,8 +5463,8 @@ local function buildGui()
 	-- Carte d'identité (à gauche)
 	local card = UI.new("Frame", {
 		Name = "IdCard",
-		Position = UDim2.fromScale(0, 0.21),
-		Size = UDim2.new(0.38, 0, 0.47, 0),
+		Position = UDim2.fromScale(0, 0.165),
+		Size = UDim2.new(1, 0, 0.33, 0),
 		BackgroundColor3 = Color3.fromRGB(235, 225, 200),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -5499,8 +5501,8 @@ local function buildGui()
 	-- Registre des réservations (à droite)
 	local registry = UI.new("Frame", {
 		Name = "Registry",
-		Position = UDim2.fromScale(0.4, 0.21),
-		Size = UDim2.new(0.6, 0, 0.47, 0),
+		Position = UDim2.fromScale(0, 0.515),
+		Size = UDim2.new(1, 0, 0.29, 0),
 		BackgroundColor3 = Color3.fromRGB(245, 240, 225),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -5535,7 +5537,7 @@ local function buildGui()
 	resultLabel = UI.new("TextLabel", {
 		Name = "Result",
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.5, 0.35),
+		Position = UDim2.fromScale(0.5, 0.2),
 		Size = UDim2.new(0.9, 0, 0.18, 0),
 		BackgroundColor3 = Color3.fromRGB(15, 10, 20),
 		BackgroundTransparency = 0.2,
@@ -5623,8 +5625,11 @@ local function focusCamera(guest: Model?)
 	cameraFocused = true
 	camera.CameraType = Enum.CameraType.Scriptable
 	setOwnCharacterHidden(true)
-	local eye = root.Position + root.CFrame.LookVector * 12 + Vector3.new(0, 7, 0)
-	local target = root.Position - Vector3.new(0, 4, 0)
+	local eye = root.Position + root.CFrame.LookVector * 11 + Vector3.new(0, 4, 0)
+	-- On vise à droite du client pour qu'il apparaisse dans la moitié gauche
+	local toGuest = (root.Position - eye) * Vector3.new(1, 0, 1)
+	local right = toGuest.Unit:Cross(Vector3.yAxis)
+	local target = root.Position - Vector3.new(0, 1.5, 0) + right * 5
 	TweenService:Create(camera, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
 		CFrame = CFrame.lookAt(eye, target),
 	}):Play()
@@ -5655,12 +5660,14 @@ function ReceptionController.Open(info: Types.ReceptionInfo)
 	showPhoto(info.PhotoAppearance)
 	setButtonsEnabled(true)
 	gui.Enabled = true
+	ProximityPromptService.Enabled = false -- l'invite cacherait le client
 	focusCamera(info.Guest)
 end
 
 function ReceptionController.Close()
 	current = nil
 	gui.Enabled = false
+	ProximityPromptService.Enabled = true
 	restoreCamera()
 end
 
