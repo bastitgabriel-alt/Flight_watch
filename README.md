@@ -18,7 +18,9 @@ rapportent de l'argent chaque seconde dans leurs cellules.
 | 7. Vol entre joueurs + verrou de porte | ✅ à tester dans Studio |
 | 8. Catalogue des anomalies + classements | ✅ à tester dans Studio |
 | 9. Monétisation (2 gamepasses, 2 produits Robux) | ✅ code prêt, IDs à créer (voir plus bas) |
-| 10 à 12. Tutoriel + sons, tests à plusieurs, publication | à venir |
+| 10. Tutoriel (3 étapes), sons, interface mobile, statistiques | ✅ à tester dans Studio |
+| 11. Revue multijoueur (serveur plein, hôtels, vols) | ✅ |
+| 12. Publication | 📋 suis [PUBLICATION.md](PUBLICATION.md) |
 
 ---
 
@@ -61,6 +63,8 @@ rapportent de l'argent chaque seconde dans leurs cellules.
 | `!prochain MidnightBride` | le prochain client sera cette anomalie précise |
 | `!pass DoubleMoney` | simule le gamepass Argent x2 (ou `ExtraCells` : +3 cellules) |
 | `!chance` | lance une « Nuit chanceuse » (raretés x3 pendant 10 min) |
+| `!temps 10` | accélère le temps x10 (revenus et clients) ; `!temps 1` pour revenir |
+| `!tuto` | relance le tutoriel |
 | `!reset` | remet tes données à zéro |
 
 Ids des anomalies : `Doppelganger`, `Shadowless`, `MrsSmile`, `GreyTraveler`, `Sleepwalker`,

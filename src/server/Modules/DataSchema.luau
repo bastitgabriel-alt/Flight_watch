@@ -47,6 +47,7 @@ local TEMPLATE = {
 	ReceiptOrder = {}, -- ordre des achats (pour ne garder que les derniers)
 	LuckyUntil = 0, -- os.time() de fin de la « Nuit chanceuse »
 	CatalogRewards = {}, -- { [palier en texte] = true } récompenses du catalogue reçues
+	Firsts = {}, -- { [nom] = true } « premières fois » déjà envoyées aux statistiques
 	TutorialDone = false,
 }
 

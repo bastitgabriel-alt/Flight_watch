@@ -58,6 +58,15 @@ local function buildGui()
 		}),
 	})
 
+	-- Petits écrans (téléphones) : la barre rétrécit pour tenir en largeur
+	local barScale = UI.new("UIScale", { Parent = bar })
+	local camera = workspace.CurrentCamera
+	local function fitBar()
+		barScale.Scale = math.clamp(camera.ViewportSize.X / 620, 0.65, 1)
+	end
+	camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitBar)
+	fitBar()
+
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
 		LayoutOrder = 2,

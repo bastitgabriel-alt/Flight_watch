@@ -15,6 +15,7 @@ local ProfileStore = require(Server:WaitForChild("Vendor"):WaitForChild("Profile
 local DataSchema = require(Server:WaitForChild("Modules"):WaitForChild("DataSchema"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
 
 local PlayerDataService = {}
 
@@ -23,6 +24,7 @@ PlayerDataService.DataLoaded = Signal.new()
 
 local store = ProfileStore.New(GameConfig.DataStoreName, DataSchema.TEMPLATE)
 local profiles: { [Player]: any } = {}
+local joinTimes: { [Player]: number } = {}
 
 local function profileKey(player: Player): string
 	return `Player_{player.UserId}`
@@ -62,14 +64,21 @@ local function onPlayerAdded(player: Player)
 	end
 
 	profiles[player] = profile
+	joinTimes[player] = os.clock()
 	local data = profile.Data
 	data.LastLogin = os.time()
 
 	player:SetAttribute("Money", data.Money)
+	player:SetAttribute("TutorialDone", data.TutorialDone)
 	PlayerDataService.DataLoaded:Fire(player, data)
 end
 
 local function onPlayerRemoving(player: Player)
+	local joinedAt = joinTimes[player]
+	joinTimes[player] = nil
+	if joinedAt then
+		Analytics.event(player, "SessionLength", math.floor(os.clock() - joinedAt))
+	end
 	local profile = profiles[player]
 	if profile then
 		profiles[player] = nil

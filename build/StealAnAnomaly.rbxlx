@@ -568,8 +568,26 @@ return ShopConfig
 ]]></string>
           </Properties>
         </Item>
+        <Item class="ModuleScript" referent="12">
+          <Properties>
+            <string name="Name">SoundConfig</string>
+            <string name="Source"><![CDATA[--!strict
+-- Sons du jeu. Ce sont des sons intégrés à Roblox (rbxasset://) : pour en mettre
+-- d'autres, remplace par « rbxassetid://<numéro> » d'un son de la Creator Store.
+
+local SoundConfig = {
+	Good = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.6 },
+	Bad = { Id = "rbxasset://sounds/uuhhh.mp3", Volume = 0.5 },
+	Click = { Id = "rbxasset://sounds/button.wav", Volume = 0.4 },
+	Scare = { Id = "rbxasset://sounds/swoosh.wav", Volume = 0.9 },
+}
+
+return SoundConfig
+]]></string>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="ModuleScript" referent="12">
+      <Item class="ModuleScript" referent="13">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[--!strict
@@ -592,6 +610,7 @@ local EVENT_NAMES: { string } = {
 	"ReceptionResult", -- serveur -> client : (token, outcome, details)
 	"ShopBuy", -- client -> serveur : ("Cell" | "Tool" | "Security", itemId)
 	"LockRequest", -- client -> serveur : verrouiller sa porte
+	"TutorialStep", -- client -> serveur : (numéro d'étape terminée)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)
@@ -649,7 +668,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="13">
+      <Item class="ModuleScript" referent="14">
         <Properties>
           <string name="Name">Types</string>
           <string name="Source"><![CDATA[--!strict
@@ -740,11 +759,11 @@ return {}
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="14">
+      <Item class="Folder" referent="15">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="15">
+        <Item class="ModuleScript" referent="16">
           <Properties>
             <string name="Name">Format</string>
             <string name="Source"><![CDATA[--!strict
@@ -790,7 +809,7 @@ return Format
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="16">
+        <Item class="ModuleScript" referent="17">
           <Properties>
             <string name="Name">Loader</string>
             <string name="Source"><![CDATA[--!strict
@@ -852,7 +871,7 @@ return Loader
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="17">
+        <Item class="ModuleScript" referent="18">
           <Properties>
             <string name="Name">ReceptionCamera</string>
             <string name="Source"><![CDATA[--!strict
@@ -879,7 +898,7 @@ return ReceptionCamera
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="18">
+        <Item class="ModuleScript" referent="19">
           <Properties>
             <string name="Name">RigAppearance</string>
             <string name="Source"><![CDATA[--!strict
@@ -988,7 +1007,7 @@ return RigAppearance
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="19">
+        <Item class="ModuleScript" referent="20">
           <Properties>
             <string name="Name">Signal</string>
             <string name="Source"><![CDATA[--!strict
@@ -1043,15 +1062,15 @@ return Signal
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="20">
+  <Item class="ServerScriptService" referent="21">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Folder" referent="21">
+    <Item class="Folder" referent="22">
       <Properties>
         <string name="Name">Server</string>
       </Properties>
-      <Item class="Script" referent="22">
+      <Item class="Script" referent="23">
         <Properties>
           <string name="Name">Main</string>
           <token name="RunContext">0</token>
@@ -1074,11 +1093,50 @@ print("[Serveur] Serveur prêt")
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="23">
+      <Item class="Folder" referent="24">
         <Properties>
           <string name="Name">Modules</string>
         </Properties>
-        <Item class="ModuleScript" referent="24">
+        <Item class="ModuleScript" referent="25">
+          <Properties>
+            <string name="Name">Analytics</string>
+            <string name="Source"><![CDATA[--!strict
+-- Statistiques de jeu (AnalyticsService de Roblox), visibles sur le Creator Hub
+-- dans l'onglet Analytics une fois le jeu publié. Les erreurs sont ignorées :
+-- les statistiques ne doivent jamais empêcher le jeu de marcher.
+
+local AnalyticsService = game:GetService("AnalyticsService")
+
+local Analytics = {}
+
+-- Événement libre (ex. « SessionLength », valeur en secondes)
+function Analytics.event(player: Player, name: string, value: number?)
+	pcall(function()
+		AnalyticsService:LogCustomEvent(player, name, value or 1)
+	end)
+end
+
+-- Étape du tutoriel (entonnoir d'accueil)
+function Analytics.funnel(player: Player, step: number, stepName: string)
+	pcall(function()
+		AnalyticsService:LogOnboardingFunnelStepEvent(player, step, stepName)
+	end)
+end
+
+-- « Première fois » (première capture, premier achat...) : enregistré une seule fois
+function Analytics.first(player: Player, data: any, key: string)
+	if data.Firsts[key] then
+		return
+	end
+	data.Firsts[key] = true
+	Analytics.event(player, `First{key}`)
+end
+
+return Analytics
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="26">
           <Properties>
             <string name="Name">CollisionGroups</string>
             <string name="Source"><![CDATA[--!strict
@@ -1136,7 +1194,7 @@ return CollisionGroups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="25">
+        <Item class="ModuleScript" referent="27">
           <Properties>
             <string name="Name">DataSchema</string>
             <string name="Source"><![CDATA[--!strict
@@ -1188,6 +1246,7 @@ local TEMPLATE = {
 	ReceiptOrder = {}, -- ordre des achats (pour ne garder que les derniers)
 	LuckyUntil = 0, -- os.time() de fin de la « Nuit chanceuse »
 	CatalogRewards = {}, -- { [palier en texte] = true } récompenses du catalogue reçues
+	Firsts = {}, -- { [nom] = true } « premières fois » déjà envoyées aux statistiques
 	TutorialDone = false,
 }
 
@@ -1218,7 +1277,7 @@ return DataSchema
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="26">
+        <Item class="ModuleScript" referent="28">
           <Properties>
             <string name="Name">GuestGenerator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1479,7 +1538,7 @@ return GuestGenerator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">IncomeCalculator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1521,7 +1580,7 @@ return IncomeCalculator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">MapBuilder</string>
             <string name="Source"><![CDATA[--!strict
@@ -1876,7 +1935,7 @@ return MapBuilder
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">Notify</string>
             <string name="Source"><![CDATA[--!strict
@@ -1897,7 +1956,7 @@ return Notify
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">RigFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -1986,11 +2045,11 @@ return RigFactory
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="31">
+      <Item class="Folder" referent="33">
         <Properties>
           <string name="Name">Services</string>
         </Properties>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">AnomalyService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2334,7 +2393,7 @@ return AnomalyService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="33">
+        <Item class="ModuleScript" referent="35">
           <Properties>
             <string name="Name">CatalogService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2394,7 +2453,7 @@ return CatalogService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">DebugService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2406,6 +2465,8 @@ return CatalogService
 --   !prochain TheOwner        le prochain client sera cette anomalie précise
 --   !pass DoubleMoney         simule un gamepass (DoubleMoney ou ExtraCells), jusqu'au départ
 --   !chance                   lance une « Nuit chanceuse » de 10 min
+--   !temps 10                 accélère le temps x10 (revenus et clients) ; !temps 1 pour revenir
+--   !tuto                     relance le tutoriel
 --   !reset                    remet tes données à zéro
 
 local Players = game:GetService("Players")
@@ -2498,6 +2559,26 @@ commands.chance = function(player)
 	end
 end
 
+commands.temps = function(player, args)
+	local scale = tonumber(args[1])
+	if not scale or scale < 1 or scale > 100 then
+		Notify.send(player, "Usage : !temps 10 (entre 1 et 100)", "Bad")
+		return
+	end
+	player:SetAttribute("TimeScale", if scale == 1 then nil else scale)
+	Notify.send(player, `Temps x{scale} (debug)`, "Good")
+end
+
+commands.tuto = function(player)
+	local data = PlayerDataService.GetData(player)
+	if data then
+		data.TutorialDone = false
+		player:SetAttribute("TutorialDone", false)
+		GuestService.ForceNext(player, { ForceAnomalyId = "Doppelganger" })
+		Notify.send(player, "Tutoriel relancé (debug)", "Good")
+	end
+end
+
 commands.reset = function(player)
 	PlayerDataService.ResetData(player)
 end
@@ -2532,7 +2613,7 @@ return DebugService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="37">
           <Properties>
             <string name="Name">GuestService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2562,6 +2643,7 @@ local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
 local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
+local Analytics = require(Modules:WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
@@ -2789,6 +2871,7 @@ local function resolve(session: Session, guest: Guest, decision: string)
 
 		if decision == "Capture" then
 			data.Stats.Captures += 1
+			Analytics.first(player, data, "Capture")
 			local cell = AnomalyService.AddAnomaly(player, def.Id, profile.Mutation)
 			if cell then
 				outcome = "Captured"
@@ -2915,7 +2998,9 @@ end
 
 local function runSession(session: Session)
 	while session.active do
-		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax))
+		-- TimeScale : accélération du temps (commande debug !temps)
+		local timeScale = (session.player:GetAttribute("TimeScale") :: number?) or 1
+		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax) / timeScale)
 		if not session.active or session.player.Parent ~= Players then
 			break
 		end
@@ -2965,6 +3050,11 @@ local function onHotelAssigned(player: Player, hotel: Model)
 		extraModels = {},
 		forceNext = nil,
 	}
+	-- Nouveau joueur : le 1er client est une anomalie commune, facile à repérer
+	local data = PlayerDataService.GetData(player)
+	if data and not data.TutorialDone then
+		session.forceNext = { ForceAnomalyId = "Doppelganger" }
+	end
 	sessions[player] = session
 	task.spawn(runSession, session)
 end
@@ -3009,7 +3099,7 @@ return GuestService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="36">
+        <Item class="ModuleScript" referent="38">
           <Properties>
             <string name="Name">HotelService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3077,6 +3167,7 @@ local function assignHotel(player: Player)
 	if not hotel then
 		-- Ne devrait pas arriver si « Max Players » = nombre d'hôtels
 		warn(`[HotelService] Aucun hôtel libre pour {player.Name}`)
+		player:Kick("Ce serveur est plein (tous les hôtels sont pris). Rejoins un autre serveur !")
 		return
 	end
 
@@ -3143,7 +3234,7 @@ return HotelService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="37">
+        <Item class="ModuleScript" referent="39">
           <Properties>
             <string name="Name">IncomeService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3218,7 +3309,9 @@ function IncomeService.Start(_self: typeof(IncomeService))
 				local income = IncomeService.GetIncome(player)
 				player:SetAttribute("Income", income)
 				if income > 0 then
-					PlayerDataService.AddMoney(player, income * tick)
+					-- TimeScale : accélération du temps (commande debug !temps)
+					local timeScale = (player:GetAttribute("TimeScale") :: number?) or 1
+					PlayerDataService.AddMoney(player, income * tick * timeScale)
 				end
 			end
 		end
@@ -3229,7 +3322,7 @@ return IncomeService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="38">
+        <Item class="ModuleScript" referent="40">
           <Properties>
             <string name="Name">LeaderboardService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3383,7 +3476,7 @@ return LeaderboardService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="39">
+        <Item class="ModuleScript" referent="41">
           <Properties>
             <string name="Name">LockService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3520,7 +3613,7 @@ return LockService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">MonetizationService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3538,6 +3631,7 @@ local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Format = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Format"))
 local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Analytics"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local IncomeService = require(script.Parent:WaitForChild("IncomeService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -3621,6 +3715,7 @@ local function processReceipt(receipt: any): Enum.ProductPurchaseDecision
 			return Enum.ProductPurchaseDecision.NotProcessedYet
 		end
 		data.ProcessedReceipts[purchaseId] = true
+		Analytics.event(player, "RobuxProduct", receipt.CurrencySpent)
 		table.insert(data.ReceiptOrder, purchaseId)
 		while #data.ReceiptOrder > MAX_RECEIPTS_KEPT do
 			local oldest = table.remove(data.ReceiptOrder, 1)
@@ -3649,6 +3744,7 @@ function MonetizationService.Init(_self: typeof(MonetizationService))
 		local data = PlayerDataService.GetData(player)
 		if purchased and name and data then
 			data.GamepassCache[tostring(passId)] = true
+			Analytics.event(player, `RobuxPass{name}`)
 			grantPass(player, name)
 			Notify.send(player, `Merci ! Gamepass « {MonetizationConfig.GamePasses[name].DisplayName} » activé`, "Good")
 		end
@@ -3661,7 +3757,7 @@ return MonetizationService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="41">
+        <Item class="ModuleScript" referent="43">
           <Properties>
             <string name="Name">PlayerDataService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3681,6 +3777,7 @@ local ProfileStore = require(Server:WaitForChild("Vendor"):WaitForChild("Profile
 local DataSchema = require(Server:WaitForChild("Modules"):WaitForChild("DataSchema"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
 
 local PlayerDataService = {}
 
@@ -3689,6 +3786,7 @@ PlayerDataService.DataLoaded = Signal.new()
 
 local store = ProfileStore.New(GameConfig.DataStoreName, DataSchema.TEMPLATE)
 local profiles: { [Player]: any } = {}
+local joinTimes: { [Player]: number } = {}
 
 local function profileKey(player: Player): string
 	return `Player_{player.UserId}`
@@ -3728,14 +3826,21 @@ local function onPlayerAdded(player: Player)
 	end
 
 	profiles[player] = profile
+	joinTimes[player] = os.clock()
 	local data = profile.Data
 	data.LastLogin = os.time()
 
 	player:SetAttribute("Money", data.Money)
+	player:SetAttribute("TutorialDone", data.TutorialDone)
 	PlayerDataService.DataLoaded:Fire(player, data)
 end
 
 local function onPlayerRemoving(player: Player)
+	local joinedAt = joinTimes[player]
+	joinTimes[player] = nil
+	if joinedAt then
+		Analytics.event(player, "SessionLength", math.floor(os.clock() - joinedAt))
+	end
 	local profile = profiles[player]
 	if profile then
 		profiles[player] = nil
@@ -3839,7 +3944,7 @@ return PlayerDataService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="44">
           <Properties>
             <string name="Name">ShopService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3860,6 +3965,7 @@ local GameConfig = require(Config:WaitForChild("GameConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -3880,6 +3986,10 @@ end
 
 local function pay(player: Player, price: number, itemName: string): boolean
 	if PlayerDataService.TrySpend(player, price) then
+		local data = PlayerDataService.GetData(player)
+		if data then
+			Analytics.first(player, data, "ShopPurchase")
+		end
 		Notify.send(player, `Acheté : {itemName} (-{Format.money(price)})`, "Good")
 		return true
 	end
@@ -3928,7 +4038,7 @@ return ShopService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="43">
+        <Item class="ModuleScript" referent="45">
           <Properties>
             <string name="Name">StealService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3947,6 +4057,7 @@ local Config = Shared:WaitForChild("Config")
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
 local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -4026,6 +4137,7 @@ local function finish(steal: Steal, success: boolean, reason: string?)
 			local ownerData = PlayerDataService.GetData(steal.owner)
 			if thiefData then
 				thiefData.Stats.StealsSucceeded += 1
+				Analytics.first(steal.thief, thiefData, "Steal")
 			end
 			if ownerData then
 				ownerData.Stats.StealsSuffered += 1
@@ -4186,12 +4298,56 @@ return StealService
 ]]></string>
           </Properties>
         </Item>
+        <Item class="ModuleScript" referent="46">
+          <Properties>
+            <string name="Name">TutorialService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Tutoriel des nouveaux joueurs (3 étapes, affiché par TutorialController).
+-- Le serveur mémorise qu'il est terminé et envoie les étapes aux statistiques.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local Analytics = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Analytics"))
+local RateLimiter = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Util"):WaitForChild("RateLimiter"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local STEP_NAMES = { "Recevoir un client", "Prendre une décision", "Ouvrir la boutique" }
+
+local TutorialService = {}
+
+local limiter = RateLimiter.new(3, 1)
+
+local function onStep(player: Player, step: any)
+	if typeof(step) ~= "number" or step % 1 ~= 0 or step < 1 or step > #STEP_NAMES then
+		return
+	end
+	local data = PlayerDataService.GetData(player)
+	if not data or data.TutorialDone or not limiter:allow(player) then
+		return
+	end
+	Analytics.funnel(player, step, STEP_NAMES[step])
+	if step == #STEP_NAMES then
+		data.TutorialDone = true
+		player:SetAttribute("TutorialDone", true)
+	end
+end
+
+function TutorialService.Init(_self: typeof(TutorialService))
+	Remotes.getEvent("TutorialStep").OnServerEvent:Connect(onStep)
+end
+
+return TutorialService
+]]></string>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Folder" referent="44">
+      <Item class="Folder" referent="47">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="45">
+        <Item class="ModuleScript" referent="48">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -4255,11 +4411,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="46">
+      <Item class="Folder" referent="49">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="47">
+        <Item class="ModuleScript" referent="50">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -6386,23 +6542,23 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="48">
+  <Item class="StarterPlayer" referent="51">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="49">
+    <Item class="StarterPlayerScripts" referent="52">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="50">
+      <Item class="Folder" referent="53">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="51">
+        <Item class="Folder" referent="54">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="52">
+          <Item class="ModuleScript" referent="55">
             <Properties>
               <string name="Name">CatalogController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6585,7 +6741,7 @@ return CatalogController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="53">
+          <Item class="ModuleScript" referent="56">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6647,6 +6803,15 @@ local function buildGui()
 			Padding = UDim.new(0, 8),
 		}),
 	})
+
+	-- Petits écrans (téléphones) : la barre rétrécit pour tenir en largeur
+	local barScale = UI.new("UIScale", { Parent = bar })
+	local camera = workspace.CurrentCamera
+	local function fitBar()
+		barScale.Scale = math.clamp(camera.ViewportSize.X / 620, 0.65, 1)
+	end
+	camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitBar)
+	fitBar()
 
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
@@ -6808,7 +6973,7 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="54">
+          <Item class="ModuleScript" referent="57">
             <Properties>
               <string name="Name">LockController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6857,7 +7022,7 @@ return LockController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="55">
+          <Item class="ModuleScript" referent="58">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6900,7 +7065,7 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="56">
+          <Item class="ModuleScript" referent="59">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7388,7 +7553,7 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="57">
+          <Item class="ModuleScript" referent="60">
             <Properties>
               <string name="Name">ShopController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7673,8 +7838,246 @@ return ShopController
 ]]></string>
             </Properties>
           </Item>
+          <Item class="ModuleScript" referent="61">
+            <Properties>
+              <string name="Name">SoundController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Sons et petit « jumpscare » (flash rouge) quand une anomalie s'infiltre.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local SoundConfig = require(Shared:WaitForChild("Config"):WaitForChild("SoundConfig"))
+local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
+
+local player = Players.LocalPlayer
+
+local SoundController = {}
+
+local sounds: { [string]: Sound } = {}
+local flash: Frame
+
+function SoundController.Play(name: string)
+	local sound = sounds[name]
+	if sound then
+		SoundService:PlayLocalSound(sound)
+	end
+end
+
+local function scare()
+	SoundController.Play("Scare")
+	flash.BackgroundTransparency = 0.25
+	TweenService:Create(flash, TweenInfo.new(0.6), { BackgroundTransparency = 1 }):Play()
+end
+
+function SoundController.Start(_self: typeof(SoundController))
+	for name, entry in SoundConfig do
+		local sound = Instance.new("Sound")
+		sound.Name = name
+		sound.SoundId = entry.Id
+		sound.Volume = entry.Volume
+		sound.Parent = SoundService
+		sounds[name] = sound
+	end
+
+	local gui = UI.new("ScreenGui", {
+		Name = "Flash",
+		ResetOnSpawn = false,
+		IgnoreGuiInset = true,
+		DisplayOrder = 10,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	flash = UI.new("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = Color3.fromRGB(150, 0, 0),
+		BackgroundTransparency = 1,
+		Active = false,
+		Parent = gui,
+	})
+
+	Remotes.getEvent("Notify").OnClientEvent:Connect(function(_text, kind)
+		if kind == "Good" then
+			SoundController.Play("Good")
+		elseif kind == "Bad" then
+			SoundController.Play("Bad")
+		end
+	end)
+	Remotes.getEvent("ReceptionResult").OnClientEvent:Connect(function(_token, outcome)
+		if outcome == "Escaped" then
+			scare()
+		elseif outcome == "WrongCapture" then
+			SoundController.Play("Bad")
+		else
+			SoundController.Play("Good")
+		end
+	end)
+end
+
+return SoundController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="62">
+            <Properties>
+              <string name="Name">TutorialController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Tutoriel des nouveaux joueurs, en 3 étapes avec flèche et texte court :
+--   1. recevoir le client au comptoir
+--   2. décider (clé ou capture)
+--   3. ouvrir la boutique
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
+
+local player = Players.LocalPlayer
+
+local STEPS = {
+	"Un client arrive au comptoir ! Approche-toi et appuie sur « Recevoir ».",
+	"Compare le registre, la photo, son ombre et ses yeux. Puis donne la clé… ou capture-le !",
+	"Tes anomalies rapportent de l'argent chaque seconde. Ouvre la Boutique pour t'agrandir !",
+}
+
+local TutorialController = {}
+
+local function waitForTutorialState(): boolean
+	while player:GetAttribute("TutorialDone") == nil do
+		player:GetAttributeChangedSignal("TutorialDone"):Wait()
+	end
+	return player:GetAttribute("TutorialDone") == true
+end
+
+-- Flèche qui rebondit au-dessus d'un objet du monde
+local function makeArrow(adornee: BasePart): BillboardGui
+	local billboard = UI.new("BillboardGui", {
+		Name = "TutorialArrow",
+		Adornee = adornee,
+		Size = UDim2.fromOffset(80, 80),
+		StudsOffsetWorldSpace = Vector3.new(0, 8, 0),
+		AlwaysOnTop = true,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local label = UI.new("TextLabel", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.FredokaOne,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(255, 220, 60),
+		TextStrokeTransparency = 0,
+		Text = "⬇",
+		Parent = billboard,
+	})
+	TweenService:Create(
+		label,
+		TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Position = UDim2.fromScale(0, 0.3) }
+	):Play()
+	return billboard
+end
+
+local function getGuestSpot(): BasePart?
+	local index = player:GetAttribute("HotelIndex")
+	local map = workspace:WaitForChild("Map")
+	local hotel = index and map:WaitForChild("Hotels"):FindFirstChild(`Hotel{index}`)
+	local spot = hotel and hotel:FindFirstChild("GuestSpot")
+	return if spot and spot:IsA("BasePart") then spot else nil
+end
+
+function TutorialController.Start(_self: typeof(TutorialController))
+	if waitForTutorialState() then
+		return
+	end
+
+	local gui = UI.new("ScreenGui", {
+		Name = "Tutorial",
+		ResetOnSpawn = false,
+		DisplayOrder = 5,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local banner = UI.new("TextLabel", {
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 52),
+		Size = UDim2.new(0.6, 0, 0, 70),
+		BackgroundColor3 = Color3.fromRGB(255, 200, 60),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextWrapped = true,
+		TextColor3 = Color3.fromRGB(30, 20, 10),
+		Parent = gui,
+	}, {
+		UI.corner(12),
+		UI.padding(8),
+		UI.textSize(12, 22),
+		UI.new("UISizeConstraint", { MinSize = Vector2.new(260, 60), MaxSize = Vector2.new(560, 90) }),
+	})
+
+	local function show(step: number)
+		banner.Text = `({step}/3) {STEPS[step]}`
+	end
+
+	-- Étape 1 : recevoir
+	while not player:GetAttribute("HotelIndex") do
+		player:GetAttributeChangedSignal("HotelIndex"):Wait()
+	end
+	show(1)
+	local spot = getGuestSpot()
+	local arrow = if spot then makeArrow(spot) else nil
+	Remotes.getEvent("ReceptionShow").OnClientEvent:Wait()
+	if arrow then
+		arrow:Destroy()
+	end
+	Remotes.getEvent("TutorialStep"):FireServer(1)
+
+	-- Étape 2 : décider
+	show(2)
+	Remotes.getEvent("ReceptionResult").OnClientEvent:Wait()
+	Remotes.getEvent("TutorialStep"):FireServer(2)
+
+	-- Étape 3 : ouvrir la boutique (on fait clignoter son bouton)
+	task.wait(2.5) -- laisse le temps de lire le résultat
+	show(3)
+	local playerGui = player:WaitForChild("PlayerGui")
+	local shopGui = playerGui:WaitForChild("Shop") :: ScreenGui
+	local shopButton = playerGui:WaitForChild("Hud"):WaitForChild("BottomBar"):WaitForChild("Boutique") :: TextButton
+	local stroke = shopButton:FindFirstChildOfClass("UIStroke")
+	local pulse = if stroke
+		then TweenService:Create(
+			stroke,
+			TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{ Color = Color3.fromRGB(255, 230, 80), Thickness = 5 }
+		)
+		else nil
+	if pulse then
+		pulse:Play()
+	end
+	while not shopGui.Enabled do
+		shopGui:GetPropertyChangedSignal("Enabled"):Wait()
+	end
+	if pulse and stroke then
+		pulse:Cancel()
+		stroke.Color = Color3.new(0, 0, 0)
+		stroke.Thickness = 2
+	end
+	Remotes.getEvent("TutorialStep"):FireServer(3)
+
+	banner.Text = "Bravo, tu es prêt ! Attention aux voleurs : pense à verrouiller ta porte. 🔒"
+	task.wait(5)
+	gui:Destroy()
+end
+
+return TutorialController
+]]></string>
+            </Properties>
+          </Item>
         </Item>
-        <Item class="LocalScript" referent="58">
+        <Item class="LocalScript" referent="63">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -7692,11 +8095,11 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="59">
+        <Item class="Folder" referent="64">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="60">
+          <Item class="ModuleScript" referent="65">
             <Properties>
               <string name="Name">HudBar</string>
               <string name="Source"><![CDATA[--!strict
@@ -7728,7 +8131,7 @@ return HudBar
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="61">
+          <Item class="ModuleScript" referent="66">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -7792,7 +8195,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="62">
+  <Item class="Workspace" referent="67">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

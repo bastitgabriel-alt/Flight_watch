@@ -7,6 +7,8 @@
 --   !prochain TheOwner        le prochain client sera cette anomalie précise
 --   !pass DoubleMoney         simule un gamepass (DoubleMoney ou ExtraCells), jusqu'au départ
 --   !chance                   lance une « Nuit chanceuse » de 10 min
+--   !temps 10                 accélère le temps x10 (revenus et clients) ; !temps 1 pour revenir
+--   !tuto                     relance le tutoriel
 --   !reset                    remet tes données à zéro
 
 local Players = game:GetService("Players")
@@ -96,6 +98,26 @@ commands.chance = function(player)
 		data.LuckyUntil = os.time() + 600
 		player:SetAttribute("LuckyUntil", data.LuckyUntil)
 		Notify.send(player, "Nuit chanceuse lancée (debug)", "Good")
+	end
+end
+
+commands.temps = function(player, args)
+	local scale = tonumber(args[1])
+	if not scale or scale < 1 or scale > 100 then
+		Notify.send(player, "Usage : !temps 10 (entre 1 et 100)", "Bad")
+		return
+	end
+	player:SetAttribute("TimeScale", if scale == 1 then nil else scale)
+	Notify.send(player, `Temps x{scale} (debug)`, "Good")
+end
+
+commands.tuto = function(player)
+	local data = PlayerDataService.GetData(player)
+	if data then
+		data.TutorialDone = false
+		player:SetAttribute("TutorialDone", false)
+		GuestService.ForceNext(player, { ForceAnomalyId = "Doppelganger" })
+		Notify.send(player, "Tutoriel relancé (debug)", "Good")
 	end
 end
 

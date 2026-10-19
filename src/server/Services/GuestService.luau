@@ -25,6 +25,7 @@ local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
 local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
+local Analytics = require(Modules:WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
@@ -252,6 +253,7 @@ local function resolve(session: Session, guest: Guest, decision: string)
 
 		if decision == "Capture" then
 			data.Stats.Captures += 1
+			Analytics.first(player, data, "Capture")
 			local cell = AnomalyService.AddAnomaly(player, def.Id, profile.Mutation)
 			if cell then
 				outcome = "Captured"
@@ -378,7 +380,9 @@ end
 
 local function runSession(session: Session)
 	while session.active do
-		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax))
+		-- TimeScale : accélération du temps (commande debug !temps)
+		local timeScale = (session.player:GetAttribute("TimeScale") :: number?) or 1
+		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax) / timeScale)
 		if not session.active or session.player.Parent ~= Players then
 			break
 		end
@@ -428,6 +432,11 @@ local function onHotelAssigned(player: Player, hotel: Model)
 		extraModels = {},
 		forceNext = nil,
 	}
+	-- Nouveau joueur : le 1er client est une anomalie commune, facile à repérer
+	local data = PlayerDataService.GetData(player)
+	if data and not data.TutorialDone then
+		session.forceNext = { ForceAnomalyId = "Doppelganger" }
+	end
 	sessions[player] = session
 	task.spawn(runSession, session)
 end

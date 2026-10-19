@@ -16,6 +16,7 @@ local GameConfig = require(Config:WaitForChild("GameConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -36,6 +37,10 @@ end
 
 local function pay(player: Player, price: number, itemName: string): boolean
 	if PlayerDataService.TrySpend(player, price) then
+		local data = PlayerDataService.GetData(player)
+		if data then
+			Analytics.first(player, data, "ShopPurchase")
+		end
 		Notify.send(player, `Acheté : {itemName} (-{Format.money(price)})`, "Good")
 		return true
 	end

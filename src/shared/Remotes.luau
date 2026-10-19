@@ -18,6 +18,7 @@ local EVENT_NAMES: { string } = {
 	"ReceptionResult", -- serveur -> client : (token, outcome, details)
 	"ShopBuy", -- client -> serveur : ("Cell" | "Tool" | "Security", itemId)
 	"LockRequest", -- client -> serveur : verrouiller sa porte
+	"TutorialStep", -- client -> serveur : (numéro d'étape terminée)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)

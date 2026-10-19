@@ -13,6 +13,7 @@ local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Format = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Format"))
 local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Analytics"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local IncomeService = require(script.Parent:WaitForChild("IncomeService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -96,6 +97,7 @@ local function processReceipt(receipt: any): Enum.ProductPurchaseDecision
 			return Enum.ProductPurchaseDecision.NotProcessedYet
 		end
 		data.ProcessedReceipts[purchaseId] = true
+		Analytics.event(player, "RobuxProduct", receipt.CurrencySpent)
 		table.insert(data.ReceiptOrder, purchaseId)
 		while #data.ReceiptOrder > MAX_RECEIPTS_KEPT do
 			local oldest = table.remove(data.ReceiptOrder, 1)
@@ -124,6 +126,7 @@ function MonetizationService.Init(_self: typeof(MonetizationService))
 		local data = PlayerDataService.GetData(player)
 		if purchased and name and data then
 			data.GamepassCache[tostring(passId)] = true
+			Analytics.event(player, `RobuxPass{name}`)
 			grantPass(player, name)
 			Notify.send(player, `Merci ! Gamepass « {MonetizationConfig.GamePasses[name].DisplayName} » activé`, "Good")
 		end

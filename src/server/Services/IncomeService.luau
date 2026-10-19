@@ -70,7 +70,9 @@ function IncomeService.Start(_self: typeof(IncomeService))
 				local income = IncomeService.GetIncome(player)
 				player:SetAttribute("Income", income)
 				if income > 0 then
-					PlayerDataService.AddMoney(player, income * tick)
+					-- TimeScale : accélération du temps (commande debug !temps)
+					local timeScale = (player:GetAttribute("TimeScale") :: number?) or 1
+					PlayerDataService.AddMoney(player, income * tick * timeScale)
 				end
 			end
 		end

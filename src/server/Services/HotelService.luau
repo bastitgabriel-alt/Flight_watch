@@ -63,6 +63,7 @@ local function assignHotel(player: Player)
 	if not hotel then
 		-- Ne devrait pas arriver si « Max Players » = nombre d'hôtels
 		warn(`[HotelService] Aucun hôtel libre pour {player.Name}`)
+		player:Kick("Ce serveur est plein (tous les hôtels sont pris). Rejoins un autre serveur !")
 		return
 	end
 

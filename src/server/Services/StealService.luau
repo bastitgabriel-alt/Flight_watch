@@ -14,6 +14,7 @@ local Config = Shared:WaitForChild("Config")
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
 local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -93,6 +94,7 @@ local function finish(steal: Steal, success: boolean, reason: string?)
 			local ownerData = PlayerDataService.GetData(steal.owner)
 			if thiefData then
 				thiefData.Stats.StealsSucceeded += 1
+				Analytics.first(steal.thief, thiefData, "Steal")
 			end
 			if ownerData then
 				ownerData.Stats.StealsSuffered += 1
