@@ -65,6 +65,11 @@ local function track(instance: Instance)
 end
 
 local function lightningStrike()
+	-- Le tonnerre arrive juste après l'éclair
+	task.delay(0.4, function()
+		local SoundController = require(script.Parent:WaitForChild("SoundController")) :: any
+		SoundController.Play("Thunder")
+	end)
 	local exposure = Lighting.ExposureCompensation
 	local ambient = Lighting.OutdoorAmbient
 	for _, duration in { 0.07, 0.05, 0.12 } do

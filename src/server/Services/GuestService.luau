@@ -18,13 +18,15 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
+local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
+local RebirthConfig = require(Config:WaitForChild("RebirthConfig"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
-local RigAnimator = require(Modules:WaitForChild("RigAnimator"))
+local AnomalyLooks = require(Modules:WaitForChild("AnomalyLooks"))
 local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
 local Analytics = require(Modules:WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
@@ -32,6 +34,7 @@ local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local IncomeService = require(script.Parent:WaitForChild("IncomeService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local EventService = require(script.Parent:WaitForChild("EventService"))
 
 -- Distance max entre le joueur et le client pour décider (anti-triche)
 local MAX_DECISION_DISTANCE = 30
@@ -138,8 +141,8 @@ local function buildGuestModel(session: Session, profile: Types.GuestProfile): M
 	CollisionGroups.assign(rig, CollisionGroups.GUESTS):Disconnect()
 
 	RigAppearance.placeOnFloor(rig, getMarker(session.hotel, "GuestSpawn").CFrame)
+	rig:SetAttribute("Motion", "Guest") -- animé par RigMotionController (client)
 	rig.Parent = guestsFolder
-	RigAnimator.walker(rig)
 
 	-- Le serveur contrôle la physique du client (empêche les joueurs de le déplacer)
 	local root = getRoot(rig)
@@ -173,15 +176,38 @@ local function walkAway(session: Session, model: Model, intoHotel: boolean)
 	end)
 end
 
+-- Gerbe d'étincelles (révélation d'une anomalie)
+local function burst(model: Model, color: Color3)
+	local root = getRoot(model)
+	if not root then
+		return
+	end
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Color = ColorSequence.new(color)
+	emitter.LightEmission = 1
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 0) })
+	emitter.Lifetime = NumberRange.new(0.6, 1.2)
+	emitter.Speed = NumberRange.new(8, 14)
+	emitter.SpreadAngle = Vector2.new(180, 180)
+	emitter.Rate = 300
+	emitter.Parent = root
+	task.delay(0.25, function()
+		emitter.Enabled = false
+	end)
+end
+
 -- Anomalie capturée : révèle sa vraie forme puis disparaît (elle part en cellule)
 local function revealAndVanish(session: Session, model: Model, def: Types.AnomalyDef)
 	removePrompt(model)
 	session.extraModels[model] = true
 	RigAppearance.apply(model, def.TrueForm)
 	RigAppearance.addGlowingEyes(model, def.EyeColor, 0.28)
+	AnomalyLooks.apply(model, def.Look, def.TrueForm, def.EyeColor)
 	RigAppearance.setCastShadow(model, false)
+	model:SetAttribute("Motion", def.Motion or "Creepy")
+	burst(model, RarityConfig[def.Rarity].Color)
 	task.spawn(function()
-		task.wait(0.6)
+		task.wait(0.9)
 		local info = TweenInfo.new(0.8)
 		for _, descendant in model:GetDescendants() do
 			if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" then
@@ -202,6 +228,7 @@ local function startWanderer(session: Session, model: Model, def: Types.AnomalyD
 	removePrompt(model)
 	setAnchored(model, false)
 	RigAppearance.addGlowingEyes(model, def.EyeColor, 0.28)
+	model:SetAttribute("Motion", "Creepy")
 	session.extraModels[model] = true
 	task.spawn(function()
 		local lobby = getMarker(session.hotel, "Lobby")
@@ -275,7 +302,9 @@ local function resolve(session: Session, guest: Guest, decision: string)
 	else
 		if decision == "Accept" then
 			outcome = "Served"
-			local tip = math.max(EconomyConfig.TipBase, math.floor(income * EconomyConfig.TipIncomeSeconds))
+			local event = EventService.Current()
+			local tipMultiplier = if event then event.TipMultiplier or 1 else 1
+			local tip = math.max(EconomyConfig.TipBase, math.floor(income * EconomyConfig.TipIncomeSeconds)) * tipMultiplier
 			details.Amount = tip
 			data.Stats.GuestsServed += 1
 			PlayerDataService.AddMoney(player, tip)
@@ -327,11 +356,25 @@ end
 local function serveOneGuest(session: Session)
 	local options: GuestGenerator.Options = session.forceNext or {}
 	session.forceNext = nil
-	-- « Nuit chanceuse » (produit Robux) : anomalies rares plus fréquentes
 	local data = PlayerDataService.GetData(session.player)
-	if data and data.LuckyUntil > os.time() then
-		options.RarityLuck = MonetizationConfig.Products.LuckyNight.RarityLuck
+	local event = EventService.Current()
+	-- Chance aux raretés : renaissances x « Nuit chanceuse » (Robux) x événement
+	local luck = options.RarityLuck or 1
+	if data then
+		options.Rebirths = data.Rebirths
+		luck *= RebirthConfig.luck(data.Rebirths)
+		if data.LuckyUntil > os.time() then
+			luck *= MonetizationConfig.Products.LuckyNight.RarityLuck
+		end
 	end
+	if event then
+		options.Event = event.Id
+		luck *= event.RarityLuck or 1
+		if options.AnomalyChance == nil then
+			options.AnomalyChance = event.AnomalyChance
+		end
+	end
+	options.RarityLuck = luck
 	local profile = GuestGenerator.generate(rng, options)
 
 	nextToken += 1
@@ -384,7 +427,9 @@ local function runSession(session: Session)
 	while session.active do
 		-- TimeScale : accélération du temps (commande debug !temps)
 		local timeScale = (session.player:GetAttribute("TimeScale") :: number?) or 1
-		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax) / timeScale)
+		local event = EventService.Current()
+		local delayMultiplier = if event then event.SpawnDelayMultiplier or 1 else 1
+		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax) * delayMultiplier / timeScale)
 		if not session.active or session.player.Parent ~= Players then
 			break
 		end

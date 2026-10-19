@@ -3,7 +3,7 @@
 
 export type RarityId = "Common" | "Rare" | "Epic" | "Legendary" | "Mythic" | "Secret"
 
-export type MutationId = "None" | "Golden" | "Neon"
+export type MutationId = "None" | "Golden" | "Neon" | "Lunar" | "Shadow"
 
 -- Indices visibles par tous + indices cachés (révélés par un outil acheté)
 export type ClueType = "Registry" | "Shadow" | "Eyes" | "Photo" | "UV" | "Thermal"
@@ -34,6 +34,7 @@ export type Mutation = {
 	SpawnChance: number, -- probabilité (0 à 1) d'apparition
 	Color: Color3?, -- couleur appliquée au modèle dans la cellule
 	Material: string?, -- nom d'un Enum.Material, ex. "Neon"
+	EventOnly: string?, -- ne sort que pendant cet événement (voir EventConfig)
 }
 
 export type AnomalyDef = {
@@ -47,6 +48,9 @@ export type AnomalyDef = {
 	Clues: { ClueType }, -- indices que cette anomalie peut montrer
 	Look: { string }?, -- traits visibles dans la cellule (voir AnomalyLooks)
 	Scale: number?, -- taille dans la cellule (1 = normale)
+	Motion: string?, -- style d'animation (voir RigMotionController), "Creepy" par défaut
+	RequiredRebirth: number?, -- n'apparaît qu'à partir de ce nombre de renaissances
+	EventOnly: string?, -- n'apparaît que pendant cet événement (voir EventConfig)
 }
 
 -- Une anomalie possédée par un joueur (sauvegardée)

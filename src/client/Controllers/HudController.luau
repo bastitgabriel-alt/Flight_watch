@@ -62,7 +62,7 @@ local function buildGui()
 	local barScale = UI.new("UIScale", { Parent = bar })
 	local camera = workspace.CurrentCamera
 	local function fitBar()
-		barScale.Scale = math.clamp(camera.ViewportSize.X / 620, 0.65, 1)
+		barScale.Scale = math.clamp((camera.ViewportSize.X - 20) / 700, 0.5, 1)
 	end
 	camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitBar)
 	fitBar()

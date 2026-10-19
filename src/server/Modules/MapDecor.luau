@@ -140,8 +140,8 @@ end
 function MapDecor.setupLighting()
 	Lighting.ClockTime = 21.3
 	Lighting.GeographicLatitude = 25
-	Lighting.Brightness = 1.6
-	Lighting.ExposureCompensation = 0.25
+	Lighting.Brightness = 1.3
+	Lighting.ExposureCompensation = 0
 	Lighting.Ambient = rgb(85, 75, 105)
 	Lighting.OutdoorAmbient = rgb(105, 95, 135)
 	Lighting.EnvironmentDiffuseScale = 0.6
@@ -165,9 +165,10 @@ function MapDecor.setupLighting()
 	atmosphere.Parent = Lighting
 
 	local bloom = Instance.new("BloomEffect")
-	bloom.Intensity = 0.8
-	bloom.Size = 28
-	bloom.Threshold = 1.1
+	-- Seuil haut : seuls les néons brillent, pas les personnages éclairés
+	bloom.Intensity = 0.45
+	bloom.Size = 24
+	bloom.Threshold = 1.3
 	bloom.Parent = Lighting
 
 	local color = Instance.new("ColorCorrectionEffect")

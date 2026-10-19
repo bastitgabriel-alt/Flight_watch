@@ -21,7 +21,6 @@ local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppea
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local IncomeCalculator = require(Server:WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local RigFactory = require(Server:WaitForChild("Modules"):WaitForChild("RigFactory"))
-local RigAnimator = require(Server:WaitForChild("Modules"):WaitForChild("RigAnimator"))
 local AnomalyLooks = require(Server:WaitForChild("Modules"):WaitForChild("AnomalyLooks"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -148,8 +147,8 @@ local function addAura(rig: Model, rarityId: Types.RarityId)
 	local color: Color3 = rarity.Color
 	local light = Instance.new("PointLight")
 	light.Color = color
-	light.Range = if SPARKLING_RARITIES[rarityId] then 12 else 7
-	light.Brightness = if SPARKLING_RARITIES[rarityId] then 2 else 0.8
+	light.Range = if SPARKLING_RARITIES[rarityId] then 10 else 6
+	light.Brightness = if SPARKLING_RARITIES[rarityId] then 1.2 else 0.5
 	light.Shadows = false
 	light.Parent = root
 	if SPARKLING_RARITIES[rarityId] then
@@ -208,8 +207,8 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 		rigRoot.Anchored = true
 	end
 	RigAppearance.placeOnFloor(rig, spot.CFrame)
+	rig:SetAttribute("Motion", def.Motion or "Creepy") -- animé par RigMotionController (client)
 	rig.Parent = cell
-	RigAnimator.idle(rig)
 
 	-- Invite « Voler », visible seulement des autres joueurs (voir PromptController)
 	local root = rig:FindFirstChild("HumanoidRootPart")
@@ -378,6 +377,23 @@ function AnomalyService.RemoveAnomaly(player: Player, uid: string): Types.OwnedA
 	end
 	AnomalyService.AnomaliesChanged:Fire(player)
 	return owned
+end
+
+-- Retire toutes les anomalies du joueur (renaissance)
+function AnomalyService.ClearAll(player: Player)
+	local data = PlayerDataService.GetData(player)
+	if not data then
+		return
+	end
+	for uid in data.Anomalies do
+		AnomalyService.HideModel(player, uid)
+	end
+	table.clear(data.Anomalies)
+	local hotel = HotelService.GetHotel(player)
+	if hotel then
+		refreshCellVisuals(player, hotel)
+	end
+	AnomalyService.AnomaliesChanged:Fire(player)
 end
 
 -- Rafraîchit l'aspect des cellules (après l'achat d'une cellule)

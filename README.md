@@ -64,6 +64,8 @@ rapportent de l'argent chaque seconde dans leurs cellules.
 | `!pass DoubleMoney` | simule le gamepass Argent x2 (ou `ExtraCells` : +3 cellules) |
 | `!chance` | lance une « Nuit chanceuse » (raretés x3 pendant 10 min) |
 | `!temps 10` | accélère le temps x10 (revenus et clients) ; `!temps 1` pour revenir |
+| `!event BloodMoon` | lance un événement (`BloodMoon`, `Blackout`, `GhostRush`) ; `!event stop` pour l'arrêter |
+| `!renaissance` | renaissance gratuite (pour tester) |
 | `!tuto` | relance le tutoriel |
 | `!reset` | remet tes données à zéro |
 
@@ -82,6 +84,13 @@ ou fermer sa porte avec le bouton **Verrouiller**.
 Dans un fichier local, la sauvegarde est simulée (tout repart de zéro à chaque Play).
 Pour tester la vraie sauvegarde : **File > Publish to Roblox**, puis **Home > Game Settings >
 Security** > active **Enable Studio Access to API Services** > **Save**.
+
+### Sons (à faire une fois)
+
+Les sons du jeu sont dans `build/SonsEtImages.zip` (dossier `sounds`). Roblox
+ne permet pas de les mettre directement dans le fichier du jeu : il faut les
+importer sur Roblox, puis coller leurs numéros dans
+`src/shared/Config/SoundConfig.luau` (ou les envoyer à Claude).
 
 ### Monétisation (à faire une fois le jeu publié)
 Les achats Robux sont prêts mais cachés tant qu'ils n'ont pas d'Id. Pour les créer :

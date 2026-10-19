@@ -184,8 +184,8 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	-- Lumière au-dessus du client : rend son ombre bien visible
 	local lightHolder = makeMarker("GuestLight", origin * CFrame.new(0, 12, 20), hotel)
 	local light = Instance.new("PointLight")
-	light.Range = 18
-	light.Brightness = 2
+	light.Range = 16
+	light.Brightness = 0.9
 	light.Shadows = true
 	light.Parent = lightHolder
 

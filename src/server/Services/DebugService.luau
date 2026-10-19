@@ -8,6 +8,8 @@
 --   !pass DoubleMoney         simule un gamepass (DoubleMoney ou ExtraCells), jusqu'au départ
 --   !chance                   lance une « Nuit chanceuse » de 10 min
 --   !temps 10                 accélère le temps x10 (revenus et clients) ; !temps 1 pour revenir
+--   !event BloodMoon          lance un événement (BloodMoon, Blackout, GhostRush) ; !event stop
+--   !renaissance              renaissance gratuite (sans payer)
 --   !tuto                     relance le tutoriel
 --   !reset                    remet tes données à zéro
 
@@ -24,6 +26,9 @@ local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local GuestService = require(script.Parent:WaitForChild("GuestService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local EventService = require(script.Parent:WaitForChild("EventService"))
+local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
+local EventConfig = require(Config:WaitForChild("EventConfig"))
 
 local DebugService = {}
 
@@ -58,7 +63,7 @@ commands.anomalie = function(player, args)
 		return
 	end
 	if not MutationConfig.Mutations[mutation :: any] then
-		Notify.send(player, "Mutation : None, Golden ou Neon", "Bad")
+		Notify.send(player, "Mutation : None, Golden, Neon, Lunar ou Shadow", "Bad")
 		return
 	end
 	local cell = AnomalyService.AddAnomaly(player, id, mutation :: any)
@@ -119,6 +124,22 @@ commands.tuto = function(player)
 		GuestService.ForceNext(player, { ForceAnomalyId = "Doppelganger" })
 		Notify.send(player, "Tutoriel relancé (debug)", "Good")
 	end
+end
+
+commands.event = function(player, args)
+	local id = args[1]
+	if id == "stop" then
+		EventService.Force(nil)
+		Notify.send(player, "Événement arrêté (debug)", "Info")
+	elseif id and EventConfig.get(id) then
+		EventService.Force(id)
+	else
+		Notify.send(player, "Usage : !event BloodMoon | Blackout | GhostRush | stop", "Bad")
+	end
+end
+
+commands.renaissance = function(player)
+	RebirthService.Rebirth(player, true)
 end
 
 commands.reset = function(player)

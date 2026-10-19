@@ -41,7 +41,9 @@ local TEMPLATE = {
 	},
 
 	LastLogin = 0, -- os.time() de la dernière connexion
-	LoginStreak = 0,
+	LastSeen = 0, -- os.time() de la dernière présence (gains hors ligne)
+	LoginStreak = 0, -- jours de connexion d'affilée
+	LastDailyDay = 0, -- jour (os.time() // 86400) de la dernière récompense quotidienne
 	GamepassCache = {}, -- { [gamepassId en texte] = true }
 	ProcessedReceipts = {}, -- { [purchaseId] = true } achats Robux déjà traités
 	ReceiptOrder = {}, -- ordre des achats (pour ne garder que les derniers)

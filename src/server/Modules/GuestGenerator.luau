@@ -18,6 +18,8 @@ export type Options = {
 	RarityLuck: number?, -- multiplie les poids des raretés non communes (bonus)
 	ForceAnomaly: boolean?, -- true = anomalie, false = vrai client, nil = hasard
 	ForceAnomalyId: string?,
+	Rebirths: number?, -- renaissances du joueur (débloque des anomalies)
+	Event: string?, -- événement en cours (anomalies et mutations d'événement)
 }
 
 local GuestGenerator = {}
@@ -94,8 +96,19 @@ function GuestGenerator.misspell(rng: Random, fullName: string): string
 	return first .. swapped
 end
 
+-- L'anomalie peut-elle apparaître (renaissances, événement en cours) ?
+function GuestGenerator.isEligible(def: Types.AnomalyDef, rebirths: number?, event: string?): boolean
+	if def.RequiredRebirth and (rebirths or 0) < def.RequiredRebirth then
+		return false
+	end
+	if def.EventOnly and def.EventOnly ~= event then
+		return false
+	end
+	return true
+end
+
 -- Tire une rareté selon les poids (RarityLuck augmente les raretés hautes)
-function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?): Types.RarityId
+function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?, rebirths: number?, event: string?): Types.RarityId
 	local luck = rarityLuck or 1
 	local entries: { { id: Types.RarityId, weight: number } } = {}
 	local total = 0
@@ -107,7 +120,7 @@ function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?): Types.Rari
 		-- Une rareté sans anomalie configurée ne peut pas sortir
 		local hasAnomaly = false
 		for _, def in AnomalyConfig.List do
-			if def.Rarity == id then
+			if def.Rarity == id and GuestGenerator.isEligible(def, rebirths, event) then
 				hasAnomaly = true
 				break
 			end
@@ -131,19 +144,20 @@ function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?): Types.Rari
 	return entries[#entries].id
 end
 
-function GuestGenerator.rollMutation(rng: Random): Types.MutationId
+function GuestGenerator.rollMutation(rng: Random, event: string?): Types.MutationId
 	for _, id in MutationConfig.RollOrder do
-		if rng:NextNumber() < MutationConfig.Mutations[id].SpawnChance then
+		local mutation = MutationConfig.Mutations[id]
+		if (mutation.EventOnly == nil or mutation.EventOnly == event) and rng:NextNumber() < mutation.SpawnChance then
 			return id
 		end
 	end
 	return "None"
 end
 
-function GuestGenerator.pickAnomaly(rng: Random, rarity: Types.RarityId): Types.AnomalyDef
+function GuestGenerator.pickAnomaly(rng: Random, rarity: Types.RarityId, rebirths: number?, event: string?): Types.AnomalyDef
 	local candidates = {}
 	for _, def in AnomalyConfig.List do
-		if def.Rarity == rarity then
+		if def.Rarity == rarity and GuestGenerator.isEligible(def, rebirths, event) then
 			table.insert(candidates, def)
 		end
 	end
@@ -204,7 +218,8 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 	if opts.ForceAnomalyId and AnomalyConfig.ById[opts.ForceAnomalyId] then
 		def = AnomalyConfig.ById[opts.ForceAnomalyId]
 	else
-		def = GuestGenerator.pickAnomaly(rng, GuestGenerator.rollRarity(rng, opts.RarityLuck))
+		local rarity = GuestGenerator.rollRarity(rng, opts.RarityLuck, opts.Rebirths, opts.Event)
+		def = GuestGenerator.pickAnomaly(rng, rarity, opts.Rebirths, opts.Event)
 	end
 	local rarity = RarityConfig[def.Rarity]
 
@@ -243,7 +258,7 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 		Name = name,
 		IsAnomaly = true,
 		AnomalyId = def.Id,
-		Mutation = GuestGenerator.rollMutation(rng),
+		Mutation = GuestGenerator.rollMutation(rng, opts.Event),
 		Appearance = appearance,
 		PhotoAppearance = photo,
 		Registry = buildRegistry(rng, registryName, name),

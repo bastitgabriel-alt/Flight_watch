@@ -12,4 +12,9 @@ function Notify.send(player: Player, text: string, kind: (string | Color3)?)
 	Remotes.getEvent("Notify"):FireClient(player, text, kind or "Info")
 end
 
+-- Même message pour tous les joueurs du serveur
+function Notify.sendAll(text: string, kind: (string | Color3)?)
+	Remotes.getEvent("Notify"):FireAllClients(text, kind or "Info")
+end
+
 return Notify

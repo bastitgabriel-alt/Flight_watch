@@ -506,7 +506,515 @@ function Traits.Cape(ctx: Context)
 	}, torso.CFrame * CFrame.new(0, torso.Size.Y / 2 - 0.1, 0))
 end
 
--- Ajoute les traits listés. Le modèle n'est pas encore dans workspace.
+-- Cache la vraie tête (remplacée par autre chose)
+local function hideHead(rig: Model): BasePart?
+	local head = bodyPart(rig, "Head")
+	if head then
+		removeFace(rig)
+		head.Transparency = 1
+	end
+	return head
+end
+
+-- Disque face à l'avant (-Z) : cylindre couché tourné de 90°
+local FACING = CFrame.Angles(0, math.rad(90), 0)
+
+-- Poupée de porcelaine : yeux-boutons, bouche cousue, fêlures
+function Traits.Doll(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	removeFace(ctx.rig)
+	local cf, size = headFrame(head)
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.06, size.X * 0.3, size.X * 0.3),
+			Color = rgb(20, 20, 25),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(side * size.X * 0.18, size.Y * 0.1, -size.Z * 0.5) * FACING)
+		attach(ctx, head, {
+			Size = Vector3.new(size.X * 0.14, size.Y * 0.07, 0.04),
+			Color = rgb(255, 150, 160),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(side * size.X * 0.28, -size.Y * 0.12, -size.Z * 0.49))
+	end
+	attach(ctx, head, {
+		Size = Vector3.new(size.X * 0.4, 0.04, 0.04),
+		Color = rgb(60, 0, 0),
+	}, cf * CFrame.new(0, -size.Y * 0.25, -size.Z * 0.5))
+	for i = -2, 2 do
+		attach(ctx, head, {
+			Size = Vector3.new(0.03, size.Y * 0.12, 0.04),
+			Color = rgb(60, 0, 0),
+		}, cf * CFrame.new(i * size.X * 0.08, -size.Y * 0.25, -size.Z * 0.5))
+	end
+	-- Fêlure sur le front
+	for i = 0, 2 do
+		attach(ctx, head, {
+			Size = Vector3.new(0.03, size.Y * 0.18, 0.04),
+			Color = rgb(30, 30, 30),
+		}, cf * CFrame.new(-size.X * 0.05 + i * 0.06, size.Y * (0.35 - i * 0.12), -size.Z * 0.5) * CFrame.Angles(0, 0, math.rad(25 - i * 40)))
+	end
+end
+
+-- Touriste gelé : corps de glace, appareil photo, stalactites
+function Traits.Frozen(ctx: Context)
+	for _, descendant in ctx.rig:GetDescendants() do
+		if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" and descendant.Name ~= "AnomalyEye" then
+			descendant.Material = Enum.Material.Ice
+		end
+	end
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if torso then
+		local cf = torso.CFrame * CFrame.new(0, -0.1, -torso.Size.Z / 2 - 0.25)
+		attach(ctx, torso, { Size = Vector3.new(0.9, 0.6, 0.4), Color = rgb(30, 30, 35), Material = Enum.Material.Metal }, cf)
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.3, 0.4, 0.4),
+			Color = rgb(10, 10, 15),
+			Material = Enum.Material.Glass,
+		}, cf * CFrame.new(0, 0, -0.3) * FACING)
+	end
+	for _, name in { "LeftLowerArm", "RightLowerArm", "LeftHand", "RightHand" } do
+		local part = bodyPart(ctx.rig, name)
+		if part then
+			attach(ctx, part, {
+				Size = Vector3.new(0.12, 0.5, 0.12),
+				Color = rgb(200, 240, 255),
+				Material = Enum.Material.Ice,
+				Transparency = 0.2,
+			}, part.CFrame * CFrame.new(0, -part.Size.Y / 2 - 0.2, 0))
+		end
+	end
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		smoke(lower, rgb(220, 240, 255), 6, 1)
+	end
+end
+
+-- Clown triste : nez rouge, collerette, chapeau pointu
+function Traits.Clown(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not head or not torso then
+		return
+	end
+	local cf, size = headFrame(head)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(size.X * 0.28, size.X * 0.28, size.X * 0.28),
+		Color = rgb(220, 0, 20),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf * CFrame.new(0, -size.Y * 0.02, -size.Z * 0.55))
+	-- Larmes bleues
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Size = Vector3.new(0.05, size.Y * 0.25, 0.04),
+			Color = rgb(40, 120, 255),
+			Material = Enum.Material.Neon,
+		}, cf * CFrame.new(side * size.X * 0.18, -size.Y * 0.08, -size.Z * 0.5))
+	end
+	local neck = torso.CFrame * CFrame.new(0, torso.Size.Y / 2, 0)
+	for i = 0, 9 do
+		local angle = math.rad(i * 36)
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(0.55, 0.55, 0.55),
+			Color = if i % 2 == 0 then rgb(250, 250, 250) else rgb(230, 60, 160),
+			Material = Enum.Material.Fabric,
+		}, neck * CFrame.new(math.cos(angle) * 0.75, 0, math.sin(angle) * 0.55))
+	end
+	local top = head.CFrame * CFrame.new(0, size.Y / 2, 0)
+	for i = 0, 3 do
+		local d = size.X * (0.8 - i * 0.18)
+		attach(ctx, head, {
+			Shape = Enum.PartType.Cylinder,
+			Size = cylinderSize(0.3, d),
+			Color = if i % 2 == 0 then rgb(255, 210, 0) else rgb(200, 30, 200),
+			Material = Enum.Material.Fabric,
+		}, top * CFrame.new(0, 0.15 + i * 0.3, 0) * UPRIGHT)
+	end
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(0.3, 0.3, 0.3),
+		Color = rgb(255, 255, 255),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, 1.4, 0))
+end
+
+-- Livreur éternel : boîte à pizza
+function Traits.PizzaBox(ctx: Context)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if not hand then
+		return
+	end
+	local cf = hand.CFrame * CFrame.new(-0.4, -0.2, -0.6)
+	attach(ctx, hand, { Size = Vector3.new(1.8, 0.25, 1.8), Color = rgb(200, 160, 110), Material = Enum.Material.Cardboard }, cf)
+	attach(ctx, hand, { Size = Vector3.new(0.8, 0.03, 0.8), Color = rgb(200, 30, 30), Material = Enum.Material.SmoothPlastic }, cf * CFrame.new(0, 0.14, 0))
+end
+
+-- Gardienne des clés : trousseau autour de la taille, grosse clé à la main
+function Traits.Keys(ctx: Context)
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		for i = 0, 9 do
+			local angle = math.rad(i * 36)
+			attach(ctx, lower, {
+				Size = Vector3.new(0.08, 0.45, 0.15),
+				Color = if i % 3 == 0 then rgb(180, 180, 190) else rgb(220, 180, 60),
+				Material = Enum.Material.Metal,
+			}, lower.CFrame * CFrame.new(math.cos(angle) * 1.05, -0.2, math.sin(angle) * 0.65) * CFrame.Angles(0, -angle, math.rad(10)))
+		end
+	end
+	local hand = bodyPart(ctx.rig, "LeftHand")
+	if hand then
+		local cf = hand.CFrame * CFrame.new(0, -0.9, 0)
+		attach(ctx, hand, { Size = Vector3.new(0.15, 1.4, 0.15), Color = rgb(220, 180, 60), Material = Enum.Material.Metal }, cf)
+		attach(ctx, hand, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.12, 0.6, 0.6),
+			Color = rgb(220, 180, 60),
+			Material = Enum.Material.Metal,
+		}, cf * CFrame.new(0, 0.75, 0) * FACING)
+		attach(ctx, hand, { Size = Vector3.new(0.15, 0.15, 0.35), Color = rgb(220, 180, 60), Material = Enum.Material.Metal }, cf * CFrame.new(0, -0.6, -0.15))
+	end
+end
+
+-- Majordome sans tête : il tient sa tête sous le bras
+function Traits.Headless(ctx: Context)
+	local head = hideHead(ctx.rig)
+	local hand = bodyPart(ctx.rig, "LeftHand")
+	if not head or not hand then
+		return
+	end
+	local size = head.Size
+	local held = hand.CFrame * CFrame.new(0.2, size.Y * 0.2, -size.Z * 0.6)
+	attach(ctx, hand, { Size = size * 0.95, Color = ctx.skin, Material = Enum.Material.SmoothPlastic }, held)
+	for _, side in { -1, 1 } do
+		attach(ctx, hand, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(0.22, 0.22, 0.22),
+			Color = ctx.eye,
+			Material = Enum.Material.Neon,
+		}, held * CFrame.new(side * size.X * 0.18, size.Y * 0.1, -size.Z * 0.48))
+	end
+	-- Moignon du cou
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if torso then
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Cylinder,
+			Size = cylinderSize(0.2, 0.6),
+			Color = rgb(120, 0, 10),
+			Material = Enum.Material.SmoothPlastic,
+		}, torso.CFrame * CFrame.new(0, torso.Size.Y / 2 + 0.05, 0) * UPRIGHT)
+		smoke(torso, rgb(60, 0, 10), 4, 0.6)
+	end
+end
+
+-- Homme-télé : tête remplacée par un vieux téléviseur qui grésille
+function Traits.TVHead(ctx: Context)
+	local head = hideHead(ctx.rig)
+	if not head then
+		return
+	end
+	local cf = head.CFrame * CFrame.new(0, 0.15, 0)
+	attach(ctx, head, { Size = Vector3.new(1.9, 1.5, 1.4), Color = rgb(60, 45, 35), Material = Enum.Material.Wood }, cf)
+	local screen = attach(ctx, head, {
+		Size = Vector3.new(1.5, 1.1, 0.05),
+		Color = rgb(150, 255, 200),
+		Material = Enum.Material.Neon,
+	}, cf * CFrame.new(-0.1, 0, -0.71))
+	screen.Name = "TVScreen"
+	screen:SetAttribute("Flicker", true)
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Size = Vector3.new(0.06, 1.2, 0.06),
+			Color = rgb(150, 150, 160),
+			Material = Enum.Material.Metal,
+		}, cf * CFrame.new(side * 0.3, 1.2, 0) * CFrame.Angles(0, 0, math.rad(-side * 25)))
+	end
+	local static = Instance.new("ParticleEmitter")
+	static.Color = ColorSequence.new(rgb(200, 255, 230))
+	static.LightEmission = 1
+	static.Size = NumberSequence.new(0.06)
+	static.Lifetime = NumberRange.new(0.1, 0.2)
+	static.Rate = 40
+	static.Speed = NumberRange.new(0)
+	static.Shape = Enum.ParticleEmitterShape.Box
+	static.Parent = screen
+end
+
+-- Bras en trop qui sortent des côtes
+function Traits.ExtraArms(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	for _, side in { -1, 1 } do
+		for row = 0, 1 do
+			local cf = torso.CFrame
+				* CFrame.new(side * torso.Size.X * 0.45, -torso.Size.Y * (0.15 + row * 0.3), 0)
+				* CFrame.Angles(math.rad(20 + row * 15), 0, math.rad(side * (55 + row * 15)))
+			attach(ctx, torso, { Size = Vector3.new(0.35, 2, 0.35), Color = ctx.skin, Material = Enum.Material.SmoothPlastic }, cf * CFrame.new(0, -1, 0))
+			for i = -1, 1 do
+				attach(ctx, torso, {
+					Size = Vector3.new(0.06, 0.4, 0.06),
+					Color = ctx.eye,
+					Material = Enum.Material.Neon,
+				}, cf * CFrame.new(i * 0.1, -2.15, 0) * CFrame.Angles(0, 0, math.rad(i * 15)))
+			end
+		end
+	end
+end
+
+-- Fils de marionnette qui montent vers le plafond
+function Traits.Strings(ctx: Context)
+	for _, name in { "Head", "LeftHand", "RightHand", "LeftLowerLeg", "RightLowerLeg" } do
+		local part = bodyPart(ctx.rig, name)
+		if part then
+			local top = part.Position + Vector3.new(0, part.Size.Y / 2, 0)
+			local length = 3.2
+			attach(ctx, part, {
+				Size = Vector3.new(0.04, length, 0.04),
+				Color = rgb(240, 240, 255),
+				Material = Enum.Material.Neon,
+				Transparency = 0.3,
+			}, CFrame.new(top + Vector3.new(0, length / 2, 0)))
+		end
+	end
+	-- Jointures en bois aux poignets et genoux
+	for _, name in { "LeftElbow", "RightElbow" } do
+		local arm = bodyPart(ctx.rig, if name == "LeftElbow" then "LeftLowerArm" else "RightLowerArm")
+		if arm then
+			attach(ctx, arm, {
+				Shape = Enum.PartType.Ball,
+				Size = Vector3.new(0.45, 0.45, 0.45),
+				Color = rgb(150, 100, 60),
+				Material = Enum.Material.Wood,
+			}, arm.CFrame * CFrame.new(0, arm.Size.Y / 2, 0))
+		end
+	end
+end
+
+-- Horloger : cadran sur la poitrine, engrenages dans le dos
+function Traits.ClockFace(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	local front = torso.CFrame * CFrame.new(0, 0, -torso.Size.Z / 2 - 0.05)
+	attach(ctx, torso, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.1, 1.3, 1.3),
+		Color = rgb(240, 230, 200),
+		Material = Enum.Material.SmoothPlastic,
+	}, front * FACING)
+	attach(ctx, torso, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.08, 1.45, 1.45),
+		Color = rgb(200, 160, 60),
+		Material = Enum.Material.Foil,
+	}, front * CFrame.new(0, 0, 0.03) * FACING)
+	for _, hand in { { 0.45, 30 }, { 0.3, 130 } } do
+		attach(ctx, torso, {
+			Size = Vector3.new(0.06, hand[1], 0.04),
+			Color = rgb(20, 20, 20),
+		}, front * CFrame.new(0, 0, -0.07) * CFrame.Angles(0, 0, math.rad(hand[2])) * CFrame.new(0, hand[1] / 2, 0))
+	end
+	local back = torso.CFrame * CFrame.new(0, 0, torso.Size.Z / 2 + 0.1)
+	for i, gear in { { -0.4, 0.3, 0.9 }, { 0.45, -0.2, 0.7 }, { 0.1, 0.6, 0.5 } } do
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.15, gear[3], gear[3]),
+			Color = if i % 2 == 0 then rgb(180, 120, 50) else rgb(200, 170, 80),
+			Material = Enum.Material.Metal,
+		}, back * CFrame.new(gear[1], gear[2], 0.05 * i) * FACING)
+	end
+end
+
+-- Chevalier pâle : heaume, épaulières, épée
+function Traits.Knight(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not head or not torso then
+		return
+	end
+	local size = head.Size
+	attach(ctx, head, { Size = size * 1.12, Color = rgb(170, 175, 185), Material = Enum.Material.Metal }, head.CFrame)
+	attach(ctx, head, {
+		Size = Vector3.new(size.X * 0.8, 0.1, 0.05),
+		Color = ctx.eye,
+		Material = Enum.Material.Neon,
+	}, head.CFrame * CFrame.new(0, size.Y * 0.1, -size.Z * 0.57))
+	attach(ctx, head, { Size = Vector3.new(0.12, 0.6, size.Z * 0.9), Color = rgb(150, 20, 30), Material = Enum.Material.Fabric }, head.CFrame * CFrame.new(0, size.Y * 0.75, 0))
+	for _, side in { -1, 1 } do
+		attach(ctx, torso, {
+			Size = Vector3.new(0.9, 0.35, 1.2),
+			Color = rgb(160, 165, 175),
+			Material = Enum.Material.Metal,
+		}, torso.CFrame * CFrame.new(side * (torso.Size.X / 2 + 0.2), torso.Size.Y / 2 - 0.05, 0) * CFrame.Angles(0, 0, math.rad(side * -20)))
+	end
+	attach(ctx, torso, { Size = torso.Size + Vector3.new(0.1, 0, 0.1), Color = rgb(150, 155, 165), Material = Enum.Material.Metal, Transparency = 0.1 }, torso.CFrame)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if hand then
+		local grip = hand.CFrame * CFrame.new(0, -0.1, 0)
+		attach(ctx, hand, { Size = Vector3.new(0.15, 3.2, 0.4), Color = rgb(210, 215, 225), Material = Enum.Material.Metal }, grip * CFrame.new(0, -1.7, -0.2) * CFrame.Angles(math.rad(-10), 0, 0))
+		attach(ctx, hand, { Size = Vector3.new(0.2, 0.15, 1), Color = rgb(120, 90, 40), Material = Enum.Material.Metal }, grip)
+	end
+end
+
+-- Loup-garou : oreilles, museau, griffes, queue
+function Traits.Wolf(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	removeFace(ctx.rig)
+	local cf, size = headFrame(head)
+	for _, side in { -1, 1 } do
+		local ear = Instance.new("WedgePart")
+		ear.Name = "LookPart"
+		ear.Anchored = false
+		ear.Massless = true
+		ear.CanCollide = false
+		ear.CanQuery = false
+		ear.CanTouch = false
+		ear.CastShadow = false
+		ear.Size = Vector3.new(0.2, size.Y * 0.6, size.Z * 0.45)
+		ear.Color = ctx.shirt
+		ear.Material = Enum.Material.Fabric
+		ear.CFrame = cf * CFrame.new(side * size.X * 0.32, size.Y * 0.75, 0) * CFrame.Angles(0, 0, math.rad(side * -12))
+		local weld = Instance.new("WeldConstraint")
+		weld.Part0 = head
+		weld.Part1 = ear
+		weld.Parent = ear
+		ear.Parent = ctx.rig
+	end
+	attach(ctx, head, { Size = Vector3.new(size.X * 0.5, size.Y * 0.4, size.Z * 0.6), Color = ctx.shirt, Material = Enum.Material.Fabric }, cf * CFrame.new(0, -size.Y * 0.15, -size.Z * 0.65))
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(0.22, 0.22, 0.22),
+		Color = rgb(10, 10, 10),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf * CFrame.new(0, -size.Y * 0.05, -size.Z * 0.95))
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Size = Vector3.new(0.06, 0.25, 0.06),
+			Color = rgb(250, 250, 240),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(side * size.X * 0.15, -size.Y * 0.38, -size.Z * 0.85))
+	end
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		attach(ctx, lower, {
+			Size = Vector3.new(0.35, 0.35, 1.8),
+			Color = ctx.shirt,
+			Material = Enum.Material.Fabric,
+		}, lower.CFrame * CFrame.new(0, -0.1, lower.Size.Z / 2 + 0.8) * CFrame.Angles(math.rad(-30), 0, 0))
+	end
+	for _, side in { "Left", "Right" } do
+		local hand = bodyPart(ctx.rig, `{side}Hand`)
+		if hand then
+			for i = -1, 1 do
+				attach(ctx, hand, {
+					Size = Vector3.new(0.06, 0.5, 0.06),
+					Color = rgb(240, 240, 230),
+					Material = Enum.Material.SmoothPlastic,
+				}, hand.CFrame * CFrame.new(i * 0.12, -hand.Size.Y / 2 - 0.2, -0.1) * CFrame.Angles(math.rad(-25), 0, 0))
+			end
+		end
+	end
+end
+
+-- Baguette de chef d'orchestre et notes qui s'envolent
+function Traits.Baton(ctx: Context)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if not hand then
+		return
+	end
+	local tip = attach(ctx, hand, {
+		Size = Vector3.new(0.06, 1.4, 0.06),
+		Color = rgb(250, 250, 250),
+		Material = Enum.Material.Neon,
+	}, hand.CFrame * CFrame.new(0, -0.6, -0.5) * CFrame.Angles(math.rad(-70), 0, 0))
+	local notes = Instance.new("ParticleEmitter")
+	notes.Color = ColorSequence.new(ctx.eye)
+	notes.LightEmission = 1
+	notes.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0) })
+	notes.Lifetime = NumberRange.new(1.5, 2.5)
+	notes.Rate = 5
+	notes.Speed = NumberRange.new(1, 2)
+	notes.SpreadAngle = Vector2.new(60, 60)
+	notes.Acceleration = Vector3.new(0, 1, 0)
+	notes.Parent = tip
+end
+
+-- Ailes (d'ange déchu)
+function Traits.Wings(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	local back = torso.CFrame * CFrame.new(0, torso.Size.Y * 0.2, torso.Size.Z / 2 + 0.15)
+	for _, side in { -1, 1 } do
+		for i = 0, 3 do
+			local length = 3.2 - i * 0.6
+			attach(ctx, torso, {
+				Size = Vector3.new(length, 0.7, 0.1),
+				Color = if i % 2 == 0 then rgb(40, 35, 45) else rgb(70, 60, 80),
+				Material = Enum.Material.Fabric,
+			}, back * CFrame.Angles(0, math.rad(side * -20), math.rad(side * (25 - i * 22))) * CFrame.new(side * length / 2, 0, 0.05 * i))
+		end
+	end
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Color = ColorSequence.new(rgb(30, 25, 35))
+	emitter.Size = NumberSequence.new(0.25)
+	emitter.Lifetime = NumberRange.new(2, 3)
+	emitter.Rate = 3
+	emitter.Speed = NumberRange.new(0.5, 1)
+	emitter.Acceleration = Vector3.new(0, -1, 0)
+	emitter.RotSpeed = NumberRange.new(-60, 60)
+	emitter.Parent = torso
+end
+
+-- Œil géant à la place de la tête
+function Traits.BigEye(ctx: Context)
+	local head = hideHead(ctx.rig)
+	if not head then
+		return
+	end
+	local cf = head.CFrame * CFrame.new(0, 0.5, 0)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(2.4, 2.4, 2.4),
+		Color = rgb(245, 240, 235),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.1, 1.3, 1.3),
+		Color = ctx.eye,
+		Material = Enum.Material.Neon,
+	}, cf * CFrame.new(0, 0, -1.17) * FACING)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.12, 0.6, 0.6),
+		Color = rgb(5, 5, 5),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf * CFrame.new(0, 0, -1.21) * FACING)
+	-- Veines rouges
+	for i = 0, 5 do
+		local angle = math.rad(i * 60 + 15)
+		attach(ctx, head, {
+			Size = Vector3.new(0.04, 0.7, 0.04),
+			Color = rgb(200, 0, 20),
+		}, cf * CFrame.Angles(0, 0, angle) * CFrame.new(0, 0.95, -0.7) * CFrame.Angles(math.rad(-35), 0, 0))
+	end
+end
+
+-- Ajoute les traits listés. Le modèle peut être déjà dans workspace (révélation).
 function AnomalyLooks.apply(rig: Model, look: { string }?, appearance: { Skin: Color3, Shirt: Color3 }, eyeColor: Color3)
 	if not look then
 		return

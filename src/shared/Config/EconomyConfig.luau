@@ -24,6 +24,16 @@ local EconomyConfig = {
 	-- Capture quand toutes les cellules sont pleines : l'anomalie est revendue
 	-- immédiatement pour X secondes de son revenu
 	FullCellsSellSeconds = 60,
+
+	-- Gains hors ligne : les anomalies continuent de rapporter (moins vite)
+	OfflineRate = 0.3, -- 30 % du revenu normal
+	OfflineMaxSeconds = 4 * 3600, -- au maximum 4 h comptées
+	OfflineMinSeconds = 120, -- en dessous, rien (simple reconnexion)
+
+	-- Récompense quotidienne : jour 1, 2, 3... de connexion d'affilée (puis on recommence).
+	-- Montant = max(montant du jour, revenu par seconde x DailyIncomeSeconds x jour)
+	DailyRewards = { 500, 1500, 4000, 10000, 25000, 60000, 150000 },
+	DailyIncomeSeconds = 60,
 }
 
 return EconomyConfig

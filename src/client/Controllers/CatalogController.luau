@@ -9,6 +9,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local CatalogConfig = require(Config:WaitForChild("CatalogConfig"))
+local EventConfig = require(Config:WaitForChild("EventConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local Util = script.Parent.Parent:WaitForChild("Util")
@@ -142,7 +143,14 @@ local function refresh()
 			-- Silhouette : on ne montre que la rareté
 			card.name.Text = "???"
 			card.name.TextColor3 = Color3.fromRGB(120, 120, 120)
-			card.info.Text = `{rarity.DisplayName}\nPas encore capturée`
+			local condition = "Pas encore capturée"
+			local event = EventConfig.get(def.EventOnly)
+			if event then
+				condition = `Seulement pendant : {event.DisplayName}`
+			elseif def.RequiredRebirth then
+				condition = `Débloquée à la renaissance {def.RequiredRebirth}`
+			end
+			card.info.Text = `{rarity.DisplayName}\n{condition}`
 			card.stroke.Color = Color3.fromRGB(60, 60, 60)
 			card.frame.BackgroundColor3 = Color3.fromRGB(15, 12, 18)
 		end

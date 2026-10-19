@@ -125,8 +125,9 @@ local GuestGenerator = robloxRequire(server.Modules.GuestGenerator)
 local IncomeCalculator = robloxRequire(server.Modules.IncomeCalculator)
 local DataSchema = robloxRequire(server.Modules.DataSchema)
 
-test("12 anomalies sur 5 raretés, indices valides", function()
-	eq(#AnomalyConfig.List, 12, "nombre d'anomalies")
+test("31 anomalies sur 6 raretés, indices valides", function()
+	eq(#AnomalyConfig.List, 31, "nombre d'anomalies")
+	local EventConfig = robloxRequire(Config.EventConfig)
 	local rarities = {}
 	local valid = { Registry = true, Shadow = true, Eyes = true, Photo = true }
 	for _, def in AnomalyConfig.List do
@@ -137,12 +138,17 @@ test("12 anomalies sur 5 raretés, indices valides", function()
 			assert(valid[clue], def.Id .. " : indice inconnu " .. clue)
 		end
 		assert(def.Income > 0, def.Id)
+		assert(def.EventOnly == nil or EventConfig.get(def.EventOnly), def.Id .. " : événement inconnu")
+		-- Les anomalies secrètes doivent être réservées (événement ou renaissance)
+		if def.Rarity == "Secret" then
+			assert(def.EventOnly or def.RequiredRebirth, def.Id .. " : secrète sans condition")
+		end
 	end
 	local count = 0
 	for _ in rarities do
 		count += 1
 	end
-	eq(count, 5, "raretés utilisées")
+	eq(count, 6, "raretés utilisées")
 end)
 
 test("Chaque anomalie a une forme monstrueuse valide", function()
@@ -203,6 +209,8 @@ test("Clients générés cohérents (20 000 tirages)", function()
 			anomalies += 1
 			local def = AnomalyConfig.ById[g.AnomalyId]
 			assert(def, "anomalie inconnue")
+			assert(not def.EventOnly and not def.RequiredRebirth, def.Id .. " sorti sans événement ni renaissance")
+			assert(g.Mutation ~= "Lunar" and g.Mutation ~= "Shadow", "mutation d'événement hors événement")
 			rarityCount[def.Rarity] = (rarityCount[def.Rarity] or 0) + 1
 			mutationCount[g.Mutation] = (mutationCount[g.Mutation] or 0) + 1
 			local n = 0
@@ -251,6 +259,29 @@ test("Clients générés cohérents (20 000 tirages)", function()
 	end
 	print(string.format("  Mutations : Dorée %.2f %%, Néon %.2f %%",
 		(mutationCount.Golden or 0) / anomalies * 100, (mutationCount.Neon or 0) / anomalies * 100))
+end)
+
+test("Événements et renaissances débloquent leurs anomalies", function()
+	local rng = Random.new(9)
+	local seen, mutations = {}, {}
+	for _ = 1, 30000 do
+		local g = GuestGenerator.generate(rng, { ForceAnomaly = true, Event = "BloodMoon", RarityLuck = 3, Rebirths = 5 })
+		local def = AnomalyConfig.ById[g.AnomalyId]
+		seen[g.AnomalyId] = true
+		mutations[g.Mutation] = true
+		assert(def.EventOnly == nil or def.EventOnly == "BloodMoon", def.Id .. " hors de son événement")
+		assert(g.Mutation ~= "Shadow", "mutation Ombre pendant la Lune de Sang")
+	end
+	assert(seen.Werewolf, "Loup-Garou jamais vu pendant la Lune de Sang")
+	assert(seen.MoonEye, "Œil de la Lune jamais vu")
+	assert(seen.Clockmaker and seen.WhiteLady and seen.DeadConductor and seen.EternalHost, "anomalies de renaissance absentes")
+	assert(mutations.Lunar, "mutation Lunaire absente")
+	-- Sans renaissance : pas d'anomalie de renaissance
+	for _ = 1, 5000 do
+		local g = GuestGenerator.generate(rng, { ForceAnomaly = true, Event = "Blackout", RarityLuck = 5 })
+		local def = AnomalyConfig.ById[g.AnomalyId]
+		assert(not def.RequiredRebirth, def.Id .. " sans renaissance")
+	end
 end)
 
 test("Options forcées (debug)", function()

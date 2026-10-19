@@ -1,5 +1,6 @@
 --!strict
--- Sons et petit « jumpscare » (flash rouge) quand une anomalie s'infiltre.
+-- Sons (musique d'ambiance, sonnette, capture, alarme de vol, événements...)
+-- et petit « jumpscare » (flash rouge) quand une anomalie s'infiltre.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -33,10 +34,15 @@ end
 
 function SoundController.Start(_self: typeof(SoundController))
 	for name, entry in SoundConfig do
+		local id = if entry.Id ~= "" then entry.Id else entry.Fallback
+		if not id then
+			continue
+		end
 		local sound = Instance.new("Sound")
 		sound.Name = name
-		sound.SoundId = entry.Id
+		sound.SoundId = id
 		sound.Volume = entry.Volume
+		sound.Looped = entry.Looped == true
 		sound.Parent = SoundService
 		sounds[name] = sound
 	end
@@ -68,8 +74,46 @@ function SoundController.Start(_self: typeof(SoundController))
 			scare()
 		elseif outcome == "WrongCapture" then
 			SoundController.Play("Bad")
-		else
-			SoundController.Play("Good")
+		elseif outcome == "Captured" or outcome == "CapturedSold" then
+			SoundController.Play("Capture")
+		elseif outcome == "Served" then
+			SoundController.Play("Cash")
+		end
+	end)
+
+	-- Musique d'ambiance
+	local ambience = sounds.Ambience
+	if ambience then
+		ambience:Play()
+	end
+
+	-- Sonnette : un client attend à MON comptoir ; alarme : on me vole une anomalie
+	workspace.DescendantAdded:Connect(function(instance)
+		if instance:IsA("ProximityPrompt") and instance:GetAttribute("OnlyUserId") == player.UserId then
+			if instance.ActionText == "Recevoir" then
+				SoundController.Play("Bell")
+			elseif instance.ActionText == "Récupérer" then
+				SoundController.Play("Alarm")
+			end
+		end
+	end)
+
+	-- Renaissance
+	local lastRebirths = player:GetAttribute("Rebirths") :: number?
+	player:GetAttributeChangedSignal("Rebirths"):Connect(function()
+		local count = player:GetAttribute("Rebirths") :: number?
+		if lastRebirths and count and count > lastRebirths then
+			SoundController.Play("Rebirth")
+		end
+		lastRebirths = count
+	end)
+
+	-- Événements
+	local EVENT_SOUNDS: { [string]: string } = { BloodMoon = "Howl", Blackout = "PowerDown", GhostRush = "Thunder" }
+	workspace:GetAttributeChangedSignal("EventId"):Connect(function()
+		local sound = EVENT_SOUNDS[(workspace:GetAttribute("EventId") :: string?) or ""]
+		if sound then
+			SoundController.Play(sound)
 		end
 	end)
 end

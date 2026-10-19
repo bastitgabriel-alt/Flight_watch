@@ -19,6 +19,8 @@ local EVENT_NAMES: { string } = {
 	"ShopBuy", -- client -> serveur : ("Cell" | "Tool" | "Security", itemId)
 	"LockRequest", -- client -> serveur : verrouiller sa porte
 	"TutorialStep", -- client -> serveur : (numéro d'étape terminée)
+	"RebirthRequest", -- client -> serveur : renaître
+	"WelcomeBack", -- serveur -> client : (gains hors ligne, secondes, jour de série, récompense du jour)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)

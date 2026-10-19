@@ -29,6 +29,9 @@
 -- TrueForm : couleurs révélées dans la cellule (peau, haut, bas)
 -- Look     : traits monstrueux visibles dans la cellule (liste dans AnomalyLooks)
 -- Scale    : taille dans la cellule (1 = normale)
+-- Motion   : style d'animation (voir RigMotionController)
+-- RequiredRebirth : n'apparaît qu'après ce nombre de renaissances
+-- EventOnly       : n'apparaît que pendant cet événement (voir EventConfig)
 -- Clues    : indices possibles ("Registry", "Shadow", "Eyes", "Photo").
 --            Le nombre d'indices montrés dépend de la rareté (RarityConfig).
 
@@ -48,6 +51,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(255, 255, 255),
 		Clues = { "Photo", "Registry", "Eyes", "Shadow" },
 		Look = { "Faceless", "ExtraEyes" },
+		Motion = "Creepy",
 	},
 	{
 		Id = "Shadowless",
@@ -59,6 +63,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(120, 200, 255),
 		Clues = { "Shadow", "Registry", "Eyes" },
 		Look = { "Faceless", "Wisps" },
+		Motion = "Creepy",
 		Scale = 1.15,
 	},
 	{
@@ -71,6 +76,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(255, 80, 160),
 		Clues = { "Eyes", "Photo", "Registry" },
 		Look = { "Smile" },
+		Motion = "Doll",
 	},
 	{
 		Id = "GreyTraveler",
@@ -82,6 +88,57 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(200, 200, 200),
 		Clues = { "Registry", "Photo", "Shadow" },
 		Look = { "TopHat", "Suitcase" },
+		Motion = "Creepy",
+	},
+
+	{
+		Id = "PorcelainDoll",
+		DisplayName = "La Poupée de Porcelaine",
+		Rarity = "Common",
+		Income = 2,
+		Description = "Elle était dans la chambre 12 avant l'ouverture de l'hôtel.",
+		TrueForm = { Skin = rgb(250, 240, 235), Shirt = rgb(200, 80, 120), Pants = rgb(240, 230, 240) },
+		EyeColor = rgb(20, 20, 20),
+		Clues = { "Eyes", "Photo", "Shadow" },
+		Look = { "Doll" },
+		Motion = "Doll",
+		Scale = 0.8,
+	},
+	{
+		Id = "FrozenTourist",
+		DisplayName = "Le Touriste Gelé",
+		Rarity = "Common",
+		Income = 3,
+		Description = "Il prend des photos de 1987. Il fait -40 °C dans sa chambre.",
+		TrueForm = { Skin = rgb(190, 225, 255), Shirt = rgb(120, 170, 230), Pants = rgb(70, 90, 140) },
+		EyeColor = rgb(150, 230, 255),
+		Clues = { "Shadow", "Registry", "Photo" },
+		Look = { "Frozen" },
+		Motion = "Twitch",
+	},
+	{
+		Id = "SadClown",
+		DisplayName = "Le Clown Triste",
+		Rarity = "Common",
+		Income = 4,
+		Description = "Son spectacle n'a jamais fini. Personne n'est jamais reparti.",
+		TrueForm = { Skin = rgb(245, 245, 245), Shirt = rgb(200, 30, 200), Pants = rgb(255, 210, 0) },
+		EyeColor = rgb(40, 120, 255),
+		Clues = { "Registry", "Eyes", "Photo" },
+		Look = { "Clown" },
+		Motion = "Doll",
+	},
+	{
+		Id = "EternalDelivery",
+		DisplayName = "Le Livreur Éternel",
+		Rarity = "Common",
+		Income = 4,
+		Description = "Une pizza pour la chambre 0. Commandée en 1974.",
+		TrueForm = { Skin = rgb(220, 180, 140), Shirt = rgb(200, 20, 20), Pants = rgb(30, 30, 40) },
+		EyeColor = rgb(255, 200, 60),
+		Clues = { "Registry", "Shadow", "Eyes" },
+		Look = { "Cap", "PizzaBox" },
+		Motion = "Creepy",
 	},
 
 	-- Rares
@@ -95,6 +152,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(150, 150, 255),
 		Clues = { "Eyes", "Shadow", "Registry" },
 		Look = { "NightCap", "Hover" },
+		Motion = "Zombie",
 	},
 	{
 		Id = "MirrorLady",
@@ -106,6 +164,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(0, 220, 255),
 		Clues = { "Photo", "Eyes", "Registry" },
 		Look = { "Mirror" },
+		Motion = "Float",
 	},
 	{
 		Id = "ForgottenMailman",
@@ -117,6 +176,44 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(255, 220, 120),
 		Clues = { "Registry", "Shadow", "Photo" },
 		Look = { "Cap", "MailBag" },
+		Motion = "Creepy",
+	},
+
+	{
+		Id = "KeyKeeper",
+		DisplayName = "La Gardienne des Clés",
+		Rarity = "Rare",
+		Income = 9,
+		Description = "Elle a la clé de toutes les portes. Même celles qui n'existent pas.",
+		TrueForm = { Skin = rgb(230, 220, 210), Shirt = rgb(90, 60, 40), Pants = rgb(60, 40, 30) },
+		EyeColor = rgb(255, 200, 60),
+		Clues = { "Registry", "Photo", "Eyes" },
+		Look = { "Keys" },
+		Motion = "Creepy",
+	},
+	{
+		Id = "HeadlessButler",
+		DisplayName = "Le Majordome Sans Tête",
+		Rarity = "Rare",
+		Income = 14,
+		Description = "Il porte sa tête sous le bras. Elle continue de sourire.",
+		TrueForm = { Skin = rgb(235, 220, 200), Shirt = rgb(20, 20, 25), Pants = rgb(20, 20, 25) },
+		EyeColor = rgb(255, 80, 40),
+		Clues = { "Shadow", "Registry", "Photo" },
+		Look = { "Headless" },
+		Motion = "Creepy",
+	},
+	{
+		Id = "StaticMan",
+		DisplayName = "L'Homme Parasite",
+		Rarity = "Rare",
+		Income = 16,
+		Description = "Il ne regarde que la chaîne 0. Elle ne diffuse que lui.",
+		TrueForm = { Skin = rgb(180, 180, 180), Shirt = rgb(60, 60, 70), Pants = rgb(40, 40, 50) },
+		EyeColor = rgb(150, 255, 200),
+		Clues = { "Eyes", "Photo", "Shadow" },
+		Look = { "TVHead" },
+		Motion = "Twitch",
 	},
 
 	-- Épiques
@@ -130,6 +227,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(255, 255, 0),
 		Clues = { "Photo", "Shadow", "Eyes" },
 		Look = { "TwistedHead" },
+		Motion = "Twitch",
 	},
 	{
 		Id = "PhantomConcierge",
@@ -141,6 +239,59 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(170, 255, 255),
 		Clues = { "Registry", "Eyes", "Shadow" },
 		Look = { "Ghost", "Cap" },
+		Motion = "Float",
+	},
+
+	{
+		Id = "ClosetThing",
+		DisplayName = "La Chose du Placard",
+		Rarity = "Epic",
+		Income = 40,
+		Description = "Elle attend que tu éteignes la lumière.",
+		TrueForm = { Skin = rgb(60, 40, 50), Shirt = rgb(30, 20, 30), Pants = rgb(30, 20, 30) },
+		EyeColor = rgb(255, 220, 0),
+		Clues = { "Shadow", "Eyes", "Registry" },
+		Look = { "ExtraArms", "Faceless", "ExtraEyes" },
+		Motion = "Feral",
+		Scale = 1.15,
+	},
+	{
+		Id = "Puppeteer",
+		DisplayName = "Le Marionnettiste",
+		Rarity = "Epic",
+		Income = 55,
+		Description = "Quelqu'un tire les fils. Ce n'est pas lui.",
+		TrueForm = { Skin = rgb(240, 225, 200), Shirt = rgb(120, 20, 20), Pants = rgb(40, 30, 30) },
+		EyeColor = rgb(255, 255, 255),
+		Clues = { "Photo", "Registry", "Eyes" },
+		Look = { "Strings", "TopHat" },
+		Motion = "Twitch",
+	},
+	{
+		Id = "Banshee",
+		DisplayName = "La Banshee",
+		Rarity = "Epic",
+		Income = 60,
+		Description = "Son cri annonce la prochaine anomalie.",
+		TrueForm = { Skin = rgb(200, 255, 220), Shirt = rgb(120, 200, 160), Pants = rgb(120, 200, 160) },
+		EyeColor = rgb(120, 255, 170),
+		Clues = { "Eyes", "Shadow", "Registry" },
+		Look = { "Ghost", "Veil" },
+		Motion = "Float",
+		EventOnly = "GhostRush",
+	},
+	{
+		Id = "Clockmaker",
+		DisplayName = "L'Horloger",
+		Rarity = "Epic",
+		Income = 70,
+		Description = "Il remonte le temps. Le tien, surtout.",
+		TrueForm = { Skin = rgb(220, 200, 170), Shirt = rgb(90, 60, 30), Pants = rgb(50, 40, 30) },
+		EyeColor = rgb(255, 190, 60),
+		Clues = { "Registry", "Photo", "Shadow" },
+		Look = { "ClockFace", "TopHat" },
+		Motion = "Doll",
+		RequiredRebirth = 1,
 	},
 
 	-- Légendaires
@@ -154,6 +305,7 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(255, 40, 40),
 		Clues = { "Eyes", "Photo", "Registry" },
 		Look = { "Veil", "Dress", "Hover" },
+		Motion = "Float",
 	},
 	{
 		Id = "FacelessWarden",
@@ -165,7 +317,49 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(180, 0, 255),
 		Clues = { "Shadow", "Registry", "Photo" },
 		Look = { "Faceless", "LongArms", "Wisps" },
+		Motion = "Feral",
 		Scale = 1.25,
+	},
+
+	{
+		Id = "PaleKnight",
+		DisplayName = "Le Chevalier Pâle",
+		Rarity = "Legendary",
+		Income = 175,
+		Description = "Il garde une chambre que personne n'a réservée.",
+		TrueForm = { Skin = rgb(230, 230, 235), Shirt = rgb(150, 155, 165), Pants = rgb(150, 155, 165) },
+		EyeColor = rgb(120, 200, 255),
+		Clues = { "Shadow", "Photo", "Registry" },
+		Look = { "Knight", "Cape" },
+		Motion = "Regal",
+		Scale = 1.15,
+	},
+	{
+		Id = "LivingShadow",
+		DisplayName = "L'Ombre Vivante",
+		Rarity = "Legendary",
+		Income = 260,
+		Description = "Quand la lumière s'éteint, elle s'allume.",
+		TrueForm = { Skin = rgb(5, 5, 8), Shirt = rgb(5, 5, 8), Pants = rgb(5, 5, 8) },
+		EyeColor = rgb(255, 255, 255),
+		Clues = { "Shadow", "Eyes", "Registry" },
+		Look = { "Faceless", "ExtraEyes", "Wisps" },
+		Motion = "Feral",
+		Scale = 1.2,
+		EventOnly = "Blackout",
+	},
+	{
+		Id = "WhiteLady",
+		DisplayName = "La Dame Blanche",
+		Rarity = "Legendary",
+		Income = 300,
+		Description = "Elle fait du stop sur la route de l'hôtel depuis 1952.",
+		TrueForm = { Skin = rgb(255, 255, 255), Shirt = rgb(245, 245, 255), Pants = rgb(245, 245, 255) },
+		EyeColor = rgb(160, 220, 255),
+		Clues = { "Eyes", "Photo", "Registry" },
+		Look = { "Ghost", "Veil", "Dress" },
+		Motion = "Float",
+		RequiredRebirth = 2,
 	},
 
 	-- Mythique
@@ -179,7 +373,79 @@ local list: { Types.AnomalyDef } = {
 		EyeColor = rgb(255, 0, 0),
 		Clues = { "Registry", "Eyes", "Photo", "Shadow" },
 		Look = { "Crown", "Cape", "Halo" },
+		Motion = "Regal",
 		Scale = 1.3,
+	},
+	{
+		Id = "FallenAngel",
+		DisplayName = "L'Ange Déchu",
+		Rarity = "Mythic",
+		Income = 1000,
+		Description = "Il cherche la sortie. Il n'y en a pas.",
+		TrueForm = { Skin = rgb(200, 190, 210), Shirt = rgb(25, 20, 30), Pants = rgb(25, 20, 30) },
+		EyeColor = rgb(255, 60, 60),
+		Clues = { "Eyes", "Shadow", "Registry", "Photo" },
+		Look = { "Wings", "Halo", "Hover" },
+		Motion = "Float",
+		Scale = 1.2,
+	},
+	{
+		Id = "Werewolf",
+		DisplayName = "Le Loup-Garou",
+		Rarity = "Mythic",
+		Income = 1200,
+		Description = "Client charmant. Sauf les soirs de pleine lune.",
+		TrueForm = { Skin = rgb(180, 140, 110), Shirt = rgb(90, 70, 55), Pants = rgb(60, 45, 35) },
+		EyeColor = rgb(255, 40, 0),
+		Clues = { "Shadow", "Eyes", "Photo", "Registry" },
+		Look = { "Wolf" },
+		Motion = "Feral",
+		Scale = 1.3,
+		EventOnly = "BloodMoon",
+	},
+	{
+		Id = "DeadConductor",
+		DisplayName = "Le Chef d'Orchestre Mort",
+		Rarity = "Mythic",
+		Income = 1500,
+		Description = "Son concert dure depuis cent ans. Ne l'applaudis pas.",
+		TrueForm = { Skin = rgb(210, 210, 200), Shirt = rgb(15, 15, 20), Pants = rgb(15, 15, 20) },
+		EyeColor = rgb(170, 120, 255),
+		Clues = { "Registry", "Eyes", "Photo", "Shadow" },
+		Look = { "Baton", "TopHat", "Cape" },
+		Motion = "Regal",
+		Scale = 1.2,
+		RequiredRebirth = 3,
+	},
+
+	-- Secrètes (événement ou renaissance)
+	{
+		Id = "MoonEye",
+		DisplayName = "L'Œil de la Lune",
+		Rarity = "Secret",
+		Income = 5000,
+		Description = "Pendant la Lune de Sang, la lune regarde. De très près.",
+		TrueForm = { Skin = rgb(180, 20, 30), Shirt = rgb(120, 10, 20), Pants = rgb(60, 5, 10) },
+		EyeColor = rgb(255, 0, 30),
+		Clues = { "Eyes", "Shadow", "Registry", "Photo" },
+		Look = { "BigEye", "Wings", "Hover" },
+		Motion = "Float",
+		Scale = 1.1,
+		EventOnly = "BloodMoon",
+	},
+	{
+		Id = "EternalHost",
+		DisplayName = "L'Hôtelier Éternel",
+		Rarity = "Secret",
+		Income = 8000,
+		Description = "Il a construit l'hôtel. Il ne l'a jamais quitté.",
+		TrueForm = { Skin = rgb(40, 0, 60), Shirt = rgb(10, 10, 10), Pants = rgb(10, 10, 10) },
+		EyeColor = rgb(200, 0, 255),
+		Clues = { "Registry", "Eyes", "Photo", "Shadow" },
+		Look = { "Crown", "Cape", "Halo", "ExtraEyes", "Wisps" },
+		Motion = "Regal",
+		Scale = 1.3,
+		RequiredRebirth = 5,
 	},
 }
 
@@ -210,6 +476,10 @@ local CatalogConfig = {
 		{ Count = 6, Money = 5000 },
 		{ Count = 9, Money = 50000 },
 		{ Count = 12, Money = 500000 },
+		{ Count = 16, Money = 2000000 },
+		{ Count = 20, Money = 10000000 },
+		{ Count = 25, Money = 50000000 },
+		{ Count = 31, Money = 500000000 },
 	},
 }
 
@@ -246,6 +516,16 @@ local EconomyConfig = {
 	-- Capture quand toutes les cellules sont pleines : l'anomalie est revendue
 	-- immédiatement pour X secondes de son revenu
 	FullCellsSellSeconds = 60,
+
+	-- Gains hors ligne : les anomalies continuent de rapporter (moins vite)
+	OfflineRate = 0.3, -- 30 % du revenu normal
+	OfflineMaxSeconds = 4 * 3600, -- au maximum 4 h comptées
+	OfflineMinSeconds = 120, -- en dessous, rien (simple reconnexion)
+
+	-- Récompense quotidienne : jour 1, 2, 3... de connexion d'affilée (puis on recommence).
+	-- Montant = max(montant du jour, revenu par seconde x DailyIncomeSeconds x jour)
+	DailyRewards = { 500, 1500, 4000, 10000, 25000, 60000, 150000 },
+	DailyIncomeSeconds = 60,
 }
 
 return EconomyConfig
@@ -253,6 +533,87 @@ return EconomyConfig
           </Properties>
         </Item>
         <Item class="ModuleScript" referent="7">
+          <Properties>
+            <string name="Name">EventConfig</string>
+            <string name="Source"><![CDATA[--!strict
+-- Événements du serveur : toutes les X minutes, un événement de quelques
+-- minutes change les règles pour tout le monde (annoncé à l'écran).
+--
+-- Effets possibles :
+--   AnomalyChance       probabilité qu'un client soit une anomalie
+--   RarityLuck          multiplie les chances des raretés au-dessus de Commune
+--   IncomeMultiplier    multiplie les revenus de tous les joueurs
+--   SpawnDelayMultiplier  < 1 = les clients arrivent plus vite
+--   TipMultiplier       multiplie les pourboires des vrais clients
+-- Les anomalies et mutations avec EventOnly = <Id> ne sortent que pendant l'événement.
+
+export type EventDef = {
+	Id: string,
+	DisplayName: string,
+	Description: string,
+	Weight: number, -- chances d'être choisi
+	Color: Color3,
+	AnomalyChance: number?,
+	RarityLuck: number?,
+	IncomeMultiplier: number?,
+	SpawnDelayMultiplier: number?,
+	TipMultiplier: number?,
+}
+
+local EventConfig = {
+	FirstDelay = 4 * 60, -- premier événement après le démarrage du serveur (secondes)
+	Interval = 10 * 60, -- temps entre la fin d'un événement et le suivant
+	Duration = 3 * 60, -- durée d'un événement
+
+	Events = {
+		{
+			Id = "BloodMoon",
+			DisplayName = "Lune de Sang",
+			Description = "Raretés x3 • mutation Lunaire x4 • le Loup-Garou rôde",
+			Weight = 1,
+			Color = Color3.fromRGB(255, 60, 70),
+			AnomalyChance = 0.55,
+			RarityLuck = 3,
+		},
+		{
+			Id = "Blackout",
+			DisplayName = "Panne de courant",
+			Description = "Revenus x2 • mutation Ombre x3 • l'Ombre Vivante sort du noir",
+			Weight = 1,
+			Color = Color3.fromRGB(150, 160, 255),
+			AnomalyChance = 0.5,
+			IncomeMultiplier = 2,
+		},
+		{
+			Id = "GhostRush",
+			DisplayName = "Ruée fantôme",
+			Description = "Clients 2x plus rapides • pourboires x3 • la Banshee hurle",
+			Weight = 1,
+			Color = Color3.fromRGB(120, 255, 170),
+			AnomalyChance = 0.5,
+			SpawnDelayMultiplier = 0.5,
+			TipMultiplier = 3,
+		},
+	} :: { EventDef },
+}
+
+function EventConfig.get(id: string?): EventDef?
+	if not id then
+		return nil
+	end
+	for _, event in EventConfig.Events do
+		if event.Id == id then
+			return event
+		end
+	end
+	return nil
+end
+
+return EventConfig
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="8">
           <Properties>
             <string name="Name">GameConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -280,7 +641,7 @@ return GameConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="8">
+        <Item class="ModuleScript" referent="9">
           <Properties>
             <string name="Name">GuestConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -340,7 +701,7 @@ return GuestConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="9">
+        <Item class="ModuleScript" referent="10">
           <Properties>
             <string name="Name">MonetizationConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -385,12 +746,12 @@ return MonetizationConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="10">
+        <Item class="ModuleScript" referent="11">
           <Properties>
             <string name="Name">MutationConfig</string>
             <string name="Source"><![CDATA[--!strict
 -- Mutations : variante visuelle + multiplicateur de revenu.
--- D'autres mutations (Ombre x3, etc.) viendront après le MVP.
+-- Lunaire et Ombre n'apparaissent que pendant leur événement (EventConfig).
 
 local Types = require(script.Parent.Parent.Types)
 
@@ -414,10 +775,26 @@ local MutationConfig: { [Types.MutationId]: Types.Mutation } = {
 		Color = Color3.fromRGB(0, 255, 200),
 		Material = "Neon",
 	},
+	Lunar = {
+		DisplayName = "Lunaire",
+		IncomeMultiplier = 4,
+		SpawnChance = 0.2,
+		Color = Color3.fromRGB(200, 20, 40),
+		Material = "Neon",
+		EventOnly = "BloodMoon",
+	},
+	Shadow = {
+		DisplayName = "Ombre",
+		IncomeMultiplier = 3,
+		SpawnChance = 0.15,
+		Color = Color3.fromRGB(15, 10, 25),
+		Material = "SmoothPlastic",
+		EventOnly = "Blackout",
+	},
 }
 
 -- Ordre de tirage des mutations (la plus rare d'abord)
-local ROLL_ORDER: { Types.MutationId } = { "Neon", "Golden" }
+local ROLL_ORDER: { Types.MutationId } = { "Neon", "Lunar", "Shadow", "Golden" }
 
 return {
 	Mutations = MutationConfig,
@@ -426,7 +803,7 @@ return {
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="11">
+        <Item class="ModuleScript" referent="12">
           <Properties>
             <string name="Name">RarityConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -486,12 +863,13 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SubtleChance = 1,
 		HiddenClueChance = 1,
 	},
-	-- Réservée aux événements admin (après le MVP) : n'apparaît jamais seule
+	-- Seulement les anomalies d'événement ou de renaissance (voir AnomalyConfig) :
+	-- sans anomalie secrète disponible, cette rareté ne sort jamais
 	Secret = {
 		DisplayName = "Secrète",
-		Color = Color3.fromRGB(30, 30, 30),
+		Color = Color3.fromRGB(255, 255, 255),
 		Order = 6,
-		SpawnWeight = 0,
+		SpawnWeight = 0.04,
 		ClueCount = 1,
 		SubtleChance = 1,
 		HiddenClueChance = 1,
@@ -502,7 +880,40 @@ return RarityConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="12">
+        <Item class="ModuleScript" referent="13">
+          <Properties>
+            <string name="Name">RebirthConfig</string>
+            <string name="Source"><![CDATA[--!strict
+-- Renaissance : on repart de zéro (argent et anomalies) contre des bonus
+-- permanents. Outils, sécurité, cellules achetées par Robux et catalogue sont gardés.
+
+local RebirthConfig = {
+	BaseCost = 500000, -- prix de la 1re renaissance
+	CostGrowth = 4, -- chaque renaissance coûte X fois plus cher que la précédente
+	IncomeBonus = 0.5, -- +50 % de revenus par renaissance
+	LuckBonus = 0.25, -- +25 % de chances de raretés hautes par renaissance
+	StartMoneyPerRebirth = 2000, -- argent de départ offert après chaque renaissance
+	MaxRebirths = 20,
+}
+
+-- Prix de la prochaine renaissance (rebirths = nombre déjà faites)
+function RebirthConfig.cost(rebirths: number): number
+	return math.floor(RebirthConfig.BaseCost * RebirthConfig.CostGrowth ^ rebirths)
+end
+
+function RebirthConfig.incomeMultiplier(rebirths: number): number
+	return 1 + RebirthConfig.IncomeBonus * rebirths
+end
+
+function RebirthConfig.luck(rebirths: number): number
+	return 1 + RebirthConfig.LuckBonus * rebirths
+end
+
+return RebirthConfig
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="14">
           <Properties>
             <string name="Name">ShopConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -591,19 +1002,40 @@ return ShopConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="13">
+        <Item class="ModuleScript" referent="15">
           <Properties>
             <string name="Name">SoundConfig</string>
             <string name="Source"><![CDATA[--!strict
--- Sons du jeu. Ce sont des sons intégrés à Roblox (rbxasset://) : pour en mettre
--- d'autres, remplace par « rbxassetid://<numéro> » d'un son de la Creator Store.
+-- Sons du jeu.
+--
+-- Les sons « rbxasset:// » sont fournis par Roblox. Les autres sont nos propres
+-- sons (dossier assets/sounds du projet) : une fois importés sur Roblox, colle
+-- leur numéro ici, ex. Id = "rbxassetid://1234567890". Un Id vide = son coupé.
+-- Fallback : son de remplacement si l'Id est vide.
 
-local SoundConfig = {
+export type SoundEntry = {
+	Id: string,
+	Volume: number,
+	Fallback: string?,
+	Looped: boolean?,
+}
+
+local SoundConfig: { [string]: SoundEntry } = {
 	Good = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.6 },
 	Bad = { Id = "rbxasset://sounds/uuhhh.mp3", Volume = 0.5 },
 	Click = { Id = "rbxasset://sounds/button.wav", Volume = 0.4 },
-	-- swoosh.wav n'existe plus chez Roblox
-	Scare = { Id = "rbxasset://sounds/uuhhh.mp3", Volume = 1 },
+
+	-- Nos sons (assets/sounds/<Nom>.mp3)
+	Ambience = { Id = "", Volume = 0.3, Looped = true }, -- musique de fond en boucle
+	Bell = { Id = "", Volume = 0.5 }, -- un client arrive au comptoir
+	Capture = { Id = "", Volume = 0.6, Fallback = "rbxasset://sounds/electronicpingshort.wav" },
+	Cash = { Id = "", Volume = 0.5, Fallback = "rbxasset://sounds/electronicpingshort.wav" },
+	Scare = { Id = "", Volume = 0.8, Fallback = "rbxasset://sounds/uuhhh.mp3" },
+	Alarm = { Id = "", Volume = 0.35 }, -- on te vole une anomalie
+	Rebirth = { Id = "", Volume = 0.6 },
+	Howl = { Id = "", Volume = 0.6 }, -- Lune de Sang
+	PowerDown = { Id = "", Volume = 0.5 }, -- Panne de courant
+	Thunder = { Id = "", Volume = 0.6 }, -- éclairs, Ruée fantôme
 }
 
 return SoundConfig
@@ -611,7 +1043,7 @@ return SoundConfig
           </Properties>
         </Item>
       </Item>
-      <Item class="ModuleScript" referent="14">
+      <Item class="ModuleScript" referent="16">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[--!strict
@@ -635,6 +1067,8 @@ local EVENT_NAMES: { string } = {
 	"ShopBuy", -- client -> serveur : ("Cell" | "Tool" | "Security", itemId)
 	"LockRequest", -- client -> serveur : verrouiller sa porte
 	"TutorialStep", -- client -> serveur : (numéro d'étape terminée)
+	"RebirthRequest", -- client -> serveur : renaître
+	"WelcomeBack", -- serveur -> client : (gains hors ligne, secondes, jour de série, récompense du jour)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)
@@ -692,7 +1126,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="15">
+      <Item class="ModuleScript" referent="17">
         <Properties>
           <string name="Name">Types</string>
           <string name="Source"><![CDATA[--!strict
@@ -700,7 +1134,7 @@ return Remotes
 
 export type RarityId = "Common" | "Rare" | "Epic" | "Legendary" | "Mythic" | "Secret"
 
-export type MutationId = "None" | "Golden" | "Neon"
+export type MutationId = "None" | "Golden" | "Neon" | "Lunar" | "Shadow"
 
 -- Indices visibles par tous + indices cachés (révélés par un outil acheté)
 export type ClueType = "Registry" | "Shadow" | "Eyes" | "Photo" | "UV" | "Thermal"
@@ -731,6 +1165,7 @@ export type Mutation = {
 	SpawnChance: number, -- probabilité (0 à 1) d'apparition
 	Color: Color3?, -- couleur appliquée au modèle dans la cellule
 	Material: string?, -- nom d'un Enum.Material, ex. "Neon"
+	EventOnly: string?, -- ne sort que pendant cet événement (voir EventConfig)
 }
 
 export type AnomalyDef = {
@@ -744,6 +1179,9 @@ export type AnomalyDef = {
 	Clues: { ClueType }, -- indices que cette anomalie peut montrer
 	Look: { string }?, -- traits visibles dans la cellule (voir AnomalyLooks)
 	Scale: number?, -- taille dans la cellule (1 = normale)
+	Motion: string?, -- style d'animation (voir RigMotionController), "Creepy" par défaut
+	RequiredRebirth: number?, -- n'apparaît qu'à partir de ce nombre de renaissances
+	EventOnly: string?, -- n'apparaît que pendant cet événement (voir EventConfig)
 }
 
 -- Une anomalie possédée par un joueur (sauvegardée)
@@ -785,11 +1223,11 @@ return {}
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="16">
+      <Item class="Folder" referent="18">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="17">
+        <Item class="ModuleScript" referent="19">
           <Properties>
             <string name="Name">Format</string>
             <string name="Source"><![CDATA[--!strict
@@ -835,7 +1273,7 @@ return Format
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="18">
+        <Item class="ModuleScript" referent="20">
           <Properties>
             <string name="Name">Loader</string>
             <string name="Source"><![CDATA[--!strict
@@ -897,7 +1335,7 @@ return Loader
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="19">
+        <Item class="ModuleScript" referent="21">
           <Properties>
             <string name="Name">ReceptionCamera</string>
             <string name="Source"><![CDATA[--!strict
@@ -924,7 +1362,7 @@ return ReceptionCamera
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="20">
+        <Item class="ModuleScript" referent="22">
           <Properties>
             <string name="Name">RigAppearance</string>
             <string name="Source"><![CDATA[--!strict
@@ -1033,7 +1471,7 @@ return RigAppearance
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="21">
+        <Item class="ModuleScript" referent="23">
           <Properties>
             <string name="Name">Signal</string>
             <string name="Source"><![CDATA[--!strict
@@ -1088,15 +1526,15 @@ return Signal
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="22">
+  <Item class="ServerScriptService" referent="24">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Folder" referent="23">
+    <Item class="Folder" referent="25">
       <Properties>
         <string name="Name">Server</string>
       </Properties>
-      <Item class="Script" referent="24">
+      <Item class="Script" referent="26">
         <Properties>
           <string name="Name">Main</string>
           <token name="RunContext">0</token>
@@ -1119,11 +1557,11 @@ print("[Serveur] Serveur prêt")
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="25">
+      <Item class="Folder" referent="27">
         <Properties>
           <string name="Name">Modules</string>
         </Properties>
-        <Item class="ModuleScript" referent="26">
+        <Item class="ModuleScript" referent="28">
           <Properties>
             <string name="Name">Analytics</string>
             <string name="Source"><![CDATA[--!strict
@@ -1162,7 +1600,7 @@ return Analytics
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">AnomalyLooks</string>
             <string name="Source"><![CDATA[--!strict
@@ -1673,7 +2111,515 @@ function Traits.Cape(ctx: Context)
 	}, torso.CFrame * CFrame.new(0, torso.Size.Y / 2 - 0.1, 0))
 end
 
--- Ajoute les traits listés. Le modèle n'est pas encore dans workspace.
+-- Cache la vraie tête (remplacée par autre chose)
+local function hideHead(rig: Model): BasePart?
+	local head = bodyPart(rig, "Head")
+	if head then
+		removeFace(rig)
+		head.Transparency = 1
+	end
+	return head
+end
+
+-- Disque face à l'avant (-Z) : cylindre couché tourné de 90°
+local FACING = CFrame.Angles(0, math.rad(90), 0)
+
+-- Poupée de porcelaine : yeux-boutons, bouche cousue, fêlures
+function Traits.Doll(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	removeFace(ctx.rig)
+	local cf, size = headFrame(head)
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.06, size.X * 0.3, size.X * 0.3),
+			Color = rgb(20, 20, 25),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(side * size.X * 0.18, size.Y * 0.1, -size.Z * 0.5) * FACING)
+		attach(ctx, head, {
+			Size = Vector3.new(size.X * 0.14, size.Y * 0.07, 0.04),
+			Color = rgb(255, 150, 160),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(side * size.X * 0.28, -size.Y * 0.12, -size.Z * 0.49))
+	end
+	attach(ctx, head, {
+		Size = Vector3.new(size.X * 0.4, 0.04, 0.04),
+		Color = rgb(60, 0, 0),
+	}, cf * CFrame.new(0, -size.Y * 0.25, -size.Z * 0.5))
+	for i = -2, 2 do
+		attach(ctx, head, {
+			Size = Vector3.new(0.03, size.Y * 0.12, 0.04),
+			Color = rgb(60, 0, 0),
+		}, cf * CFrame.new(i * size.X * 0.08, -size.Y * 0.25, -size.Z * 0.5))
+	end
+	-- Fêlure sur le front
+	for i = 0, 2 do
+		attach(ctx, head, {
+			Size = Vector3.new(0.03, size.Y * 0.18, 0.04),
+			Color = rgb(30, 30, 30),
+		}, cf * CFrame.new(-size.X * 0.05 + i * 0.06, size.Y * (0.35 - i * 0.12), -size.Z * 0.5) * CFrame.Angles(0, 0, math.rad(25 - i * 40)))
+	end
+end
+
+-- Touriste gelé : corps de glace, appareil photo, stalactites
+function Traits.Frozen(ctx: Context)
+	for _, descendant in ctx.rig:GetDescendants() do
+		if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" and descendant.Name ~= "AnomalyEye" then
+			descendant.Material = Enum.Material.Ice
+		end
+	end
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if torso then
+		local cf = torso.CFrame * CFrame.new(0, -0.1, -torso.Size.Z / 2 - 0.25)
+		attach(ctx, torso, { Size = Vector3.new(0.9, 0.6, 0.4), Color = rgb(30, 30, 35), Material = Enum.Material.Metal }, cf)
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.3, 0.4, 0.4),
+			Color = rgb(10, 10, 15),
+			Material = Enum.Material.Glass,
+		}, cf * CFrame.new(0, 0, -0.3) * FACING)
+	end
+	for _, name in { "LeftLowerArm", "RightLowerArm", "LeftHand", "RightHand" } do
+		local part = bodyPart(ctx.rig, name)
+		if part then
+			attach(ctx, part, {
+				Size = Vector3.new(0.12, 0.5, 0.12),
+				Color = rgb(200, 240, 255),
+				Material = Enum.Material.Ice,
+				Transparency = 0.2,
+			}, part.CFrame * CFrame.new(0, -part.Size.Y / 2 - 0.2, 0))
+		end
+	end
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		smoke(lower, rgb(220, 240, 255), 6, 1)
+	end
+end
+
+-- Clown triste : nez rouge, collerette, chapeau pointu
+function Traits.Clown(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not head or not torso then
+		return
+	end
+	local cf, size = headFrame(head)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(size.X * 0.28, size.X * 0.28, size.X * 0.28),
+		Color = rgb(220, 0, 20),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf * CFrame.new(0, -size.Y * 0.02, -size.Z * 0.55))
+	-- Larmes bleues
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Size = Vector3.new(0.05, size.Y * 0.25, 0.04),
+			Color = rgb(40, 120, 255),
+			Material = Enum.Material.Neon,
+		}, cf * CFrame.new(side * size.X * 0.18, -size.Y * 0.08, -size.Z * 0.5))
+	end
+	local neck = torso.CFrame * CFrame.new(0, torso.Size.Y / 2, 0)
+	for i = 0, 9 do
+		local angle = math.rad(i * 36)
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(0.55, 0.55, 0.55),
+			Color = if i % 2 == 0 then rgb(250, 250, 250) else rgb(230, 60, 160),
+			Material = Enum.Material.Fabric,
+		}, neck * CFrame.new(math.cos(angle) * 0.75, 0, math.sin(angle) * 0.55))
+	end
+	local top = head.CFrame * CFrame.new(0, size.Y / 2, 0)
+	for i = 0, 3 do
+		local d = size.X * (0.8 - i * 0.18)
+		attach(ctx, head, {
+			Shape = Enum.PartType.Cylinder,
+			Size = cylinderSize(0.3, d),
+			Color = if i % 2 == 0 then rgb(255, 210, 0) else rgb(200, 30, 200),
+			Material = Enum.Material.Fabric,
+		}, top * CFrame.new(0, 0.15 + i * 0.3, 0) * UPRIGHT)
+	end
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(0.3, 0.3, 0.3),
+		Color = rgb(255, 255, 255),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, 1.4, 0))
+end
+
+-- Livreur éternel : boîte à pizza
+function Traits.PizzaBox(ctx: Context)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if not hand then
+		return
+	end
+	local cf = hand.CFrame * CFrame.new(-0.4, -0.2, -0.6)
+	attach(ctx, hand, { Size = Vector3.new(1.8, 0.25, 1.8), Color = rgb(200, 160, 110), Material = Enum.Material.Cardboard }, cf)
+	attach(ctx, hand, { Size = Vector3.new(0.8, 0.03, 0.8), Color = rgb(200, 30, 30), Material = Enum.Material.SmoothPlastic }, cf * CFrame.new(0, 0.14, 0))
+end
+
+-- Gardienne des clés : trousseau autour de la taille, grosse clé à la main
+function Traits.Keys(ctx: Context)
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		for i = 0, 9 do
+			local angle = math.rad(i * 36)
+			attach(ctx, lower, {
+				Size = Vector3.new(0.08, 0.45, 0.15),
+				Color = if i % 3 == 0 then rgb(180, 180, 190) else rgb(220, 180, 60),
+				Material = Enum.Material.Metal,
+			}, lower.CFrame * CFrame.new(math.cos(angle) * 1.05, -0.2, math.sin(angle) * 0.65) * CFrame.Angles(0, -angle, math.rad(10)))
+		end
+	end
+	local hand = bodyPart(ctx.rig, "LeftHand")
+	if hand then
+		local cf = hand.CFrame * CFrame.new(0, -0.9, 0)
+		attach(ctx, hand, { Size = Vector3.new(0.15, 1.4, 0.15), Color = rgb(220, 180, 60), Material = Enum.Material.Metal }, cf)
+		attach(ctx, hand, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.12, 0.6, 0.6),
+			Color = rgb(220, 180, 60),
+			Material = Enum.Material.Metal,
+		}, cf * CFrame.new(0, 0.75, 0) * FACING)
+		attach(ctx, hand, { Size = Vector3.new(0.15, 0.15, 0.35), Color = rgb(220, 180, 60), Material = Enum.Material.Metal }, cf * CFrame.new(0, -0.6, -0.15))
+	end
+end
+
+-- Majordome sans tête : il tient sa tête sous le bras
+function Traits.Headless(ctx: Context)
+	local head = hideHead(ctx.rig)
+	local hand = bodyPart(ctx.rig, "LeftHand")
+	if not head or not hand then
+		return
+	end
+	local size = head.Size
+	local held = hand.CFrame * CFrame.new(0.2, size.Y * 0.2, -size.Z * 0.6)
+	attach(ctx, hand, { Size = size * 0.95, Color = ctx.skin, Material = Enum.Material.SmoothPlastic }, held)
+	for _, side in { -1, 1 } do
+		attach(ctx, hand, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(0.22, 0.22, 0.22),
+			Color = ctx.eye,
+			Material = Enum.Material.Neon,
+		}, held * CFrame.new(side * size.X * 0.18, size.Y * 0.1, -size.Z * 0.48))
+	end
+	-- Moignon du cou
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if torso then
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Cylinder,
+			Size = cylinderSize(0.2, 0.6),
+			Color = rgb(120, 0, 10),
+			Material = Enum.Material.SmoothPlastic,
+		}, torso.CFrame * CFrame.new(0, torso.Size.Y / 2 + 0.05, 0) * UPRIGHT)
+		smoke(torso, rgb(60, 0, 10), 4, 0.6)
+	end
+end
+
+-- Homme-télé : tête remplacée par un vieux téléviseur qui grésille
+function Traits.TVHead(ctx: Context)
+	local head = hideHead(ctx.rig)
+	if not head then
+		return
+	end
+	local cf = head.CFrame * CFrame.new(0, 0.15, 0)
+	attach(ctx, head, { Size = Vector3.new(1.9, 1.5, 1.4), Color = rgb(60, 45, 35), Material = Enum.Material.Wood }, cf)
+	local screen = attach(ctx, head, {
+		Size = Vector3.new(1.5, 1.1, 0.05),
+		Color = rgb(150, 255, 200),
+		Material = Enum.Material.Neon,
+	}, cf * CFrame.new(-0.1, 0, -0.71))
+	screen.Name = "TVScreen"
+	screen:SetAttribute("Flicker", true)
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Size = Vector3.new(0.06, 1.2, 0.06),
+			Color = rgb(150, 150, 160),
+			Material = Enum.Material.Metal,
+		}, cf * CFrame.new(side * 0.3, 1.2, 0) * CFrame.Angles(0, 0, math.rad(-side * 25)))
+	end
+	local static = Instance.new("ParticleEmitter")
+	static.Color = ColorSequence.new(rgb(200, 255, 230))
+	static.LightEmission = 1
+	static.Size = NumberSequence.new(0.06)
+	static.Lifetime = NumberRange.new(0.1, 0.2)
+	static.Rate = 40
+	static.Speed = NumberRange.new(0)
+	static.Shape = Enum.ParticleEmitterShape.Box
+	static.Parent = screen
+end
+
+-- Bras en trop qui sortent des côtes
+function Traits.ExtraArms(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	for _, side in { -1, 1 } do
+		for row = 0, 1 do
+			local cf = torso.CFrame
+				* CFrame.new(side * torso.Size.X * 0.45, -torso.Size.Y * (0.15 + row * 0.3), 0)
+				* CFrame.Angles(math.rad(20 + row * 15), 0, math.rad(side * (55 + row * 15)))
+			attach(ctx, torso, { Size = Vector3.new(0.35, 2, 0.35), Color = ctx.skin, Material = Enum.Material.SmoothPlastic }, cf * CFrame.new(0, -1, 0))
+			for i = -1, 1 do
+				attach(ctx, torso, {
+					Size = Vector3.new(0.06, 0.4, 0.06),
+					Color = ctx.eye,
+					Material = Enum.Material.Neon,
+				}, cf * CFrame.new(i * 0.1, -2.15, 0) * CFrame.Angles(0, 0, math.rad(i * 15)))
+			end
+		end
+	end
+end
+
+-- Fils de marionnette qui montent vers le plafond
+function Traits.Strings(ctx: Context)
+	for _, name in { "Head", "LeftHand", "RightHand", "LeftLowerLeg", "RightLowerLeg" } do
+		local part = bodyPart(ctx.rig, name)
+		if part then
+			local top = part.Position + Vector3.new(0, part.Size.Y / 2, 0)
+			local length = 3.2
+			attach(ctx, part, {
+				Size = Vector3.new(0.04, length, 0.04),
+				Color = rgb(240, 240, 255),
+				Material = Enum.Material.Neon,
+				Transparency = 0.3,
+			}, CFrame.new(top + Vector3.new(0, length / 2, 0)))
+		end
+	end
+	-- Jointures en bois aux poignets et genoux
+	for _, name in { "LeftElbow", "RightElbow" } do
+		local arm = bodyPart(ctx.rig, if name == "LeftElbow" then "LeftLowerArm" else "RightLowerArm")
+		if arm then
+			attach(ctx, arm, {
+				Shape = Enum.PartType.Ball,
+				Size = Vector3.new(0.45, 0.45, 0.45),
+				Color = rgb(150, 100, 60),
+				Material = Enum.Material.Wood,
+			}, arm.CFrame * CFrame.new(0, arm.Size.Y / 2, 0))
+		end
+	end
+end
+
+-- Horloger : cadran sur la poitrine, engrenages dans le dos
+function Traits.ClockFace(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	local front = torso.CFrame * CFrame.new(0, 0, -torso.Size.Z / 2 - 0.05)
+	attach(ctx, torso, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.1, 1.3, 1.3),
+		Color = rgb(240, 230, 200),
+		Material = Enum.Material.SmoothPlastic,
+	}, front * FACING)
+	attach(ctx, torso, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.08, 1.45, 1.45),
+		Color = rgb(200, 160, 60),
+		Material = Enum.Material.Foil,
+	}, front * CFrame.new(0, 0, 0.03) * FACING)
+	for _, hand in { { 0.45, 30 }, { 0.3, 130 } } do
+		attach(ctx, torso, {
+			Size = Vector3.new(0.06, hand[1], 0.04),
+			Color = rgb(20, 20, 20),
+		}, front * CFrame.new(0, 0, -0.07) * CFrame.Angles(0, 0, math.rad(hand[2])) * CFrame.new(0, hand[1] / 2, 0))
+	end
+	local back = torso.CFrame * CFrame.new(0, 0, torso.Size.Z / 2 + 0.1)
+	for i, gear in { { -0.4, 0.3, 0.9 }, { 0.45, -0.2, 0.7 }, { 0.1, 0.6, 0.5 } } do
+		attach(ctx, torso, {
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.15, gear[3], gear[3]),
+			Color = if i % 2 == 0 then rgb(180, 120, 50) else rgb(200, 170, 80),
+			Material = Enum.Material.Metal,
+		}, back * CFrame.new(gear[1], gear[2], 0.05 * i) * FACING)
+	end
+end
+
+-- Chevalier pâle : heaume, épaulières, épée
+function Traits.Knight(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not head or not torso then
+		return
+	end
+	local size = head.Size
+	attach(ctx, head, { Size = size * 1.12, Color = rgb(170, 175, 185), Material = Enum.Material.Metal }, head.CFrame)
+	attach(ctx, head, {
+		Size = Vector3.new(size.X * 0.8, 0.1, 0.05),
+		Color = ctx.eye,
+		Material = Enum.Material.Neon,
+	}, head.CFrame * CFrame.new(0, size.Y * 0.1, -size.Z * 0.57))
+	attach(ctx, head, { Size = Vector3.new(0.12, 0.6, size.Z * 0.9), Color = rgb(150, 20, 30), Material = Enum.Material.Fabric }, head.CFrame * CFrame.new(0, size.Y * 0.75, 0))
+	for _, side in { -1, 1 } do
+		attach(ctx, torso, {
+			Size = Vector3.new(0.9, 0.35, 1.2),
+			Color = rgb(160, 165, 175),
+			Material = Enum.Material.Metal,
+		}, torso.CFrame * CFrame.new(side * (torso.Size.X / 2 + 0.2), torso.Size.Y / 2 - 0.05, 0) * CFrame.Angles(0, 0, math.rad(side * -20)))
+	end
+	attach(ctx, torso, { Size = torso.Size + Vector3.new(0.1, 0, 0.1), Color = rgb(150, 155, 165), Material = Enum.Material.Metal, Transparency = 0.1 }, torso.CFrame)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if hand then
+		local grip = hand.CFrame * CFrame.new(0, -0.1, 0)
+		attach(ctx, hand, { Size = Vector3.new(0.15, 3.2, 0.4), Color = rgb(210, 215, 225), Material = Enum.Material.Metal }, grip * CFrame.new(0, -1.7, -0.2) * CFrame.Angles(math.rad(-10), 0, 0))
+		attach(ctx, hand, { Size = Vector3.new(0.2, 0.15, 1), Color = rgb(120, 90, 40), Material = Enum.Material.Metal }, grip)
+	end
+end
+
+-- Loup-garou : oreilles, museau, griffes, queue
+function Traits.Wolf(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	removeFace(ctx.rig)
+	local cf, size = headFrame(head)
+	for _, side in { -1, 1 } do
+		local ear = Instance.new("WedgePart")
+		ear.Name = "LookPart"
+		ear.Anchored = false
+		ear.Massless = true
+		ear.CanCollide = false
+		ear.CanQuery = false
+		ear.CanTouch = false
+		ear.CastShadow = false
+		ear.Size = Vector3.new(0.2, size.Y * 0.6, size.Z * 0.45)
+		ear.Color = ctx.shirt
+		ear.Material = Enum.Material.Fabric
+		ear.CFrame = cf * CFrame.new(side * size.X * 0.32, size.Y * 0.75, 0) * CFrame.Angles(0, 0, math.rad(side * -12))
+		local weld = Instance.new("WeldConstraint")
+		weld.Part0 = head
+		weld.Part1 = ear
+		weld.Parent = ear
+		ear.Parent = ctx.rig
+	end
+	attach(ctx, head, { Size = Vector3.new(size.X * 0.5, size.Y * 0.4, size.Z * 0.6), Color = ctx.shirt, Material = Enum.Material.Fabric }, cf * CFrame.new(0, -size.Y * 0.15, -size.Z * 0.65))
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(0.22, 0.22, 0.22),
+		Color = rgb(10, 10, 10),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf * CFrame.new(0, -size.Y * 0.05, -size.Z * 0.95))
+	for _, side in { -1, 1 } do
+		attach(ctx, head, {
+			Size = Vector3.new(0.06, 0.25, 0.06),
+			Color = rgb(250, 250, 240),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(side * size.X * 0.15, -size.Y * 0.38, -size.Z * 0.85))
+	end
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		attach(ctx, lower, {
+			Size = Vector3.new(0.35, 0.35, 1.8),
+			Color = ctx.shirt,
+			Material = Enum.Material.Fabric,
+		}, lower.CFrame * CFrame.new(0, -0.1, lower.Size.Z / 2 + 0.8) * CFrame.Angles(math.rad(-30), 0, 0))
+	end
+	for _, side in { "Left", "Right" } do
+		local hand = bodyPart(ctx.rig, `{side}Hand`)
+		if hand then
+			for i = -1, 1 do
+				attach(ctx, hand, {
+					Size = Vector3.new(0.06, 0.5, 0.06),
+					Color = rgb(240, 240, 230),
+					Material = Enum.Material.SmoothPlastic,
+				}, hand.CFrame * CFrame.new(i * 0.12, -hand.Size.Y / 2 - 0.2, -0.1) * CFrame.Angles(math.rad(-25), 0, 0))
+			end
+		end
+	end
+end
+
+-- Baguette de chef d'orchestre et notes qui s'envolent
+function Traits.Baton(ctx: Context)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if not hand then
+		return
+	end
+	local tip = attach(ctx, hand, {
+		Size = Vector3.new(0.06, 1.4, 0.06),
+		Color = rgb(250, 250, 250),
+		Material = Enum.Material.Neon,
+	}, hand.CFrame * CFrame.new(0, -0.6, -0.5) * CFrame.Angles(math.rad(-70), 0, 0))
+	local notes = Instance.new("ParticleEmitter")
+	notes.Color = ColorSequence.new(ctx.eye)
+	notes.LightEmission = 1
+	notes.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0) })
+	notes.Lifetime = NumberRange.new(1.5, 2.5)
+	notes.Rate = 5
+	notes.Speed = NumberRange.new(1, 2)
+	notes.SpreadAngle = Vector2.new(60, 60)
+	notes.Acceleration = Vector3.new(0, 1, 0)
+	notes.Parent = tip
+end
+
+-- Ailes (d'ange déchu)
+function Traits.Wings(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	local back = torso.CFrame * CFrame.new(0, torso.Size.Y * 0.2, torso.Size.Z / 2 + 0.15)
+	for _, side in { -1, 1 } do
+		for i = 0, 3 do
+			local length = 3.2 - i * 0.6
+			attach(ctx, torso, {
+				Size = Vector3.new(length, 0.7, 0.1),
+				Color = if i % 2 == 0 then rgb(40, 35, 45) else rgb(70, 60, 80),
+				Material = Enum.Material.Fabric,
+			}, back * CFrame.Angles(0, math.rad(side * -20), math.rad(side * (25 - i * 22))) * CFrame.new(side * length / 2, 0, 0.05 * i))
+		end
+	end
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Color = ColorSequence.new(rgb(30, 25, 35))
+	emitter.Size = NumberSequence.new(0.25)
+	emitter.Lifetime = NumberRange.new(2, 3)
+	emitter.Rate = 3
+	emitter.Speed = NumberRange.new(0.5, 1)
+	emitter.Acceleration = Vector3.new(0, -1, 0)
+	emitter.RotSpeed = NumberRange.new(-60, 60)
+	emitter.Parent = torso
+end
+
+-- Œil géant à la place de la tête
+function Traits.BigEye(ctx: Context)
+	local head = hideHead(ctx.rig)
+	if not head then
+		return
+	end
+	local cf = head.CFrame * CFrame.new(0, 0.5, 0)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(2.4, 2.4, 2.4),
+		Color = rgb(245, 240, 235),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.1, 1.3, 1.3),
+		Color = ctx.eye,
+		Material = Enum.Material.Neon,
+	}, cf * CFrame.new(0, 0, -1.17) * FACING)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.12, 0.6, 0.6),
+		Color = rgb(5, 5, 5),
+		Material = Enum.Material.SmoothPlastic,
+	}, cf * CFrame.new(0, 0, -1.21) * FACING)
+	-- Veines rouges
+	for i = 0, 5 do
+		local angle = math.rad(i * 60 + 15)
+		attach(ctx, head, {
+			Size = Vector3.new(0.04, 0.7, 0.04),
+			Color = rgb(200, 0, 20),
+		}, cf * CFrame.Angles(0, 0, angle) * CFrame.new(0, 0.95, -0.7) * CFrame.Angles(math.rad(-35), 0, 0))
+	end
+end
+
+-- Ajoute les traits listés. Le modèle peut être déjà dans workspace (révélation).
 function AnomalyLooks.apply(rig: Model, look: { string }?, appearance: { Skin: Color3, Shirt: Color3 }, eyeColor: Color3)
 	if not look then
 		return
@@ -1698,7 +2644,7 @@ return AnomalyLooks
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">CollisionGroups</string>
             <string name="Source"><![CDATA[--!strict
@@ -1756,7 +2702,7 @@ return CollisionGroups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">DataSchema</string>
             <string name="Source"><![CDATA[--!strict
@@ -1802,7 +2748,9 @@ local TEMPLATE = {
 	},
 
 	LastLogin = 0, -- os.time() de la dernière connexion
-	LoginStreak = 0,
+	LastSeen = 0, -- os.time() de la dernière présence (gains hors ligne)
+	LoginStreak = 0, -- jours de connexion d'affilée
+	LastDailyDay = 0, -- jour (os.time() // 86400) de la dernière récompense quotidienne
 	GamepassCache = {}, -- { [gamepassId en texte] = true }
 	ProcessedReceipts = {}, -- { [purchaseId] = true } achats Robux déjà traités
 	ReceiptOrder = {}, -- ordre des achats (pour ne garder que les derniers)
@@ -1839,7 +2787,7 @@ return DataSchema
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">GuestGenerator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1862,6 +2810,8 @@ export type Options = {
 	RarityLuck: number?, -- multiplie les poids des raretés non communes (bonus)
 	ForceAnomaly: boolean?, -- true = anomalie, false = vrai client, nil = hasard
 	ForceAnomalyId: string?,
+	Rebirths: number?, -- renaissances du joueur (débloque des anomalies)
+	Event: string?, -- événement en cours (anomalies et mutations d'événement)
 }
 
 local GuestGenerator = {}
@@ -1938,8 +2888,19 @@ function GuestGenerator.misspell(rng: Random, fullName: string): string
 	return first .. swapped
 end
 
+-- L'anomalie peut-elle apparaître (renaissances, événement en cours) ?
+function GuestGenerator.isEligible(def: Types.AnomalyDef, rebirths: number?, event: string?): boolean
+	if def.RequiredRebirth and (rebirths or 0) < def.RequiredRebirth then
+		return false
+	end
+	if def.EventOnly and def.EventOnly ~= event then
+		return false
+	end
+	return true
+end
+
 -- Tire une rareté selon les poids (RarityLuck augmente les raretés hautes)
-function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?): Types.RarityId
+function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?, rebirths: number?, event: string?): Types.RarityId
 	local luck = rarityLuck or 1
 	local entries: { { id: Types.RarityId, weight: number } } = {}
 	local total = 0
@@ -1951,7 +2912,7 @@ function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?): Types.Rari
 		-- Une rareté sans anomalie configurée ne peut pas sortir
 		local hasAnomaly = false
 		for _, def in AnomalyConfig.List do
-			if def.Rarity == id then
+			if def.Rarity == id and GuestGenerator.isEligible(def, rebirths, event) then
 				hasAnomaly = true
 				break
 			end
@@ -1975,19 +2936,20 @@ function GuestGenerator.rollRarity(rng: Random, rarityLuck: number?): Types.Rari
 	return entries[#entries].id
 end
 
-function GuestGenerator.rollMutation(rng: Random): Types.MutationId
+function GuestGenerator.rollMutation(rng: Random, event: string?): Types.MutationId
 	for _, id in MutationConfig.RollOrder do
-		if rng:NextNumber() < MutationConfig.Mutations[id].SpawnChance then
+		local mutation = MutationConfig.Mutations[id]
+		if (mutation.EventOnly == nil or mutation.EventOnly == event) and rng:NextNumber() < mutation.SpawnChance then
 			return id
 		end
 	end
 	return "None"
 end
 
-function GuestGenerator.pickAnomaly(rng: Random, rarity: Types.RarityId): Types.AnomalyDef
+function GuestGenerator.pickAnomaly(rng: Random, rarity: Types.RarityId, rebirths: number?, event: string?): Types.AnomalyDef
 	local candidates = {}
 	for _, def in AnomalyConfig.List do
-		if def.Rarity == rarity then
+		if def.Rarity == rarity and GuestGenerator.isEligible(def, rebirths, event) then
 			table.insert(candidates, def)
 		end
 	end
@@ -2048,7 +3010,8 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 	if opts.ForceAnomalyId and AnomalyConfig.ById[opts.ForceAnomalyId] then
 		def = AnomalyConfig.ById[opts.ForceAnomalyId]
 	else
-		def = GuestGenerator.pickAnomaly(rng, GuestGenerator.rollRarity(rng, opts.RarityLuck))
+		local rarity = GuestGenerator.rollRarity(rng, opts.RarityLuck, opts.Rebirths, opts.Event)
+		def = GuestGenerator.pickAnomaly(rng, rarity, opts.Rebirths, opts.Event)
 	end
 	local rarity = RarityConfig[def.Rarity]
 
@@ -2087,7 +3050,7 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 		Name = name,
 		IsAnomaly = true,
 		AnomalyId = def.Id,
-		Mutation = GuestGenerator.rollMutation(rng),
+		Mutation = GuestGenerator.rollMutation(rng, opts.Event),
 		Appearance = appearance,
 		PhotoAppearance = photo,
 		Registry = buildRegistry(rng, registryName, name),
@@ -2100,7 +3063,7 @@ return GuestGenerator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="33">
           <Properties>
             <string name="Name">IncomeCalculator</string>
             <string name="Source"><![CDATA[--!strict
@@ -2142,7 +3105,7 @@ return IncomeCalculator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">MapBuilder</string>
             <string name="Source"><![CDATA[--!strict
@@ -2331,8 +3294,8 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	-- Lumière au-dessus du client : rend son ombre bien visible
 	local lightHolder = makeMarker("GuestLight", origin * CFrame.new(0, 12, 20), hotel)
 	local light = Instance.new("PointLight")
-	light.Range = 18
-	light.Brightness = 2
+	light.Range = 16
+	light.Brightness = 0.9
 	light.Shadows = true
 	light.Parent = lightHolder
 
@@ -2492,7 +3455,7 @@ return MapBuilder
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="33">
+        <Item class="ModuleScript" referent="35">
           <Properties>
             <string name="Name">MapDecor</string>
             <string name="Source"><![CDATA[--!strict
@@ -2637,8 +3600,8 @@ end
 function MapDecor.setupLighting()
 	Lighting.ClockTime = 21.3
 	Lighting.GeographicLatitude = 25
-	Lighting.Brightness = 1.6
-	Lighting.ExposureCompensation = 0.25
+	Lighting.Brightness = 1.3
+	Lighting.ExposureCompensation = 0
 	Lighting.Ambient = rgb(85, 75, 105)
 	Lighting.OutdoorAmbient = rgb(105, 95, 135)
 	Lighting.EnvironmentDiffuseScale = 0.6
@@ -2662,9 +3625,10 @@ function MapDecor.setupLighting()
 	atmosphere.Parent = Lighting
 
 	local bloom = Instance.new("BloomEffect")
-	bloom.Intensity = 0.8
-	bloom.Size = 28
-	bloom.Threshold = 1.1
+	-- Seuil haut : seuls les néons brillent, pas les personnages éclairés
+	bloom.Intensity = 0.45
+	bloom.Size = 24
+	bloom.Threshold = 1.3
 	bloom.Parent = Lighting
 
 	local color = Instance.new("ColorCorrectionEffect")
@@ -3463,7 +4427,7 @@ return MapDecor
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">Notify</string>
             <string name="Source"><![CDATA[--!strict
@@ -3480,11 +4444,16 @@ function Notify.send(player: Player, text: string, kind: (string | Color3)?)
 	Remotes.getEvent("Notify"):FireClient(player, text, kind or "Info")
 end
 
+-- Même message pour tous les joueurs du serveur
+function Notify.sendAll(text: string, kind: (string | Color3)?)
+	Remotes.getEvent("Notify"):FireAllClients(text, kind or "Info")
+end
+
 return Notify
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="37">
           <Properties>
             <string name="Name">PartFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -3544,92 +4513,7 @@ return PartFactory
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="36">
-          <Properties>
-            <string name="Name">RigAnimator</string>
-            <string name="Source"><![CDATA[--!strict
--- Animations des personnages non-joueurs (clients et anomalies).
--- Ce sont les animations R15 par défaut de Roblox : marche quand le personnage
--- bouge, respiration (« idle ») quand il est immobile.
-
-local WALK_ANIMATION = "rbxassetid://913402848"
-local IDLE_ANIMATION = "rbxassetid://507766666"
-local MOVING_SPEED = 0.5 -- vitesse au-dessus de laquelle on joue la marche
-
-local RigAnimator = {}
-
-local function loadTrack(animator: Animator, id: string, priority: Enum.AnimationPriority): AnimationTrack?
-	local animation = Instance.new("Animation")
-	animation.AnimationId = id
-	local ok, track = pcall(function()
-		return animator:LoadAnimation(animation)
-	end)
-	if not ok then
-		warn(`[RigAnimator] Animation impossible à charger ({id})`)
-		return nil
-	end
-	track.Priority = priority
-	track.Looped = true
-	return track
-end
-
-local function getAnimator(model: Model): (Humanoid?, Animator?)
-	local humanoid = model:FindFirstChildOfClass("Humanoid")
-	if not humanoid then
-		return nil, nil
-	end
-	local animator = humanoid:FindFirstChildOfClass("Animator")
-	if not animator then
-		animator = Instance.new("Animator")
-		animator.Parent = humanoid
-	end
-	return humanoid, animator
-end
-
--- Respiration seule (anomalie dans sa cellule). À appeler une fois le modèle dans workspace.
-function RigAnimator.idle(model: Model)
-	local _, animator = getAnimator(model)
-	if not animator then
-		return
-	end
-	local track = loadTrack(animator, IDLE_ANIMATION, Enum.AnimationPriority.Idle)
-	if track then
-		-- Décalage aléatoire : les anomalies ne respirent pas toutes en même temps
-		track:Play(0.1, 1, 0.8 + math.random() * 0.4)
-	end
-end
-
--- Marche / respiration selon la vitesse (clients). À appeler une fois le modèle dans workspace.
-function RigAnimator.walker(model: Model)
-	local humanoid, animator = getAnimator(model)
-	if not humanoid or not animator then
-		return
-	end
-	local idle = loadTrack(animator, IDLE_ANIMATION, Enum.AnimationPriority.Idle)
-	local walk = loadTrack(animator, WALK_ANIMATION, Enum.AnimationPriority.Movement)
-	if idle then
-		idle:Play()
-	end
-	local walking = false
-	humanoid.Running:Connect(function(speed)
-		local moving = speed > MOVING_SPEED
-		if moving == walking or not walk then
-			return
-		end
-		walking = moving
-		if moving then
-			walk:Play(0.2, 1, humanoid.WalkSpeed / 16)
-		else
-			walk:Stop(0.2)
-		end
-	end)
-end
-
-return RigAnimator
-]]></string>
-          </Properties>
-        </Item>
-        <Item class="ModuleScript" referent="37">
+        <Item class="ModuleScript" referent="38">
           <Properties>
             <string name="Name">RigFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -3718,11 +4602,11 @@ return RigFactory
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="38">
+      <Item class="Folder" referent="39">
         <Properties>
           <string name="Name">Services</string>
         </Properties>
-        <Item class="ModuleScript" referent="39">
+        <Item class="ModuleScript" referent="40">
           <Properties>
             <string name="Name">AnomalyService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3748,7 +4632,6 @@ local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppea
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local IncomeCalculator = require(Server:WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local RigFactory = require(Server:WaitForChild("Modules"):WaitForChild("RigFactory"))
-local RigAnimator = require(Server:WaitForChild("Modules"):WaitForChild("RigAnimator"))
 local AnomalyLooks = require(Server:WaitForChild("Modules"):WaitForChild("AnomalyLooks"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
@@ -3875,8 +4758,8 @@ local function addAura(rig: Model, rarityId: Types.RarityId)
 	local color: Color3 = rarity.Color
 	local light = Instance.new("PointLight")
 	light.Color = color
-	light.Range = if SPARKLING_RARITIES[rarityId] then 12 else 7
-	light.Brightness = if SPARKLING_RARITIES[rarityId] then 2 else 0.8
+	light.Range = if SPARKLING_RARITIES[rarityId] then 10 else 6
+	light.Brightness = if SPARKLING_RARITIES[rarityId] then 1.2 else 0.5
 	light.Shadows = false
 	light.Parent = root
 	if SPARKLING_RARITIES[rarityId] then
@@ -3935,8 +4818,8 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 		rigRoot.Anchored = true
 	end
 	RigAppearance.placeOnFloor(rig, spot.CFrame)
+	rig:SetAttribute("Motion", def.Motion or "Creepy") -- animé par RigMotionController (client)
 	rig.Parent = cell
-	RigAnimator.idle(rig)
 
 	-- Invite « Voler », visible seulement des autres joueurs (voir PromptController)
 	local root = rig:FindFirstChild("HumanoidRootPart")
@@ -4107,6 +4990,23 @@ function AnomalyService.RemoveAnomaly(player: Player, uid: string): Types.OwnedA
 	return owned
 end
 
+-- Retire toutes les anomalies du joueur (renaissance)
+function AnomalyService.ClearAll(player: Player)
+	local data = PlayerDataService.GetData(player)
+	if not data then
+		return
+	end
+	for uid in data.Anomalies do
+		AnomalyService.HideModel(player, uid)
+	end
+	table.clear(data.Anomalies)
+	local hotel = HotelService.GetHotel(player)
+	if hotel then
+		refreshCellVisuals(player, hotel)
+	end
+	AnomalyService.AnomaliesChanged:Fire(player)
+end
+
 -- Rafraîchit l'aspect des cellules (après l'achat d'une cellule)
 function AnomalyService.RefreshCells(player: Player)
 	local hotel = HotelService.GetHotel(player)
@@ -4124,7 +5024,7 @@ return AnomalyService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="41">
           <Properties>
             <string name="Name">CatalogService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4184,7 +5084,7 @@ return CatalogService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="41">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">DebugService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4197,6 +5097,8 @@ return CatalogService
 --   !pass DoubleMoney         simule un gamepass (DoubleMoney ou ExtraCells), jusqu'au départ
 --   !chance                   lance une « Nuit chanceuse » de 10 min
 --   !temps 10                 accélère le temps x10 (revenus et clients) ; !temps 1 pour revenir
+--   !event BloodMoon          lance un événement (BloodMoon, Blackout, GhostRush) ; !event stop
+--   !renaissance              renaissance gratuite (sans payer)
 --   !tuto                     relance le tutoriel
 --   !reset                    remet tes données à zéro
 
@@ -4213,6 +5115,9 @@ local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local GuestService = require(script.Parent:WaitForChild("GuestService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local EventService = require(script.Parent:WaitForChild("EventService"))
+local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
+local EventConfig = require(Config:WaitForChild("EventConfig"))
 
 local DebugService = {}
 
@@ -4247,7 +5152,7 @@ commands.anomalie = function(player, args)
 		return
 	end
 	if not MutationConfig.Mutations[mutation :: any] then
-		Notify.send(player, "Mutation : None, Golden ou Neon", "Bad")
+		Notify.send(player, "Mutation : None, Golden, Neon, Lunar ou Shadow", "Bad")
 		return
 	end
 	local cell = AnomalyService.AddAnomaly(player, id, mutation :: any)
@@ -4310,6 +5215,22 @@ commands.tuto = function(player)
 	end
 end
 
+commands.event = function(player, args)
+	local id = args[1]
+	if id == "stop" then
+		EventService.Force(nil)
+		Notify.send(player, "Événement arrêté (debug)", "Info")
+	elseif id and EventConfig.get(id) then
+		EventService.Force(id)
+	else
+		Notify.send(player, "Usage : !event BloodMoon | Blackout | GhostRush | stop", "Bad")
+	end
+end
+
+commands.renaissance = function(player)
+	RebirthService.Rebirth(player, true)
+end
+
 commands.reset = function(player)
 	PlayerDataService.ResetData(player)
 end
@@ -4344,7 +5265,116 @@ return DebugService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="43">
+          <Properties>
+            <string name="Name">EventService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Événements du serveur (Lune de Sang, Panne de courant, Ruée fantôme).
+-- L'état est publié dans les attributs de workspace, lus par les clients :
+--   EventId        événement en cours (absent = aucun)
+--   EventEndsAt    fin de l'événement (workspace:GetServerTimeNow())
+--   NextEventAt    début du prochain événement
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local EventConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("EventConfig"))
+local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Notify"))
+local Signal = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Signal"))
+
+local EventService = {}
+
+-- (eventId?) : un événement commence (id) ou se termine (nil)
+EventService.Changed = Signal.new()
+
+local current: EventConfig.EventDef? = nil
+local rng = Random.new()
+local forced: string? = nil
+
+function EventService.Current(): EventConfig.EventDef?
+	return current
+end
+
+local function pickEvent(): EventConfig.EventDef
+	local total = 0
+	for _, event in EventConfig.Events do
+		total += event.Weight
+	end
+	local roll = rng:NextNumber() * total
+	for _, event in EventConfig.Events do
+		roll -= event.Weight
+		if roll < 0 then
+			return event
+		end
+	end
+	return EventConfig.Events[1]
+end
+
+local function now(): number
+	return workspace:GetServerTimeNow()
+end
+
+local function runEvent(event: EventConfig.EventDef)
+	current = event
+	workspace:SetAttribute("EventId", event.Id)
+	workspace:SetAttribute("EventEndsAt", now() + EventConfig.Duration)
+	workspace:SetAttribute("NextEventAt", nil)
+	Notify.sendAll(`{event.DisplayName} ! {event.Description}`, event.Color)
+	EventService.Changed:Fire(event.Id)
+
+	local endsAt = now() + EventConfig.Duration
+	while now() < endsAt and current == event do
+		task.wait(1)
+	end
+	if current == event then
+		current = nil
+		workspace:SetAttribute("EventId", nil)
+		workspace:SetAttribute("EventEndsAt", nil)
+		Notify.sendAll(`Fin de l'événement : {event.DisplayName}`, "Info")
+		EventService.Changed:Fire(nil)
+	end
+end
+
+-- Debug : lance tout de suite un événement (ou arrête l'événement en cours)
+function EventService.Force(id: string?)
+	if id == nil then
+		current = nil
+		workspace:SetAttribute("EventId", nil)
+		workspace:SetAttribute("EventEndsAt", nil)
+		EventService.Changed:Fire(nil)
+		return
+	end
+	forced = id
+	current = nil -- termine l'événement en cours, le forcé démarre juste après
+end
+
+function EventService.Start(_self: typeof(EventService))
+	local nextAt = now() + EventConfig.FirstDelay
+	workspace:SetAttribute("NextEventAt", nextAt)
+	while true do
+		task.wait(1)
+		if forced then
+			local event = EventConfig.get(forced)
+			forced = nil
+			if event then
+				current = nil
+				runEvent(event)
+				nextAt = now() + EventConfig.Interval
+				workspace:SetAttribute("NextEventAt", nextAt)
+			end
+		elseif now() >= nextAt and current == nil then
+			runEvent(pickEvent())
+			nextAt = now() + EventConfig.Interval
+			workspace:SetAttribute("NextEventAt", nextAt)
+		end
+	end
+end
+
+return EventService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="44">
           <Properties>
             <string name="Name">GuestService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4367,13 +5397,15 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
+local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
+local RebirthConfig = require(Config:WaitForChild("RebirthConfig"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
-local RigAnimator = require(Modules:WaitForChild("RigAnimator"))
+local AnomalyLooks = require(Modules:WaitForChild("AnomalyLooks"))
 local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
 local Analytics = require(Modules:WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
@@ -4381,6 +5413,7 @@ local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local IncomeService = require(script.Parent:WaitForChild("IncomeService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local EventService = require(script.Parent:WaitForChild("EventService"))
 
 -- Distance max entre le joueur et le client pour décider (anti-triche)
 local MAX_DECISION_DISTANCE = 30
@@ -4487,8 +5520,8 @@ local function buildGuestModel(session: Session, profile: Types.GuestProfile): M
 	CollisionGroups.assign(rig, CollisionGroups.GUESTS):Disconnect()
 
 	RigAppearance.placeOnFloor(rig, getMarker(session.hotel, "GuestSpawn").CFrame)
+	rig:SetAttribute("Motion", "Guest") -- animé par RigMotionController (client)
 	rig.Parent = guestsFolder
-	RigAnimator.walker(rig)
 
 	-- Le serveur contrôle la physique du client (empêche les joueurs de le déplacer)
 	local root = getRoot(rig)
@@ -4522,15 +5555,38 @@ local function walkAway(session: Session, model: Model, intoHotel: boolean)
 	end)
 end
 
+-- Gerbe d'étincelles (révélation d'une anomalie)
+local function burst(model: Model, color: Color3)
+	local root = getRoot(model)
+	if not root then
+		return
+	end
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Color = ColorSequence.new(color)
+	emitter.LightEmission = 1
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 0) })
+	emitter.Lifetime = NumberRange.new(0.6, 1.2)
+	emitter.Speed = NumberRange.new(8, 14)
+	emitter.SpreadAngle = Vector2.new(180, 180)
+	emitter.Rate = 300
+	emitter.Parent = root
+	task.delay(0.25, function()
+		emitter.Enabled = false
+	end)
+end
+
 -- Anomalie capturée : révèle sa vraie forme puis disparaît (elle part en cellule)
 local function revealAndVanish(session: Session, model: Model, def: Types.AnomalyDef)
 	removePrompt(model)
 	session.extraModels[model] = true
 	RigAppearance.apply(model, def.TrueForm)
 	RigAppearance.addGlowingEyes(model, def.EyeColor, 0.28)
+	AnomalyLooks.apply(model, def.Look, def.TrueForm, def.EyeColor)
 	RigAppearance.setCastShadow(model, false)
+	model:SetAttribute("Motion", def.Motion or "Creepy")
+	burst(model, RarityConfig[def.Rarity].Color)
 	task.spawn(function()
-		task.wait(0.6)
+		task.wait(0.9)
 		local info = TweenInfo.new(0.8)
 		for _, descendant in model:GetDescendants() do
 			if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" then
@@ -4551,6 +5607,7 @@ local function startWanderer(session: Session, model: Model, def: Types.AnomalyD
 	removePrompt(model)
 	setAnchored(model, false)
 	RigAppearance.addGlowingEyes(model, def.EyeColor, 0.28)
+	model:SetAttribute("Motion", "Creepy")
 	session.extraModels[model] = true
 	task.spawn(function()
 		local lobby = getMarker(session.hotel, "Lobby")
@@ -4624,7 +5681,9 @@ local function resolve(session: Session, guest: Guest, decision: string)
 	else
 		if decision == "Accept" then
 			outcome = "Served"
-			local tip = math.max(EconomyConfig.TipBase, math.floor(income * EconomyConfig.TipIncomeSeconds))
+			local event = EventService.Current()
+			local tipMultiplier = if event then event.TipMultiplier or 1 else 1
+			local tip = math.max(EconomyConfig.TipBase, math.floor(income * EconomyConfig.TipIncomeSeconds)) * tipMultiplier
 			details.Amount = tip
 			data.Stats.GuestsServed += 1
 			PlayerDataService.AddMoney(player, tip)
@@ -4676,11 +5735,25 @@ end
 local function serveOneGuest(session: Session)
 	local options: GuestGenerator.Options = session.forceNext or {}
 	session.forceNext = nil
-	-- « Nuit chanceuse » (produit Robux) : anomalies rares plus fréquentes
 	local data = PlayerDataService.GetData(session.player)
-	if data and data.LuckyUntil > os.time() then
-		options.RarityLuck = MonetizationConfig.Products.LuckyNight.RarityLuck
+	local event = EventService.Current()
+	-- Chance aux raretés : renaissances x « Nuit chanceuse » (Robux) x événement
+	local luck = options.RarityLuck or 1
+	if data then
+		options.Rebirths = data.Rebirths
+		luck *= RebirthConfig.luck(data.Rebirths)
+		if data.LuckyUntil > os.time() then
+			luck *= MonetizationConfig.Products.LuckyNight.RarityLuck
+		end
 	end
+	if event then
+		options.Event = event.Id
+		luck *= event.RarityLuck or 1
+		if options.AnomalyChance == nil then
+			options.AnomalyChance = event.AnomalyChance
+		end
+	end
+	options.RarityLuck = luck
 	local profile = GuestGenerator.generate(rng, options)
 
 	nextToken += 1
@@ -4733,7 +5806,9 @@ local function runSession(session: Session)
 	while session.active do
 		-- TimeScale : accélération du temps (commande debug !temps)
 		local timeScale = (session.player:GetAttribute("TimeScale") :: number?) or 1
-		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax) / timeScale)
+		local event = EventService.Current()
+		local delayMultiplier = if event then event.SpawnDelayMultiplier or 1 else 1
+		task.wait(rng:NextNumber(GuestConfig.SpawnDelayMin, GuestConfig.SpawnDelayMax) * delayMultiplier / timeScale)
 		if not session.active or session.player.Parent ~= Players then
 			break
 		end
@@ -4832,7 +5907,7 @@ return GuestService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="43">
+        <Item class="ModuleScript" referent="45">
           <Properties>
             <string name="Name">HotelService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4967,7 +6042,7 @@ return HotelService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="44">
+        <Item class="ModuleScript" referent="46">
           <Properties>
             <string name="Name">IncomeService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4978,10 +6053,13 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local EconomyConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("EconomyConfig"))
+local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
+local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
+local RebirthConfig = require(Config:WaitForChild("RebirthConfig"))
 local IncomeCalculator = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local EventService = require(script.Parent:WaitForChild("EventService"))
 
 local IncomeService = {}
 
@@ -5018,7 +6096,9 @@ function IncomeService.GetIncome(player: Player): number
 	end
 	-- Gamepass « Argent x2 » : attribut posé par MonetizationService
 	local passMultiplier = if player:GetAttribute("Pass_DoubleMoney") then 2 else 1
-	local multiplier = data.RebirthMultiplier * getDebuffMultiplier(player) * passMultiplier
+	local event = EventService.Current()
+	local eventMultiplier = if event then event.IncomeMultiplier or 1 else 1
+	local multiplier = RebirthConfig.incomeMultiplier(data.Rebirths) * getDebuffMultiplier(player) * passMultiplier * eventMultiplier
 	return IncomeCalculator.total(data.Anomalies, multiplier)
 end
 
@@ -5055,7 +6135,7 @@ return IncomeService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="45">
+        <Item class="ModuleScript" referent="47">
           <Properties>
             <string name="Name">LeaderboardService</string>
             <string name="Source"><![CDATA[--!strict
@@ -5209,7 +6289,7 @@ return LeaderboardService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="46">
+        <Item class="ModuleScript" referent="48">
           <Properties>
             <string name="Name">LockService</string>
             <string name="Source"><![CDATA[--!strict
@@ -5346,7 +6426,7 @@ return LockService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="47">
+        <Item class="ModuleScript" referent="49">
           <Properties>
             <string name="Name">MonetizationService</string>
             <string name="Source"><![CDATA[--!strict
@@ -5530,7 +6610,7 @@ return MonetizationService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="48">
+        <Item class="ModuleScript" referent="50">
           <Properties>
             <string name="Name">PlayerDataService</string>
             <string name="Source"><![CDATA[--!strict
@@ -5617,6 +6697,7 @@ local function onPlayerRemoving(player: Player)
 	local profile = profiles[player]
 	if profile then
 		profiles[player] = nil
+		profile.Data.LastSeen = os.time()
 		profile:EndSession()
 	end
 end
@@ -5717,7 +6798,177 @@ return PlayerDataService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="49">
+        <Item class="ModuleScript" referent="51">
+          <Properties>
+            <string name="Name">RebirthService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Renaissance : le joueur paie le prix, perd son argent et ses anomalies, et
+-- gagne des bonus permanents (revenus, chance, nouvelles anomalies).
+-- Le nombre de renaissances est publié dans l'attribut « Rebirths » du joueur.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local RebirthConfig = require(Shared:WaitForChild("Config"):WaitForChild("RebirthConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Server = ServerScriptService:WaitForChild("Server")
+local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
+local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
+local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local RebirthService = {}
+
+local limiter = RateLimiter.new(1, 2)
+
+local function publish(player: Player, data: any)
+	player:SetAttribute("Rebirths", data.Rebirths)
+end
+
+-- free = true : sans payer (commande debug)
+function RebirthService.Rebirth(player: Player, free: boolean?)
+	local data = PlayerDataService.GetData(player)
+	if not data then
+		return
+	end
+	if data.Rebirths >= RebirthConfig.MaxRebirths then
+		Notify.send(player, "Tu as atteint la renaissance maximale !", "Bad")
+		return
+	end
+	local cost = RebirthConfig.cost(data.Rebirths)
+	if not free and data.Money < cost then
+		Notify.send(player, `Il te faut {Format.money(cost)} pour renaître`, "Bad")
+		return
+	end
+
+	AnomalyService.ClearAll(player)
+	data.Rebirths += 1
+	data.RebirthMultiplier = RebirthConfig.incomeMultiplier(data.Rebirths)
+	PlayerDataService.AddMoney(player, -data.Money)
+	PlayerDataService.AddMoney(player, RebirthConfig.StartMoneyPerRebirth * data.Rebirths)
+	publish(player, data)
+	AnomalyService.AnomaliesChanged:Fire(player)
+	Analytics.event(player, "Rebirth", data.Rebirths)
+
+	Notify.send(player, `Renaissance {data.Rebirths} ! Revenus x{data.RebirthMultiplier} pour toujours`, Color3.fromRGB(255, 200, 80))
+	for _, other in Players:GetPlayers() do
+		if other ~= player then
+			Notify.send(other, `{player.DisplayName} vient de renaître (renaissance {data.Rebirths}) !`, "Info")
+		end
+	end
+end
+
+function RebirthService.Init(_self: typeof(RebirthService))
+	PlayerDataService.DataLoaded:Connect(publish)
+	Remotes.getEvent("RebirthRequest").OnServerEvent:Connect(function(player)
+		if limiter:allow(player) then
+			RebirthService.Rebirth(player, false)
+		end
+	end)
+end
+
+return RebirthService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="52">
+          <Properties>
+            <string name="Name">RetentionService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Raisons de revenir : gains hors ligne et récompense quotidienne (série de jours).
+-- Le joueur reçoit un message « Bon retour » (WelcomeBack) à sa connexion.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local EconomyConfig = require(Shared:WaitForChild("Config"):WaitForChild("EconomyConfig"))
+local RebirthConfig = require(Shared:WaitForChild("Config"):WaitForChild("RebirthConfig"))
+local IncomeCalculator = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local DAY = 86400
+
+local RetentionService = {}
+
+-- Gains hors ligne (calcul pur, testable)
+function RetentionService.offlineEarnings(data: any, now: number): (number, number)
+	if data.LastSeen <= 0 then
+		return 0, 0
+	end
+	local seconds = math.min(now - data.LastSeen, EconomyConfig.OfflineMaxSeconds)
+	if seconds < EconomyConfig.OfflineMinSeconds then
+		return 0, 0
+	end
+	local income = IncomeCalculator.total(data.Anomalies, RebirthConfig.incomeMultiplier(data.Rebirths))
+	return math.floor(income * seconds * EconomyConfig.OfflineRate), seconds
+end
+
+-- Met à jour la série de jours. Renvoie (jour de la série, récompense) ou (0, 0) si déjà reçue aujourd'hui.
+function RetentionService.dailyReward(data: any, now: number): (number, number)
+	local today = now // DAY
+	if data.LastDailyDay == today then
+		return 0, 0
+	end
+	if data.LastDailyDay == today - 1 then
+		data.LoginStreak += 1
+	else
+		data.LoginStreak = 1
+	end
+	data.LastDailyDay = today
+	local rewards = EconomyConfig.DailyRewards
+	local day = (data.LoginStreak - 1) % #rewards + 1
+	local income = IncomeCalculator.total(data.Anomalies, RebirthConfig.incomeMultiplier(data.Rebirths))
+	local amount = math.max(rewards[day], math.floor(income * EconomyConfig.DailyIncomeSeconds * day))
+	return day, amount
+end
+
+local function onDataLoaded(player: Player, data: any)
+	local now = os.time()
+	local offline, seconds = RetentionService.offlineEarnings(data, now)
+	local day, daily = RetentionService.dailyReward(data, now)
+	data.LastSeen = now
+	if offline + daily > 0 then
+		PlayerDataService.AddMoney(player, offline + daily)
+		-- Laisse l'interface se charger avant d'afficher la fenêtre
+		task.delay(3, function()
+			if player.Parent == Players then
+				Remotes.getEvent("WelcomeBack"):FireClient(player, offline, seconds, day, daily)
+			end
+		end)
+	end
+	player:SetAttribute("LoginStreak", data.LoginStreak)
+end
+
+function RetentionService.Init(_self: typeof(RetentionService))
+	PlayerDataService.DataLoaded:Connect(onDataLoaded)
+end
+
+function RetentionService.Start(_self: typeof(RetentionService))
+	-- Présence notée régulièrement (si le serveur s'arrête brutalement)
+	while true do
+		task.wait(60)
+		local now = os.time()
+		for _, player in Players:GetPlayers() do
+			local data = PlayerDataService.GetData(player)
+			if data then
+				data.LastSeen = now
+			end
+		end
+	end
+end
+
+return RetentionService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="53">
           <Properties>
             <string name="Name">ShopService</string>
             <string name="Source"><![CDATA[--!strict
@@ -5811,7 +7062,7 @@ return ShopService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="50">
+        <Item class="ModuleScript" referent="54">
           <Properties>
             <string name="Name">StealService</string>
             <string name="Source"><![CDATA[--!strict
@@ -6071,7 +7322,7 @@ return StealService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="51">
+        <Item class="ModuleScript" referent="55">
           <Properties>
             <string name="Name">TutorialService</string>
             <string name="Source"><![CDATA[--!strict
@@ -6116,11 +7367,11 @@ return TutorialService
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="52">
+      <Item class="Folder" referent="56">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="53">
+        <Item class="ModuleScript" referent="57">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -6184,11 +7435,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="54">
+      <Item class="Folder" referent="58">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="55">
+        <Item class="ModuleScript" referent="59">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -8315,23 +9566,23 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="56">
+  <Item class="StarterPlayer" referent="60">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="57">
+    <Item class="StarterPlayerScripts" referent="61">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="58">
+      <Item class="Folder" referent="62">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="59">
+        <Item class="Folder" referent="63">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="60">
+          <Item class="ModuleScript" referent="64">
             <Properties>
               <string name="Name">AmbienceController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8401,6 +9652,11 @@ local function track(instance: Instance)
 end
 
 local function lightningStrike()
+	-- Le tonnerre arrive juste après l'éclair
+	task.delay(0.4, function()
+		local SoundController = require(script.Parent:WaitForChild("SoundController")) :: any
+		SoundController.Play("Thunder")
+	end)
 	local exposure = Lighting.ExposureCompensation
 	local ambient = Lighting.OutdoorAmbient
 	for _, duration in { 0.07, 0.05, 0.12 } do
@@ -8449,7 +9705,7 @@ return AmbienceController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="61">
+          <Item class="ModuleScript" referent="65">
             <Properties>
               <string name="Name">CatalogController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8463,6 +9719,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local CatalogConfig = require(Config:WaitForChild("CatalogConfig"))
+local EventConfig = require(Config:WaitForChild("EventConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local Util = script.Parent.Parent:WaitForChild("Util")
@@ -8596,7 +9853,14 @@ local function refresh()
 			-- Silhouette : on ne montre que la rareté
 			card.name.Text = "???"
 			card.name.TextColor3 = Color3.fromRGB(120, 120, 120)
-			card.info.Text = `{rarity.DisplayName}\nPas encore capturée`
+			local condition = "Pas encore capturée"
+			local event = EventConfig.get(def.EventOnly)
+			if event then
+				condition = `Seulement pendant : {event.DisplayName}`
+			elseif def.RequiredRebirth then
+				condition = `Débloquée à la renaissance {def.RequiredRebirth}`
+			end
+			card.info.Text = `{rarity.DisplayName}\n{condition}`
 			card.stroke.Color = Color3.fromRGB(60, 60, 60)
 			card.frame.BackgroundColor3 = Color3.fromRGB(15, 12, 18)
 		end
@@ -8632,7 +9896,252 @@ return CatalogController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="62">
+          <Item class="ModuleScript" referent="66">
+            <Properties>
+              <string name="Name">EventController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Événements du serveur, côté écran : bandeau avec compte à rebours (en haut
+-- à droite), grande annonce au début, et ambiance propre à chaque événement
+-- (lune rouge, coupure de courant avec lampe torche, brume verte).
+
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local EventConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("EventConfig"))
+local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
+
+local player = Players.LocalPlayer
+
+local EventController = {}
+
+local banner: Frame
+local bannerTitle: TextLabel
+local bannerInfo: TextLabel
+local bannerStroke: UIStroke
+local announce: TextLabel
+local announceInfo: TextLabel
+
+local function formatTime(seconds: number): string
+	seconds = math.max(0, math.floor(seconds))
+	return string.format("%d:%02d", seconds // 60, seconds % 60)
+end
+
+local function buildGui()
+	local gui = UI.new("ScreenGui", {
+		Name = "Events",
+		ResetOnSpawn = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	bannerStroke = UI.stroke(Color3.fromRGB(170, 80, 255), 2)
+	banner = UI.new("Frame", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(1, -10, 0, 10),
+		Size = UDim2.fromOffset(230, 58),
+		BackgroundColor3 = Color3.fromRGB(15, 10, 20),
+		BackgroundTransparency = 0.2,
+		Parent = gui,
+	}, { UI.corner(12), bannerStroke, UI.padding(6) })
+	bannerTitle = UI.new("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.fromScale(1, 0.55),
+		Font = Enum.Font.Creepster,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Parent = banner,
+	})
+	bannerInfo = UI.new("TextLabel", {
+		BackgroundTransparency = 1,
+		Position = UDim2.fromScale(0, 0.55),
+		Size = UDim2.fromScale(1, 0.45),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.fromRGB(220, 210, 230),
+		Parent = banner,
+	})
+
+	-- Grande annonce au centre de l'écran
+	announce = UI.new("TextLabel", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.32),
+		Size = UDim2.fromScale(0.8, 0.14),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.Creepster,
+		TextScaled = true,
+		TextTransparency = 1,
+		TextStrokeTransparency = 1,
+		Parent = gui,
+	})
+	announceInfo = UI.new("TextLabel", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.42),
+		Size = UDim2.fromScale(0.7, 0.05),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		TextTransparency = 1,
+		TextStrokeTransparency = 1,
+		Parent = gui,
+	})
+end
+
+local function showAnnouncement(event: EventConfig.EventDef)
+	announce.Text = event.DisplayName
+	announce.TextColor3 = event.Color
+	announceInfo.Text = event.Description
+	for _, label in { announce, announceInfo } do
+		label.TextTransparency = 1
+		label.TextStrokeTransparency = 1
+		TweenService:Create(label, TweenInfo.new(0.6), { TextTransparency = 0, TextStrokeTransparency = 0.3 }):Play()
+	end
+	announce.Size = UDim2.fromScale(1.1, 0.18)
+	TweenService:Create(announce, TweenInfo.new(0.8, Enum.EasingStyle.Back), { Size = UDim2.fromScale(0.8, 0.14) }):Play()
+	task.delay(4, function()
+		for _, label in { announce, announceInfo } do
+			TweenService:Create(label, TweenInfo.new(1), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		end
+	end)
+end
+
+------------------------------------------------------------------ ambiance
+
+type Saved = { [Instance]: { [string]: any } }
+local saved: Saved = {}
+local flashlight: SpotLight? = nil
+
+local function set(instance: Instance?, props: { [string]: any })
+	if not instance then
+		return
+	end
+	local backup = saved[instance] or {}
+	for key, value in props do
+		if backup[key] == nil then
+			backup[key] = (instance :: any)[key]
+		end
+		(instance :: any)[key] = value
+	end
+	saved[instance] = backup
+end
+
+local function restoreAll()
+	for instance, props in saved do
+		for key, value in props do
+			pcall(function()
+				(instance :: any)[key] = value
+			end)
+		end
+	end
+	table.clear(saved)
+	if flashlight then
+		flashlight:Destroy()
+		flashlight = nil
+	end
+end
+
+local function giveFlashlight()
+	local character = player.Character
+	local head = character and character:FindFirstChild("Head")
+	if head and not flashlight then
+		local spot = Instance.new("SpotLight")
+		spot.Name = "Flashlight"
+		spot.Range = 45
+		spot.Angle = 55
+		spot.Brightness = 3
+		spot.Shadows = true
+		spot.Color = Color3.fromRGB(255, 240, 210)
+		spot.Face = Enum.NormalId.Front
+		spot.Parent = head
+		flashlight = spot
+	end
+end
+
+local function applyAmbience(eventId: string?)
+	restoreAll()
+	local sky = Lighting:FindFirstChildOfClass("Sky")
+	local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
+	local color = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+	if eventId == "BloodMoon" then
+		set(sky, { MoonAngularSize = 45 })
+		set(atmosphere, { Color = Color3.fromRGB(170, 50, 60), Decay = Color3.fromRGB(90, 10, 20) })
+		set(color, { TintColor = Color3.fromRGB(255, 180, 180) })
+		set(Lighting, { OutdoorAmbient = Color3.fromRGB(140, 60, 70) })
+	elseif eventId == "Blackout" then
+		local map = workspace:FindFirstChild("Map")
+		if map then
+			for _, descendant in map:GetDescendants() do
+				-- Les anomalies et le contour des cellules restent visibles dans le noir
+				local rig = descendant:FindFirstAncestorOfClass("Model")
+				if (rig and rig:GetAttribute("Motion") ~= nil) or descendant.Name == "TrimStrip" then
+					continue
+				end
+				if descendant:IsA("Light") then
+					set(descendant, { Enabled = false })
+				elseif descendant:IsA("BasePart") and descendant.Material == Enum.Material.Neon then
+					set(descendant, { Material = Enum.Material.SmoothPlastic, Color = descendant.Color:Lerp(Color3.new(0, 0, 0), 0.6) })
+				end
+			end
+		end
+		set(Lighting, {
+			Ambient = Color3.fromRGB(40, 35, 55),
+			OutdoorAmbient = Color3.fromRGB(55, 50, 80),
+		})
+		giveFlashlight()
+	elseif eventId == "GhostRush" then
+		set(atmosphere, { Color = Color3.fromRGB(110, 200, 150), Decay = Color3.fromRGB(30, 90, 60) })
+		set(color, { TintColor = Color3.fromRGB(220, 255, 230) })
+	end
+end
+
+function EventController.Start(_self: typeof(EventController))
+	buildGui()
+
+	local function onEventChanged()
+		local event = EventConfig.get(workspace:GetAttribute("EventId") :: string?)
+		applyAmbience(if event then event.Id else nil)
+		if event then
+			showAnnouncement(event)
+		end
+	end
+	workspace:GetAttributeChangedSignal("EventId"):Connect(onEventChanged)
+	if workspace:GetAttribute("EventId") then
+		onEventChanged()
+	end
+	-- La lampe torche suit le personnage s'il réapparaît
+	player.CharacterAdded:Connect(function()
+		flashlight = nil
+		if workspace:GetAttribute("EventId") == "Blackout" then
+			task.wait(1)
+			giveFlashlight()
+		end
+	end)
+
+	while true do
+		local now = workspace:GetServerTimeNow()
+		local event = EventConfig.get(workspace:GetAttribute("EventId") :: string?)
+		if event then
+			local endsAt = (workspace:GetAttribute("EventEndsAt") :: number?) or now
+			bannerTitle.Text = event.DisplayName
+			bannerTitle.TextColor3 = event.Color
+			bannerInfo.Text = `Encore {formatTime(endsAt - now)}`
+			bannerStroke.Color = event.Color
+		else
+			local nextAt = (workspace:GetAttribute("NextEventAt") :: number?) or now
+			bannerTitle.Text = "Prochain événement"
+			bannerTitle.TextColor3 = Color3.fromRGB(220, 180, 255)
+			bannerInfo.Text = `dans {formatTime(nextAt - now)}`
+			bannerStroke.Color = Color3.fromRGB(170, 80, 255)
+		end
+		task.wait(0.5)
+	end
+end
+
+return EventController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="67">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8699,7 +10208,7 @@ local function buildGui()
 	local barScale = UI.new("UIScale", { Parent = bar })
 	local camera = workspace.CurrentCamera
 	local function fitBar()
-		barScale.Scale = math.clamp(camera.ViewportSize.X / 620, 0.65, 1)
+		barScale.Scale = math.clamp((camera.ViewportSize.X - 20) / 700, 0.5, 1)
 	end
 	camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitBar)
 	fitBar()
@@ -8864,7 +10373,7 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="63">
+          <Item class="ModuleScript" referent="68">
             <Properties>
               <string name="Name">LockController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8913,7 +10422,7 @@ return LockController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="64">
+          <Item class="ModuleScript" referent="69">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8956,7 +10465,204 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="65">
+          <Item class="ModuleScript" referent="70">
+            <Properties>
+              <string name="Name">RebirthController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Fenêtre « Renaissance » : prix, progression, bonus gagnés, anomalies débloquées.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
+local RebirthConfig = require(Config:WaitForChild("RebirthConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Util = script.Parent.Parent:WaitForChild("Util")
+local UI = require(Util:WaitForChild("UI"))
+local HudBar = require(Util:WaitForChild("HudBar"))
+
+local player = Players.LocalPlayer
+
+local GOLD = Color3.fromRGB(255, 200, 80)
+
+local RebirthController = {}
+
+local gui: ScreenGui
+local title: TextLabel
+local progressFill: Frame
+local progressText: TextLabel
+local rewards: TextLabel
+local confirm: TextButton
+local hudButton: TextButton
+
+local function rebirths(): number
+	return (player:GetAttribute("Rebirths") :: number?) or 0
+end
+
+-- Anomalies débloquées par la prochaine renaissance
+local function unlockText(next: number): string
+	local names = {}
+	for _, def in AnomalyConfig.List do
+		if def.RequiredRebirth == next then
+			table.insert(names, def.DisplayName)
+		end
+	end
+	return if #names > 0 then `\n🔓 Nouvelle anomalie : {table.concat(names, ", ")}` else ""
+end
+
+local function refresh()
+	local count = rebirths()
+	local money = (player:GetAttribute("Money") :: number?) or 0
+	if count >= RebirthConfig.MaxRebirths then
+		title.Text = `🔁 Renaissance {count} (max)`
+		progressFill.Size = UDim2.fromScale(1, 1)
+		progressText.Text = "Maximum atteint !"
+		rewards.Text = ""
+		confirm.Visible = false
+		hudButton.BackgroundColor3 = Color3.fromRGB(90, 70, 40)
+		return
+	end
+	local cost = RebirthConfig.cost(count)
+	local ratio = math.clamp(money / cost, 0, 1)
+	title.Text = `🔁 Renaissance {count + 1}`
+	progressFill.Size = UDim2.fromScale(ratio, 1)
+	progressText.Text = `{Format.money(money)} / {Format.money(cost)}`
+	local nextMultiplier = RebirthConfig.incomeMultiplier(count + 1)
+	local nextLuck = math.floor(RebirthConfig.luck(count + 1) * 100 + 0.5)
+	rewards.Text = `Tu gagnes pour toujours :\n💰 Revenus x{nextMultiplier}\n🍀 Chance aux raretés {nextLuck} %`
+		.. unlockText(count + 1)
+		.. `\n\nTu perds ton argent et tes anomalies.\nTu gardes cellules, outils, sécurité et catalogue.`
+	confirm.Visible = true
+	confirm.Active = ratio >= 1
+	confirm.AutoButtonColor = ratio >= 1
+	confirm.BackgroundColor3 = if ratio >= 1 then Color3.fromRGB(220, 150, 30) else Color3.fromRGB(70, 60, 60)
+	confirm.Text = if ratio >= 1 then "RENAÎTRE !" else `Encore {Format.money(cost - money)}`
+	-- Le bouton du bas brille quand la renaissance est possible
+	hudButton.BackgroundColor3 = if ratio >= 1 then Color3.fromRGB(230, 160, 30) else Color3.fromRGB(120, 90, 40)
+end
+
+local function buildGui()
+	gui = UI.new("ScreenGui", {
+		Name = "Rebirth",
+		ResetOnSpawn = false,
+		Enabled = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local window = UI.new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.45),
+		Size = UDim2.fromScale(0.6, 0.72),
+		BackgroundColor3 = Color3.fromRGB(25, 18, 30),
+		Parent = gui,
+	}, {
+		UI.corner(18),
+		UI.stroke(GOLD, 2),
+		UI.padding(12),
+		UI.new("UISizeConstraint", { MaxSize = Vector2.new(460, 440), MinSize = Vector2.new(300, 300) }),
+	})
+	title = UI.new("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, -50, 0, 40),
+		Font = Enum.Font.Creepster,
+		TextScaled = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = GOLD,
+		Parent = window,
+	})
+	UI.new("TextButton", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromScale(1, 0),
+		Size = UDim2.fromOffset(40, 40),
+		BackgroundColor3 = Color3.fromRGB(70, 60, 80),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Text = "X",
+		Parent = window,
+	}, { UI.corner(8) }).Activated:Connect(function()
+		gui.Enabled = false
+	end)
+	local bar = UI.new("Frame", {
+		Position = UDim2.fromOffset(0, 50),
+		Size = UDim2.new(1, 0, 0, 30),
+		BackgroundColor3 = Color3.fromRGB(45, 35, 50),
+		Parent = window,
+	}, { UI.corner(10) })
+	progressFill = UI.new("Frame", {
+		Size = UDim2.fromScale(0, 1),
+		BackgroundColor3 = GOLD,
+		Parent = bar,
+	}, { UI.corner(10) })
+	progressText = UI.new("TextLabel", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		TextStrokeTransparency = 0.4,
+		ZIndex = 2,
+		Parent = bar,
+	}, { UI.padding(4) })
+	rewards = UI.new("TextLabel", {
+		Position = UDim2.fromOffset(0, 90),
+		Size = UDim2.new(1, 0, 1, -160),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextWrapped = true,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		TextColor3 = Color3.fromRGB(230, 220, 240),
+		Parent = window,
+	}, { UI.textSize(10, 20) })
+	confirm = UI.new("TextButton", {
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.fromScale(0.5, 1),
+		Size = UDim2.new(0.8, 0, 0, 56),
+		Font = Enum.Font.Creepster,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Parent = window,
+	}, { UI.corner(14), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6) })
+	confirm.Activated:Connect(function()
+		if confirm.Active then
+			Remotes.getEvent("RebirthRequest"):FireServer()
+			gui.Enabled = false
+		end
+	end)
+end
+
+function RebirthController.Start(_self: typeof(RebirthController))
+	buildGui()
+	hudButton = HudBar.addButton("Renaître", 4, Color3.fromRGB(120, 90, 40))
+	hudButton.Text = "🔁 Renaître"
+	hudButton.Activated:Connect(function()
+		gui.Enabled = not gui.Enabled
+		refresh()
+	end)
+	refresh()
+	player:GetAttributeChangedSignal("Money"):Connect(refresh)
+	player:GetAttributeChangedSignal("Rebirths"):Connect(function()
+		refresh()
+		-- Petit effet de fête
+		local scale = Instance.new("UIScale")
+		scale.Scale = 1.4
+		scale.Parent = hudButton
+		TweenService:Create(scale, TweenInfo.new(0.6, Enum.EasingStyle.Elastic), { Scale = 1 }):Play()
+		task.delay(0.7, function()
+			scale:Destroy()
+		end)
+	end)
+end
+
+return RebirthController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="71">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -9454,7 +11160,288 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="66">
+          <Item class="ModuleScript" referent="72">
+            <Properties>
+              <string name="Name">RigMotionController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Animations des clients et des anomalies, calculées sur l'écran du joueur.
+-- On fait bouger les articulations (Motor6D) directement : pas besoin de
+-- fichiers d'animation Roblox, donc ça marche partout et ne coûte rien au réseau.
+--
+-- Le serveur choisit le style avec l'attribut « Motion » du modèle :
+--   Guest   client normal (marche, respire, regarde autour de lui)
+--   Creepy  tête qui penche lentement, petits sursauts nerveux
+--   Float   bras tendus, jambes qui pendent (fantômes)
+--   Zombie  bras tendus droit devant, tête tombante (somnambule)
+--   Twitch  secousses violentes et fréquentes
+--   Regal   torse bombé, regard hautain, bras levé
+--   Feral   courbé, respiration haletante, bras qui pendent
+--   Doll    mouvements saccadés de poupée
+
+local RunService = game:GetService("RunService")
+
+local MAX_DISTANCE = 140 -- au-delà, on n'anime pas (économie)
+local WALK_SPEED_MIN = 0.6
+
+local JOINTS = {
+	"Root", "Waist", "Neck",
+	"LeftShoulder", "RightShoulder", "LeftElbow", "RightElbow",
+	"LeftHip", "RightHip", "LeftKnee", "RightKnee",
+}
+
+type Pose = { [string]: Vector3 } -- articulation -> (avant/arrière, rotation, inclinaison) en radians
+type Rig = {
+	model: Model,
+	root: BasePart,
+	joints: { [string]: Motor6D },
+	style: string,
+	seed: number,
+	phase: number,
+	walk: number, -- 0 = immobile, 1 = marche (transition douce)
+	twitchUntil: number,
+	nextTwitch: number,
+	twitch: Pose,
+}
+
+local RigMotionController = {}
+
+local rigs: { [Model]: Rig } = {}
+
+local function add(pose: Pose, joint: string, pitch: number, yaw: number, roll: number)
+	local current = pose[joint] or Vector3.zero
+	pose[joint] = current + Vector3.new(pitch, yaw, roll)
+end
+
+-- Pose immobile selon le style. t = temps, s = graine propre au modèle
+local STYLES: { [string]: (pose: Pose, t: number, s: number) -> () } = {}
+
+STYLES.Guest = function(pose, t, s)
+	local breath = math.sin(t * 1.8 + s)
+	add(pose, "Waist", breath * 0.02, 0, 0)
+	add(pose, "Neck", -breath * 0.02, math.sin(t * 0.35 + s) * 0.35, 0)
+	add(pose, "LeftShoulder", 0, 0, -0.06 - breath * 0.02)
+	add(pose, "RightShoulder", 0, 0, 0.06 + breath * 0.02)
+	add(pose, "LeftElbow", 0.12, 0, 0)
+	add(pose, "RightElbow", 0.12, 0, 0)
+end
+
+STYLES.Creepy = function(pose, t, s)
+	local breath = math.sin(t * 1.2 + s)
+	add(pose, "Waist", -0.12 + breath * 0.03, math.sin(t * 0.3 + s) * 0.08, 0)
+	add(pose, "Neck", -0.15, math.sin(t * 0.25 + s) * 0.25, math.sin(t * 0.55 + s) * 0.4)
+	add(pose, "LeftShoulder", math.sin(t * 0.8 + s) * 0.08, 0, -0.05)
+	add(pose, "RightShoulder", math.sin(t * 0.8 + s + 1.5) * 0.08, 0, 0.05)
+end
+
+STYLES.Float = function(pose, t, s)
+	local sway = math.sin(t * 1.1 + s)
+	add(pose, "Waist", 0.05, sway * 0.06, 0)
+	add(pose, "Neck", -0.1, 0, sway * 0.15)
+	add(pose, "LeftShoulder", 0.7 + sway * 0.15, 0, -0.35)
+	add(pose, "RightShoulder", 0.7 - sway * 0.15, 0, 0.35)
+	add(pose, "LeftElbow", 0.3, 0, 0)
+	add(pose, "RightElbow", 0.3, 0, 0)
+	add(pose, "LeftHip", -0.25 + sway * 0.1, 0, 0)
+	add(pose, "RightHip", -0.15 - sway * 0.1, 0, 0)
+	add(pose, "LeftKnee", -0.4, 0, 0)
+	add(pose, "RightKnee", -0.3, 0, 0)
+end
+
+STYLES.Zombie = function(pose, t, s)
+	local sway = math.sin(t * 0.9 + s)
+	add(pose, "Waist", -0.05, sway * 0.1, sway * 0.04)
+	add(pose, "Neck", -0.45, 0, sway * 0.25)
+	add(pose, "LeftShoulder", 1.45 + sway * 0.05, 0, 0)
+	add(pose, "RightShoulder", 1.45 - sway * 0.05, 0, 0)
+	add(pose, "LeftElbow", 0.05, 0, 0)
+	add(pose, "RightElbow", 0.05, 0, 0)
+end
+
+STYLES.Twitch = function(pose, t, s)
+	STYLES.Creepy(pose, t, s)
+	add(pose, "Neck", 0, 0, math.sin(t * 9 + s) * 0.06)
+end
+
+STYLES.Regal = function(pose, t, s)
+	local breath = math.sin(t * 1.4 + s)
+	add(pose, "Waist", 0.1 + breath * 0.02, math.sin(t * 0.25 + s) * 0.15, 0)
+	add(pose, "Neck", 0.15, math.sin(t * 0.2 + s) * 0.5, 0)
+	-- Bras droit levé, comme un chef d'orchestre
+	add(pose, "RightShoulder", 1.9 + math.sin(t * 2 + s) * 0.35, 0, 0.3)
+	add(pose, "RightElbow", 0.6 + math.sin(t * 2 + s + 0.5) * 0.3, 0, 0)
+	add(pose, "LeftShoulder", 0.2, 0, -0.15)
+	add(pose, "LeftElbow", 0.8, 0, 0)
+end
+
+STYLES.Feral = function(pose, t, s)
+	local breath = math.sin(t * 4 + s)
+	add(pose, "Waist", -0.45 + breath * 0.05, 0, 0)
+	add(pose, "Neck", 0.3, math.sin(t * 0.7 + s) * 0.4, 0)
+	add(pose, "LeftShoulder", 0.35 + breath * 0.05, 0, -0.2)
+	add(pose, "RightShoulder", 0.35 - breath * 0.05, 0, 0.2)
+	add(pose, "LeftElbow", 0.5, 0, 0)
+	add(pose, "RightElbow", 0.5, 0, 0)
+	add(pose, "LeftHip", 0.3, 0, -0.1)
+	add(pose, "RightHip", 0.3, 0, 0.1)
+	add(pose, "LeftKnee", -0.6, 0, 0)
+	add(pose, "RightKnee", -0.6, 0, 0)
+end
+
+STYLES.Doll = function(pose, t, s)
+	-- Positions qui changent d'un coup, comme une poupée mécanique
+	local step = math.floor(t * 0.8 + s)
+	local tilt = ((step * 37) % 7 - 3) / 3
+	add(pose, "Neck", 0, tilt * 0.4, tilt * 0.35)
+	add(pose, "LeftShoulder", 0, 0, -0.25)
+	add(pose, "RightShoulder", 0, 0, 0.25)
+end
+
+-- Secousse aléatoire (tête, bras ou torse qui sursaute)
+local function randomTwitch(intensity: number): Pose
+	local pose: Pose = {}
+	local r = Random.new()
+	add(pose, "Neck", r:NextNumber(-0.6, 0.6) * intensity, r:NextNumber(-0.8, 0.8) * intensity, r:NextNumber(-0.9, 0.9) * intensity)
+	if r:NextNumber() < 0.5 then
+		local side = if r:NextNumber() < 0.5 then "Left" else "Right"
+		add(pose, `{side}Shoulder`, r:NextNumber(0.3, 1.2) * intensity, 0, r:NextNumber(-0.5, 0.5) * intensity)
+		add(pose, `{side}Elbow`, r:NextNumber(0.2, 1.2) * intensity, 0, 0)
+	end
+	add(pose, "Waist", r:NextNumber(-0.2, 0.2) * intensity, r:NextNumber(-0.3, 0.3) * intensity, 0)
+	return pose
+end
+
+local TWITCHY: { [string]: { every: number, intensity: number } } = {
+	Creepy = { every = 4, intensity = 0.6 },
+	Twitch = { every = 1.2, intensity = 1 },
+	Feral = { every = 3, intensity = 0.5 },
+	Doll = { every = 6, intensity = 0.4 },
+}
+
+local function track(model: Model)
+	if rigs[model] then
+		return
+	end
+	local root = model:WaitForChild("HumanoidRootPart", 5)
+	if not root or not root:IsA("BasePart") or not model.Parent then
+		return
+	end
+	local joints: { [string]: Motor6D } = {}
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("Motor6D") and table.find(JOINTS, descendant.Name) then
+			joints[descendant.Name] = descendant
+		end
+	end
+	rigs[model] = {
+		model = model,
+		root = root,
+		joints = joints,
+		style = (model:GetAttribute("Motion") :: string?) or "Guest",
+		seed = math.random() * 100,
+		phase = 0,
+		walk = 0,
+		twitchUntil = 0,
+		nextTwitch = os.clock() + math.random() * 4,
+		twitch = {},
+	}
+	model:GetAttributeChangedSignal("Motion"):Connect(function()
+		local rig = rigs[model]
+		if rig then
+			rig.style = (model:GetAttribute("Motion") :: string?) or "Guest"
+		end
+	end)
+end
+
+local function update(rig: Rig, dt: number, now: number)
+	local velocity = rig.root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
+	local speed = if rig.root.Anchored then 0 else velocity.Magnitude
+	local moving = speed > WALK_SPEED_MIN
+	rig.walk += ((if moving then 1 else 0) - rig.walk) * math.min(1, dt * 8)
+	if moving then
+		rig.phase += dt * speed * 0.55
+	end
+
+	local pose: Pose = {}
+	local style = STYLES[rig.style] or STYLES.Guest
+	style(pose, now, rig.seed)
+
+	-- Petits sursauts
+	local twitchy = TWITCHY[rig.style]
+	if twitchy then
+		if now >= rig.nextTwitch then
+			rig.twitch = randomTwitch(twitchy.intensity)
+			rig.twitchUntil = now + 0.12 + math.random() * 0.15
+			rig.nextTwitch = now + twitchy.every * (0.5 + math.random())
+		end
+		if now < rig.twitchUntil then
+			for joint, angles in rig.twitch do
+				add(pose, joint, angles.X, angles.Y, angles.Z)
+			end
+		end
+	end
+
+	-- Marche : on remplace bras et jambes par le cycle de marche
+	local w = rig.walk
+	local bob = 0
+	if w > 0.01 then
+		local p = rig.phase
+		local swing = math.sin(p)
+		for _, joint in { "LeftShoulder", "RightShoulder", "LeftElbow", "RightElbow", "LeftHip", "RightHip", "LeftKnee", "RightKnee" } do
+			if pose[joint] then
+				pose[joint] *= (1 - w)
+			end
+		end
+		add(pose, "LeftHip", swing * 0.6 * w, 0, 0)
+		add(pose, "RightHip", -swing * 0.6 * w, 0, 0)
+		add(pose, "LeftKnee", -math.max(0, math.cos(p)) * 0.9 * w, 0, 0)
+		add(pose, "RightKnee", -math.max(0, -math.cos(p)) * 0.9 * w, 0, 0)
+		add(pose, "LeftShoulder", -swing * 0.5 * w, 0, 0)
+		add(pose, "RightShoulder", swing * 0.5 * w, 0, 0)
+		add(pose, "LeftElbow", 0.35 * w, 0, 0)
+		add(pose, "RightElbow", 0.35 * w, 0, 0)
+		add(pose, "Waist", 0, swing * 0.1 * w, 0)
+		bob = (math.abs(math.cos(p)) - 0.6) * 0.15 * w
+	end
+
+	for name, joint in rig.joints do
+		local angles = pose[name]
+		local transform = if angles then CFrame.Angles(angles.X, angles.Y, angles.Z) else CFrame.identity
+		if name == "Root" then
+			transform = CFrame.new(0, bob, 0) * transform
+		end
+		joint.Transform = transform
+	end
+end
+
+function RigMotionController.Start(_self: typeof(RigMotionController))
+	local function consider(instance: Instance)
+		if instance:IsA("Model") and instance:GetAttribute("Motion") then
+			task.spawn(track, instance)
+		end
+	end
+	workspace.DescendantAdded:Connect(consider)
+	for _, instance in workspace:GetDescendants() do
+		consider(instance)
+	end
+
+	RunService.PreSimulation:Connect(function(dt)
+		local camera = workspace.CurrentCamera
+		local eye = if camera then camera.CFrame.Position else Vector3.zero
+		local now = os.clock()
+		for model, rig in rigs do
+			if not model.Parent or not rig.root.Parent then
+				rigs[model] = nil
+			elseif (rig.root.Position - eye).Magnitude < MAX_DISTANCE then
+				update(rig, dt, now)
+			end
+		end
+	end)
+end
+
+return RigMotionController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="73">
             <Properties>
               <string name="Name">ShopController</string>
               <string name="Source"><![CDATA[--!strict
@@ -9739,11 +11726,12 @@ return ShopController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="67">
+          <Item class="ModuleScript" referent="74">
             <Properties>
               <string name="Name">SoundController</string>
               <string name="Source"><![CDATA[--!strict
--- Sons et petit « jumpscare » (flash rouge) quand une anomalie s'infiltre.
+-- Sons (musique d'ambiance, sonnette, capture, alarme de vol, événements...)
+-- et petit « jumpscare » (flash rouge) quand une anomalie s'infiltre.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9777,10 +11765,15 @@ end
 
 function SoundController.Start(_self: typeof(SoundController))
 	for name, entry in SoundConfig do
+		local id = if entry.Id ~= "" then entry.Id else entry.Fallback
+		if not id then
+			continue
+		end
 		local sound = Instance.new("Sound")
 		sound.Name = name
-		sound.SoundId = entry.Id
+		sound.SoundId = id
 		sound.Volume = entry.Volume
+		sound.Looped = entry.Looped == true
 		sound.Parent = SoundService
 		sounds[name] = sound
 	end
@@ -9812,8 +11805,46 @@ function SoundController.Start(_self: typeof(SoundController))
 			scare()
 		elseif outcome == "WrongCapture" then
 			SoundController.Play("Bad")
-		else
-			SoundController.Play("Good")
+		elseif outcome == "Captured" or outcome == "CapturedSold" then
+			SoundController.Play("Capture")
+		elseif outcome == "Served" then
+			SoundController.Play("Cash")
+		end
+	end)
+
+	-- Musique d'ambiance
+	local ambience = sounds.Ambience
+	if ambience then
+		ambience:Play()
+	end
+
+	-- Sonnette : un client attend à MON comptoir ; alarme : on me vole une anomalie
+	workspace.DescendantAdded:Connect(function(instance)
+		if instance:IsA("ProximityPrompt") and instance:GetAttribute("OnlyUserId") == player.UserId then
+			if instance.ActionText == "Recevoir" then
+				SoundController.Play("Bell")
+			elseif instance.ActionText == "Récupérer" then
+				SoundController.Play("Alarm")
+			end
+		end
+	end)
+
+	-- Renaissance
+	local lastRebirths = player:GetAttribute("Rebirths") :: number?
+	player:GetAttributeChangedSignal("Rebirths"):Connect(function()
+		local count = player:GetAttribute("Rebirths") :: number?
+		if lastRebirths and count and count > lastRebirths then
+			SoundController.Play("Rebirth")
+		end
+		lastRebirths = count
+	end)
+
+	-- Événements
+	local EVENT_SOUNDS: { [string]: string } = { BloodMoon = "Howl", Blackout = "PowerDown", GhostRush = "Thunder" }
+	workspace:GetAttributeChangedSignal("EventId"):Connect(function()
+		local sound = EVENT_SOUNDS[(workspace:GetAttribute("EventId") :: string?) or ""]
+		if sound then
+			SoundController.Play(sound)
 		end
 	end)
 end
@@ -9822,7 +11853,7 @@ return SoundController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="68">
+          <Item class="ModuleScript" referent="75">
             <Properties>
               <string name="Name">TutorialController</string>
               <string name="Source"><![CDATA[--!strict
@@ -9990,8 +12021,131 @@ return TutorialController
 ]]></string>
             </Properties>
           </Item>
+          <Item class="ModuleScript" referent="76">
+            <Properties>
+              <string name="Name">WelcomeController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Fenêtre « Bon retour » : gains hors ligne + récompense quotidienne (7 jours).
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local EconomyConfig = require(Shared:WaitForChild("Config"):WaitForChild("EconomyConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
+
+local player = Players.LocalPlayer
+
+local WelcomeController = {}
+
+local function duration(seconds: number): string
+	local hours = seconds // 3600
+	local minutes = (seconds % 3600) // 60
+	return if hours > 0 then `{hours} h {string.format("%02d", minutes)}` else `{minutes} min`
+end
+
+local function show(offline: number, seconds: number, day: number, daily: number)
+	local gui = UI.new("ScreenGui", {
+		Name = "Welcome",
+		ResetOnSpawn = false,
+		DisplayOrder = 5,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local window = UI.new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.45),
+		Size = UDim2.fromScale(0.5, 0.62),
+		BackgroundColor3 = Color3.fromRGB(25, 18, 30),
+		Parent = gui,
+	}, {
+		UI.corner(18),
+		UI.stroke(Color3.fromRGB(170, 80, 255), 3),
+		UI.padding(14),
+		UI.new("UISizeConstraint", { MaxSize = Vector2.new(420, 340), MinSize = Vector2.new(280, 320) }),
+		UI.new("UIListLayout", {
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			Padding = UDim.new(0, 8),
+		}),
+	})
+	local scale = UI.new("UIScale", { Scale = 0.6, Parent = window })
+	TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+
+	local function line(order: number, text: string, color: Color3, height: number, font: Enum.Font?)
+		UI.new("TextLabel", {
+			LayoutOrder = order,
+			Size = UDim2.new(1, 0, 0, height),
+			BackgroundTransparency = 1,
+			Font = font or Enum.Font.GothamBold,
+			TextScaled = true,
+			TextWrapped = true,
+			TextColor3 = color,
+			Text = text,
+			Parent = window,
+		})
+	end
+
+	line(1, "Bon retour à l'hôtel !", Color3.fromRGB(220, 180, 255), 42, Enum.Font.Creepster)
+	if offline > 0 then
+		line(2, `Pendant ton absence ({duration(seconds)}), tes anomalies ont rapporté`, Color3.new(1, 1, 1), 34)
+		line(3, `+{Format.money(offline)}`, Color3.fromRGB(255, 220, 90), 34, Enum.Font.FredokaOne)
+	end
+	if daily > 0 then
+		line(4, `🔥 Récompense du jour {day}/{#EconomyConfig.DailyRewards} : +{Format.money(daily)}`, Color3.fromRGB(255, 160, 80), 28)
+		-- Les 7 jours de la série
+		local row = UI.new("Frame", {
+			LayoutOrder = 5,
+			Size = UDim2.new(1, 0, 0, 28),
+			BackgroundTransparency = 1,
+			Parent = window,
+		}, {
+			UI.new("UIListLayout", {
+				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
+				Padding = UDim.new(0, 6),
+			}),
+		})
+		for i = 1, #EconomyConfig.DailyRewards do
+			UI.new("TextLabel", {
+				Size = UDim2.fromOffset(28, 28),
+				BackgroundColor3 = if i <= day then Color3.fromRGB(230, 130, 40) else Color3.fromRGB(60, 50, 65),
+				Font = Enum.Font.GothamBold,
+				TextScaled = true,
+				TextColor3 = Color3.new(1, 1, 1),
+				Text = tostring(i),
+				Parent = row,
+			}, { UI.corner(14) })
+		end
+		line(6, "Reviens demain pour une plus grosse récompense !", Color3.fromRGB(190, 180, 200), 20)
+	end
+	local ok = UI.new("TextButton", {
+		LayoutOrder = 7,
+		Size = UDim2.new(0.6, 0, 0, 44),
+		BackgroundColor3 = Color3.fromRGB(60, 170, 80),
+		Font = Enum.Font.FredokaOne,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Text = "Récupérer",
+		Parent = window,
+	}, { UI.corner(12), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6) })
+	ok.Activated:Connect(function()
+		gui:Destroy()
+	end)
+end
+
+function WelcomeController.Start(_self: typeof(WelcomeController))
+	Remotes.getEvent("WelcomeBack").OnClientEvent:Connect(show)
+end
+
+return WelcomeController
+]]></string>
+            </Properties>
+          </Item>
         </Item>
-        <Item class="LocalScript" referent="69">
+        <Item class="LocalScript" referent="77">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -10009,11 +12163,11 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="70">
+        <Item class="Folder" referent="78">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="71">
+          <Item class="ModuleScript" referent="79">
             <Properties>
               <string name="Name">HudBar</string>
               <string name="Source"><![CDATA[--!strict
@@ -10045,7 +12199,7 @@ return HudBar
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="72">
+          <Item class="ModuleScript" referent="80">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -10109,7 +12263,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="73">
+  <Item class="Workspace" referent="81">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

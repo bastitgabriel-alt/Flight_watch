@@ -1,6 +1,6 @@
 --!strict
 -- Mutations : variante visuelle + multiplicateur de revenu.
--- D'autres mutations (Ombre x3, etc.) viendront après le MVP.
+-- Lunaire et Ombre n'apparaissent que pendant leur événement (EventConfig).
 
 local Types = require(script.Parent.Parent.Types)
 
@@ -24,10 +24,26 @@ local MutationConfig: { [Types.MutationId]: Types.Mutation } = {
 		Color = Color3.fromRGB(0, 255, 200),
 		Material = "Neon",
 	},
+	Lunar = {
+		DisplayName = "Lunaire",
+		IncomeMultiplier = 4,
+		SpawnChance = 0.2,
+		Color = Color3.fromRGB(200, 20, 40),
+		Material = "Neon",
+		EventOnly = "BloodMoon",
+	},
+	Shadow = {
+		DisplayName = "Ombre",
+		IncomeMultiplier = 3,
+		SpawnChance = 0.15,
+		Color = Color3.fromRGB(15, 10, 25),
+		Material = "SmoothPlastic",
+		EventOnly = "Blackout",
+	},
 }
 
 -- Ordre de tirage des mutations (la plus rare d'abord)
-local ROLL_ORDER: { Types.MutationId } = { "Neon", "Golden" }
+local ROLL_ORDER: { Types.MutationId } = { "Neon", "Lunar", "Shadow", "Golden" }
 
 return {
 	Mutations = MutationConfig,

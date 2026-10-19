@@ -48,6 +48,15 @@ pour que tu puisses utiliser les commandes `!` dans le vrai jeu (et personne d'a
   des cellules pleines d'anomalies, un vol en cours.
   Dans Studio, cache l'interface (bouton « UI » en haut) avant de capturer.
 
+## 5 bis. Icône et miniatures
+
+Dans `build/SonsEtImages.zip`, dossier `images` :
+- `Icon.png` (512 x 512) : l'icône du jeu
+- `Thumbnail1_Reception.png`, `Thumbnail2_Vol.png`, `Thumbnail3_Collection.png` (1920 x 1080) : les images de la page du jeu
+
+Sur create.roblox.com : Créations > ton jeu, puis dans le menu de gauche
+(partie « Configurer ») cherche « Icône » et « Miniatures », et importe les fichiers.
+
 ## 6. Questionnaire de maturité (obligatoire)
 Creator Hub > ton jeu > **Audience > Maturity & Compliance** > remplis le questionnaire.
 Réponses pour ce jeu :

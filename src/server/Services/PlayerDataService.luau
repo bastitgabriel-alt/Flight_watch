@@ -82,6 +82,7 @@ local function onPlayerRemoving(player: Player)
 	local profile = profiles[player]
 	if profile then
 		profiles[player] = nil
+		profile.Data.LastSeen = os.time()
 		profile:EndSession()
 	end
 end

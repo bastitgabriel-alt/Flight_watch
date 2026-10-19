@@ -6,10 +6,13 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local EconomyConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("EconomyConfig"))
+local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
+local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
+local RebirthConfig = require(Config:WaitForChild("RebirthConfig"))
 local IncomeCalculator = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local EventService = require(script.Parent:WaitForChild("EventService"))
 
 local IncomeService = {}
 
@@ -46,7 +49,9 @@ function IncomeService.GetIncome(player: Player): number
 	end
 	-- Gamepass « Argent x2 » : attribut posé par MonetizationService
 	local passMultiplier = if player:GetAttribute("Pass_DoubleMoney") then 2 else 1
-	local multiplier = data.RebirthMultiplier * getDebuffMultiplier(player) * passMultiplier
+	local event = EventService.Current()
+	local eventMultiplier = if event then event.IncomeMultiplier or 1 else 1
+	local multiplier = RebirthConfig.incomeMultiplier(data.Rebirths) * getDebuffMultiplier(player) * passMultiplier * eventMultiplier
 	return IncomeCalculator.total(data.Anomalies, multiplier)
 end
 

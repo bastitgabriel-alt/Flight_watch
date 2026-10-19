@@ -55,12 +55,13 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SubtleChance = 1,
 		HiddenClueChance = 1,
 	},
-	-- Réservée aux événements admin (après le MVP) : n'apparaît jamais seule
+	-- Seulement les anomalies d'événement ou de renaissance (voir AnomalyConfig) :
+	-- sans anomalie secrète disponible, cette rareté ne sort jamais
 	Secret = {
 		DisplayName = "Secrète",
-		Color = Color3.fromRGB(30, 30, 30),
+		Color = Color3.fromRGB(255, 255, 255),
 		Order = 6,
-		SpawnWeight = 0,
+		SpawnWeight = 0.04,
 		ClueCount = 1,
 		SubtleChance = 1,
 		HiddenClueChance = 1,
