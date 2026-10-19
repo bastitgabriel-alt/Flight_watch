@@ -8,10 +8,11 @@
 --     DoorBarrier, Sign (SurfaceGui > OwnerLabel)
 --     Cells > Cell{n} > Pad, Spot, Label (SurfaceGui > Text)
 
-local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("GameConfig"))
+local MapDecor = require(script.Parent:WaitForChild("MapDecor"))
+local PartFactory = require(script.Parent:WaitForChild("PartFactory"))
 
 -- Dimensions (studs)
 local HOTEL_SIZE = 56
@@ -23,30 +24,8 @@ local CELL_WIDTH = 6.5
 
 local MapBuilder = {}
 
-local function makePart(props: { [string]: any }): Part
-	local part = Instance.new("Part")
-	part.Anchored = true
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	for key, value in props do
-		(part :: any)[key] = value
-	end
-	return part
-end
-
--- Repère invisible (position où quelque chose doit apparaître)
-local function makeMarker(name: string, cframe: CFrame, parent: Instance): Part
-	return makePart({
-		Name = name,
-		Size = Vector3.new(1, 1, 1),
-		CFrame = cframe,
-		Transparency = 1,
-		CanCollide = false,
-		CanQuery = false,
-		CanTouch = false,
-		Parent = parent,
-	})
-end
+local makePart = PartFactory.part
+local makeMarker = PartFactory.marker
 
 -- Une cellule de confinement. « local » = repère de l'hôtel.
 local function buildCell(index: number, origin: CFrame, localCFrame: CFrame, parent: Instance)
@@ -244,6 +223,8 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	end
 	assert(cellIndex >= GameConfig.MaxCells, "Pas assez d'emplacements de cellules construits")
 
+	MapDecor.decorateHotel(hotel, origin, { Size = HOTEL_SIZE, WallHeight = WALL_HEIGHT, DoorWidth = DOOR_WIDTH })
+
 	hotel.PrimaryPart = floor
 	hotel.Parent = parent
 end
@@ -278,7 +259,7 @@ function MapBuilder.build(): Folder
 	spawn.Name = "PlazaSpawn"
 	spawn.Anchored = true
 	spawn.Size = Vector3.new(12, 1, 12)
-	spawn.CFrame = CFrame.new(0, 0.9, 0)
+	spawn.CFrame = CFrame.new(0, 0.9, 30) -- la fontaine occupe le centre
 	spawn.Neutral = true
 	spawn.Duration = 0 -- pas de bouclier d'apparition
 	spawn.Color = Color3.fromRGB(80, 40, 90)
@@ -338,9 +319,8 @@ function MapBuilder.build(): Folder
 		buildHotel(index, origin, hotels)
 	end
 
-	-- Ambiance coucher de soleil : un peu inquiétant, mais les ombres restent visibles
-	Lighting.ClockTime = 17.6
-	Lighting.Brightness = 2
+	MapDecor.decoratePlaza(map)
+	MapDecor.setupLighting()
 
 	map.Parent = workspace
 	return map

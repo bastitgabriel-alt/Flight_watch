@@ -21,6 +21,7 @@ local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppea
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local IncomeCalculator = require(Server:WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local RigFactory = require(Server:WaitForChild("Modules"):WaitForChild("RigFactory"))
+local RigAnimator = require(Server:WaitForChild("Modules"):WaitForChild("RigAnimator"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 
@@ -116,6 +117,37 @@ local function resetCellVisuals(hotel: Model)
 	end
 end
 
+-- Lueur de la couleur de la rareté ; particules à partir d'Épique
+local SPARKLING_RARITIES: { [string]: boolean } = { Epic = true, Legendary = true, Mythic = true, Secret = true }
+
+local function addAura(rig: Model, rarityId: Types.RarityId)
+	local root = rig:FindFirstChild("HumanoidRootPart")
+	local rarity = RarityConfig[rarityId]
+	if not root or not rarity then
+		return
+	end
+	local color: Color3 = rarity.Color
+	local light = Instance.new("PointLight")
+	light.Color = color
+	light.Range = if SPARKLING_RARITIES[rarityId] then 12 else 7
+	light.Brightness = if SPARKLING_RARITIES[rarityId] then 2 else 0.8
+	light.Shadows = false
+	light.Parent = root
+	if SPARKLING_RARITIES[rarityId] then
+		local sparkles = Instance.new("ParticleEmitter")
+		sparkles.Name = "Aura"
+		sparkles.Color = ColorSequence.new(color)
+		sparkles.LightEmission = 1
+		sparkles.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0) })
+		sparkles.Transparency = NumberSequence.new(0.2, 1)
+		sparkles.Lifetime = NumberRange.new(1, 2)
+		sparkles.Rate = if rarityId == "Epic" then 6 else 14
+		sparkles.Speed = NumberRange.new(0.5, 1.5)
+		sparkles.SpreadAngle = Vector2.new(180, 180)
+		sparkles.Parent = root
+	end
+end
+
 -- Personnage de l'anomalie sous sa vraie forme (couleurs, mutation, yeux)
 function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId): Model
 	local def = AnomalyConfig.ById[anomalyId]
@@ -132,6 +164,7 @@ function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId
 			descendant.CanCollide = false
 		end
 	end
+	addAura(rig, def.Rarity)
 	return rig
 end
 
@@ -146,13 +179,14 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 
 	local rig = AnomalyService.BuildRig(owned.Id, owned.Mutation)
 	rig.Name = `Anomaly_{uid}`
-	for _, descendant in rig:GetDescendants() do
-		if descendant:IsA("BasePart") then
-			descendant.Anchored = true
-		end
+	-- Seul le tronc est ancré : les membres restent libres pour l'animation
+	local rigRoot = rig:FindFirstChild("HumanoidRootPart")
+	if rigRoot and rigRoot:IsA("BasePart") then
+		rigRoot.Anchored = true
 	end
 	RigAppearance.placeOnFloor(rig, spot.CFrame)
 	rig.Parent = cell
+	RigAnimator.idle(rig)
 
 	-- Invite « Voler », visible seulement des autres joueurs (voir PromptController)
 	local root = rig:FindFirstChild("HumanoidRootPart")

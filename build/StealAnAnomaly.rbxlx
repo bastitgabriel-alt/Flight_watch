@@ -1,17 +1,23 @@
 <roblox version="4">
-  <Item class="ReplicatedStorage" referent="0">
+  <Item class="Lighting" referent="0">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <token name="Technology">4</token>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="1">
     <Properties>
       <string name="Name">ReplicatedStorage</string>
     </Properties>
-    <Item class="Folder" referent="1">
+    <Item class="Folder" referent="2">
       <Properties>
         <string name="Name">Shared</string>
       </Properties>
-      <Item class="Folder" referent="2">
+      <Item class="Folder" referent="3">
         <Properties>
           <string name="Name">Config</string>
         </Properties>
-        <Item class="ModuleScript" referent="3">
+        <Item class="ModuleScript" referent="4">
           <Properties>
             <string name="Name">AnomalyConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -174,7 +180,7 @@ return {
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="4">
+        <Item class="ModuleScript" referent="5">
           <Properties>
             <string name="Name">CatalogConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -194,7 +200,7 @@ return CatalogConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="5">
+        <Item class="ModuleScript" referent="6">
           <Properties>
             <string name="Name">EconomyConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -229,7 +235,7 @@ return EconomyConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="6">
+        <Item class="ModuleScript" referent="7">
           <Properties>
             <string name="Name">GameConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -257,7 +263,7 @@ return GameConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="7">
+        <Item class="ModuleScript" referent="8">
           <Properties>
             <string name="Name">GuestConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -317,7 +323,7 @@ return GuestConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="8">
+        <Item class="ModuleScript" referent="9">
           <Properties>
             <string name="Name">MonetizationConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -362,7 +368,7 @@ return MonetizationConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="9">
+        <Item class="ModuleScript" referent="10">
           <Properties>
             <string name="Name">MutationConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -403,7 +409,7 @@ return {
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="10">
+        <Item class="ModuleScript" referent="11">
           <Properties>
             <string name="Name">RarityConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -479,7 +485,7 @@ return RarityConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="11">
+        <Item class="ModuleScript" referent="12">
           <Properties>
             <string name="Name">ShopConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -568,7 +574,7 @@ return ShopConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="12">
+        <Item class="ModuleScript" referent="13">
           <Properties>
             <string name="Name">SoundConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -588,7 +594,7 @@ return SoundConfig
           </Properties>
         </Item>
       </Item>
-      <Item class="ModuleScript" referent="13">
+      <Item class="ModuleScript" referent="14">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[--!strict
@@ -669,7 +675,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="14">
+      <Item class="ModuleScript" referent="15">
         <Properties>
           <string name="Name">Types</string>
           <string name="Source"><![CDATA[--!strict
@@ -760,11 +766,11 @@ return {}
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="15">
+      <Item class="Folder" referent="16">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="16">
+        <Item class="ModuleScript" referent="17">
           <Properties>
             <string name="Name">Format</string>
             <string name="Source"><![CDATA[--!strict
@@ -810,7 +816,7 @@ return Format
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="17">
+        <Item class="ModuleScript" referent="18">
           <Properties>
             <string name="Name">Loader</string>
             <string name="Source"><![CDATA[--!strict
@@ -872,7 +878,7 @@ return Loader
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="18">
+        <Item class="ModuleScript" referent="19">
           <Properties>
             <string name="Name">ReceptionCamera</string>
             <string name="Source"><![CDATA[--!strict
@@ -899,7 +905,7 @@ return ReceptionCamera
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="19">
+        <Item class="ModuleScript" referent="20">
           <Properties>
             <string name="Name">RigAppearance</string>
             <string name="Source"><![CDATA[--!strict
@@ -1008,7 +1014,7 @@ return RigAppearance
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="20">
+        <Item class="ModuleScript" referent="21">
           <Properties>
             <string name="Name">Signal</string>
             <string name="Source"><![CDATA[--!strict
@@ -1063,15 +1069,15 @@ return Signal
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="21">
+  <Item class="ServerScriptService" referent="22">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Folder" referent="22">
+    <Item class="Folder" referent="23">
       <Properties>
         <string name="Name">Server</string>
       </Properties>
-      <Item class="Script" referent="23">
+      <Item class="Script" referent="24">
         <Properties>
           <string name="Name">Main</string>
           <token name="RunContext">0</token>
@@ -1094,11 +1100,11 @@ print("[Serveur] Serveur prêt")
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="24">
+      <Item class="Folder" referent="25">
         <Properties>
           <string name="Name">Modules</string>
         </Properties>
-        <Item class="ModuleScript" referent="25">
+        <Item class="ModuleScript" referent="26">
           <Properties>
             <string name="Name">Analytics</string>
             <string name="Source"><![CDATA[--!strict
@@ -1137,7 +1143,7 @@ return Analytics
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="26">
+        <Item class="ModuleScript" referent="27">
           <Properties>
             <string name="Name">CollisionGroups</string>
             <string name="Source"><![CDATA[--!strict
@@ -1195,7 +1201,7 @@ return CollisionGroups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="28">
           <Properties>
             <string name="Name">DataSchema</string>
             <string name="Source"><![CDATA[--!strict
@@ -1278,7 +1284,7 @@ return DataSchema
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">GuestGenerator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1539,7 +1545,7 @@ return GuestGenerator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">IncomeCalculator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1581,7 +1587,7 @@ return IncomeCalculator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">MapBuilder</string>
             <string name="Source"><![CDATA[--!strict
@@ -1594,10 +1600,11 @@ return IncomeCalculator
 --     DoorBarrier, Sign (SurfaceGui > OwnerLabel)
 --     Cells > Cell{n} > Pad, Spot, Label (SurfaceGui > Text)
 
-local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("GameConfig"))
+local MapDecor = require(script.Parent:WaitForChild("MapDecor"))
+local PartFactory = require(script.Parent:WaitForChild("PartFactory"))
 
 -- Dimensions (studs)
 local HOTEL_SIZE = 56
@@ -1609,30 +1616,8 @@ local CELL_WIDTH = 6.5
 
 local MapBuilder = {}
 
-local function makePart(props: { [string]: any }): Part
-	local part = Instance.new("Part")
-	part.Anchored = true
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	for key, value in props do
-		(part :: any)[key] = value
-	end
-	return part
-end
-
--- Repère invisible (position où quelque chose doit apparaître)
-local function makeMarker(name: string, cframe: CFrame, parent: Instance): Part
-	return makePart({
-		Name = name,
-		Size = Vector3.new(1, 1, 1),
-		CFrame = cframe,
-		Transparency = 1,
-		CanCollide = false,
-		CanQuery = false,
-		CanTouch = false,
-		Parent = parent,
-	})
-end
+local makePart = PartFactory.part
+local makeMarker = PartFactory.marker
 
 -- Une cellule de confinement. « local » = repère de l'hôtel.
 local function buildCell(index: number, origin: CFrame, localCFrame: CFrame, parent: Instance)
@@ -1830,6 +1815,8 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	end
 	assert(cellIndex >= GameConfig.MaxCells, "Pas assez d'emplacements de cellules construits")
 
+	MapDecor.decorateHotel(hotel, origin, { Size = HOTEL_SIZE, WallHeight = WALL_HEIGHT, DoorWidth = DOOR_WIDTH })
+
 	hotel.PrimaryPart = floor
 	hotel.Parent = parent
 end
@@ -1864,7 +1851,7 @@ function MapBuilder.build(): Folder
 	spawn.Name = "PlazaSpawn"
 	spawn.Anchored = true
 	spawn.Size = Vector3.new(12, 1, 12)
-	spawn.CFrame = CFrame.new(0, 0.9, 0)
+	spawn.CFrame = CFrame.new(0, 0.9, 30) -- la fontaine occupe le centre
 	spawn.Neutral = true
 	spawn.Duration = 0 -- pas de bouclier d'apparition
 	spawn.Color = Color3.fromRGB(80, 40, 90)
@@ -1924,9 +1911,8 @@ function MapBuilder.build(): Folder
 		buildHotel(index, origin, hotels)
 	end
 
-	-- Ambiance coucher de soleil : un peu inquiétant, mais les ombres restent visibles
-	Lighting.ClockTime = 17.6
-	Lighting.Brightness = 2
+	MapDecor.decoratePlaza(map)
+	MapDecor.setupLighting()
 
 	map.Parent = workspace
 	return map
@@ -1936,7 +1922,360 @@ return MapBuilder
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="32">
+          <Properties>
+            <string name="Name">MapDecor</string>
+            <string name="Source"><![CDATA[--!strict
+-- Habillage de la carte : ambiance (lumière, brume), décor des hôtels et de la place.
+-- Purement visuel : rien ici ne doit gêner les chemins des clients ni la caméra
+-- de réception (vérifié par tests/run.luau).
+
+local Lighting = game:GetService("Lighting")
+
+local PartFactory = require(script.Parent:WaitForChild("PartFactory"))
+
+local decor = PartFactory.decor
+local light = PartFactory.light
+local rgb = Color3.fromRGB
+
+local WARM_LIGHT = rgb(255, 196, 130)
+
+export type HotelLayout = {
+	Size: number,
+	WallHeight: number,
+	DoorWidth: number,
+}
+
+local MapDecor = {}
+
+-- Cylindre debout (les cylindres Roblox sont couchés sur l'axe X)
+local function standingCylinder(props: { [string]: any }, height: number, diameter: number, position: Vector3): Part
+	props.Shape = Enum.PartType.Cylinder
+	props.Size = Vector3.new(height, diameter, diameter)
+	props.CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90))
+	return decor(props)
+end
+
+-- Ambiance : coucher de soleil violet, brume légère, éclairage réaliste
+function MapDecor.setupLighting()
+	Lighting.ClockTime = 18.6
+	Lighting.Brightness = 2
+	Lighting.Ambient = rgb(70, 60, 85)
+	Lighting.OutdoorAmbient = rgb(110, 95, 130)
+	Lighting.EnvironmentDiffuseScale = 0.5
+	Lighting.EnvironmentSpecularScale = 0.5
+
+	local atmosphere = Instance.new("Atmosphere")
+	atmosphere.Density = 0.32
+	atmosphere.Offset = 0.2
+	atmosphere.Color = rgb(200, 170, 230)
+	atmosphere.Decay = rgb(90, 60, 120)
+	atmosphere.Glare = 0.3
+	atmosphere.Haze = 1.6
+	atmosphere.Parent = Lighting
+
+	local bloom = Instance.new("BloomEffect")
+	bloom.Intensity = 0.6
+	bloom.Size = 24
+	bloom.Threshold = 1.3
+	bloom.Parent = Lighting
+
+	local color = Instance.new("ColorCorrectionEffect")
+	color.Contrast = 0.1
+	color.Saturation = -0.08
+	color.TintColor = rgb(238, 228, 255)
+	color.Parent = Lighting
+end
+
+function MapDecor.decorateHotel(hotel: Model, origin: CFrame, layout: HotelLayout)
+	local half = layout.Size / 2
+	local top = 1 + layout.WallHeight -- haut des murs
+	local folder = Instance.new("Folder")
+	folder.Name = "Decor"
+	folder.Parent = hotel
+
+	local function at(x: number, y: number, z: number): CFrame
+		return origin * CFrame.new(x, y, z)
+	end
+
+	-- Toit (avec un léger débord)
+	decor({
+		Name = "Roof",
+		Size = Vector3.new(layout.Size + 2, 1, layout.Size + 2),
+		CFrame = at(0, top + 0.5, 0),
+		Color = rgb(45, 35, 50),
+		Material = Enum.Material.Slate,
+		CanCollide = true,
+		Parent = folder,
+	})
+
+	-- Plafonniers (pas d'ombre : seule la lampe au-dessus du client en fait)
+	for _, x in { -14, 14 } do
+		for _, z in { -14, 2 } do
+			local panel = decor({
+				Name = "CeilingLight",
+				Size = Vector3.new(6, 0.3, 6),
+				CFrame = at(x, top - 0.2, z),
+				Color = rgb(255, 230, 190),
+				Material = Enum.Material.Neon,
+				Parent = folder,
+			})
+			light(panel, WARM_LIGHT, 26, 1.3)
+		end
+	end
+
+	-- Tapis rouge de la porte au comptoir
+	decor({
+		Name = "Carpet",
+		Size = Vector3.new(8, 0.1, 13),
+		CFrame = at(0, 1.05, 21),
+		Color = rgb(120, 20, 35),
+		Material = Enum.Material.Fabric,
+		Parent = folder,
+	})
+
+	-- Comptoir : plateau en marbre, sonnette, registre, petite lampe
+	decor({
+		Name = "CounterTop",
+		Size = Vector3.new(15, 0.4, 3),
+		CFrame = at(0, 5.2, 12),
+		Color = rgb(225, 220, 230),
+		Material = Enum.Material.Marble,
+		CanCollide = true,
+		Parent = folder,
+	})
+	decor({
+		Name = "Bell",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(0.7, 0.7, 0.7),
+		CFrame = at(3, 5.7, 12),
+		Color = rgb(230, 180, 60),
+		Material = Enum.Material.Metal,
+		Parent = folder,
+	})
+	decor({
+		Name = "Ledger",
+		Size = Vector3.new(1.8, 0.25, 1.2),
+		CFrame = at(-2.5, 5.55, 12) * CFrame.Angles(0, math.rad(10), 0),
+		Color = rgb(90, 30, 30),
+		Material = Enum.Material.Fabric,
+		Parent = folder,
+	})
+	local lamp = decor({
+		Name = "DeskLamp",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(0.8, 0.8, 0.8),
+		CFrame = at(-6, 6, 12),
+		Color = rgb(255, 210, 140),
+		Material = Enum.Material.Neon,
+		Parent = folder,
+	})
+	light(lamp, WARM_LIGHT, 10, 1)
+
+	-- Plantes dans les coins près de l'entrée
+	for _, x in { -(half - 3), half - 3 } do
+		standingCylinder({
+			Name = "Pot",
+			Color = rgb(90, 55, 40),
+			Material = Enum.Material.Concrete,
+			Parent = folder,
+		}, 2.5, 2.5, origin * Vector3.new(x, 2.25, half - 3))
+		decor({
+			Name = "Leaves",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(3.5, 3.5, 3.5),
+			CFrame = at(x, 4.6, half - 3),
+			Color = rgb(40, 95, 50),
+			Material = Enum.Material.Grass,
+			Parent = folder,
+		})
+	end
+
+	-- Façade : fenêtres lumineuses, auvent, montants de porte, lanternes
+	local sideCenter = (layout.DoorWidth + (layout.Size - layout.DoorWidth) / 2) / 2
+	for _, side in { -1, 1 } do
+		decor({
+			Name = "Window",
+			Size = Vector3.new(8, 5, 0.2),
+			CFrame = at(side * sideCenter, 9, half + 0.6),
+			Color = rgb(255, 200, 120),
+			Material = Enum.Material.Neon,
+			Transparency = 0.25,
+			Parent = folder,
+		})
+		decor({
+			Name = "DoorPillar",
+			Size = Vector3.new(1, layout.WallHeight - 4, 1),
+			CFrame = at(side * (layout.DoorWidth / 2 + 0.5), 1 + (layout.WallHeight - 4) / 2, half + 0.6),
+			Color = rgb(60, 35, 25),
+			Material = Enum.Material.Wood,
+			Parent = folder,
+		})
+		standingCylinder({
+			Name = "LanternPost",
+			Color = rgb(30, 25, 30),
+			Material = Enum.Material.Metal,
+			Parent = folder,
+		}, 6, 0.5, origin * Vector3.new(side * (layout.DoorWidth / 2 + 2.5), 4, half + 2))
+		local flame = decor({
+			Name = "Lantern",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(1.2, 1.2, 1.2),
+			CFrame = at(side * (layout.DoorWidth / 2 + 2.5), 7.5, half + 2),
+			Color = rgb(255, 150, 60),
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+		light(flame, rgb(255, 150, 70), 14, 1.5)
+	end
+	-- Fenêtres sur les côtés
+	for _, side in { -1, 1 } do
+		for _, z in { -12, 6 } do
+			decor({
+				Name = "SideWindow",
+				Size = Vector3.new(0.2, 5, 7),
+				CFrame = at(side * (half + 0.6), 9, z),
+				Color = rgb(255, 200, 120),
+				Material = Enum.Material.Neon,
+				Transparency = 0.25,
+				Parent = folder,
+			})
+		end
+	end
+	decor({
+		Name = "Awning",
+		Size = Vector3.new(layout.DoorWidth + 4, 0.5, 4),
+		CFrame = at(0, layout.WallHeight - 2.5, half + 2.2) * CFrame.Angles(math.rad(-12), 0, 0),
+		Color = rgb(130, 25, 45),
+		Material = Enum.Material.Fabric,
+		Parent = folder,
+	})
+
+	-- Cadre néon autour de l'enseigne
+	local sign = hotel:FindFirstChild("Sign")
+	if sign and sign:IsA("BasePart") then
+		decor({
+			Name = "SignFrame",
+			Size = sign.Size + Vector3.new(0.8, 0.8, -0.3),
+			CFrame = sign.CFrame * CFrame.new(0, 0, 0.3),
+			Color = rgb(170, 60, 255),
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+	end
+end
+
+function MapDecor.decoratePlaza(map: Folder)
+	local folder = Instance.new("Folder")
+	folder.Name = "Decor"
+	folder.Parent = map
+
+	-- Fontaine au centre de la place
+	standingCylinder({
+		Name = "FountainBasin",
+		Color = rgb(120, 115, 125),
+		Material = Enum.Material.Cobblestone,
+		CanCollide = true,
+		Parent = folder,
+	}, 2, 18, Vector3.new(0, 1, 0))
+	standingCylinder({
+		Name = "FountainWater",
+		Color = rgb(90, 200, 255),
+		Material = Enum.Material.Neon,
+		Transparency = 0.35,
+		Parent = folder,
+	}, 0.2, 15, Vector3.new(0, 2.05, 0))
+	standingCylinder({
+		Name = "FountainPillar",
+		Color = rgb(150, 145, 155),
+		Material = Enum.Material.Marble,
+		CanCollide = true,
+		Parent = folder,
+	}, 6, 2, Vector3.new(0, 4, 0))
+	local orb = decor({
+		Name = "FountainOrb",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(3, 3, 3),
+		CFrame = CFrame.new(0, 8.5, 0),
+		Color = rgb(150, 90, 255),
+		Material = Enum.Material.Neon,
+		Parent = folder,
+	})
+	light(orb, rgb(170, 110, 255), 30, 2)
+
+	-- Lampadaires
+	for _, x in { -105, -35, 35, 105 } do
+		for _, z in { -50, 50 } do
+			standingCylinder({
+				Name = "LampPost",
+				Color = rgb(30, 25, 35),
+				Material = Enum.Material.Metal,
+				CanCollide = true,
+				Parent = folder,
+			}, 10, 0.8, Vector3.new(x, 5, z))
+			local bulb = decor({
+				Name = "LampBulb",
+				Shape = Enum.PartType.Ball,
+				Size = Vector3.new(1.8, 1.8, 1.8),
+				CFrame = CFrame.new(x, 10.6, z),
+				Color = rgb(255, 210, 150),
+				Material = Enum.Material.Neon,
+				Parent = folder,
+			})
+			light(bulb, WARM_LIGHT, 28, 1.6)
+		end
+	end
+
+	-- Arbres morts et tombes autour de la place (hors des chemins)
+	local treeSpots = {
+		Vector3.new(-170, 0, -40), Vector3.new(-160, 0, 60), Vector3.new(170, 0, -60), Vector3.new(165, 0, 45),
+		Vector3.new(-120, 0, -175), Vector3.new(30, 0, -180), Vector3.new(-40, 0, 180), Vector3.new(120, 0, 175),
+	}
+	for index, base in treeSpots do
+		standingCylinder({
+			Name = "TreeTrunk",
+			Color = rgb(55, 40, 35),
+			Material = Enum.Material.Wood,
+			CanCollide = true,
+			Parent = folder,
+		}, 14, 2, base + Vector3.new(0, 7, 0))
+		for b = 1, 3 do
+			local angle = math.rad(index * 47 + b * 120)
+			decor({
+				Name = "TreeBranch",
+				Size = Vector3.new(0.6, 6, 0.6),
+				CFrame = CFrame.new(base + Vector3.new(0, 10 + b, 0))
+					* CFrame.Angles(0, angle, 0)
+					* CFrame.Angles(math.rad(50), 0, 0)
+					* CFrame.new(0, 3, 0),
+				Color = rgb(55, 40, 35),
+				Material = Enum.Material.Wood,
+				Parent = folder,
+			})
+		end
+	end
+	local graves = {
+		Vector3.new(-150, 0, 0), Vector3.new(-150, 0, 12), Vector3.new(-150, 0, -12),
+		Vector3.new(150, 0, 0), Vector3.new(150, 0, 12), Vector3.new(150, 0, -12),
+	}
+	for _, base in graves do
+		decor({
+			Name = "Grave",
+			Size = Vector3.new(3, 4, 0.8),
+			CFrame = CFrame.new(base + Vector3.new(0, 2, 0)) * CFrame.Angles(0, math.rad(90), math.rad(4)),
+			Color = rgb(100, 100, 110),
+			Material = Enum.Material.Slate,
+			CanCollide = true,
+			Parent = folder,
+		})
+	end
+end
+
+return MapDecor
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="33">
           <Properties>
             <string name="Name">Notify</string>
             <string name="Source"><![CDATA[--!strict
@@ -1957,7 +2296,152 @@ return Notify
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="34">
+          <Properties>
+            <string name="Name">PartFactory</string>
+            <string name="Source"><![CDATA[--!strict
+-- Création de pièces ancrées pour la carte.
+
+local PartFactory = {}
+
+-- Pièce ancrée avec ses propriétés : PartFactory.part({ Name = "Mur", Size = ..., Parent = ... })
+function PartFactory.part(props: { [string]: any }): Part
+	local part = Instance.new("Part")
+	part.Anchored = true
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	for key, value in props do
+		(part :: any)[key] = value
+	end
+	return part
+end
+
+-- Repère invisible (position où quelque chose doit apparaître)
+function PartFactory.marker(name: string, cframe: CFrame, parent: Instance): Part
+	return PartFactory.part({
+		Name = name,
+		Size = Vector3.new(1, 1, 1),
+		CFrame = cframe,
+		Transparency = 1,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		Parent = parent,
+	})
+end
+
+-- Décoration : ne gêne ni les joueurs ni les clics
+function PartFactory.decor(props: { [string]: any }): Part
+	local part = PartFactory.part(props)
+	if props.CanCollide == nil then
+		part.CanCollide = false
+	end
+	part.CanQuery = false
+	part.CanTouch = false
+	return part
+end
+
+-- Lumière ponctuelle accrochée à une pièce
+function PartFactory.light(parent: BasePart, color: Color3, range: number, brightness: number, shadows: boolean?): PointLight
+	local light = Instance.new("PointLight")
+	light.Color = color
+	light.Range = range
+	light.Brightness = brightness
+	light.Shadows = shadows == true
+	light.Parent = parent
+	return light
+end
+
+return PartFactory
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="35">
+          <Properties>
+            <string name="Name">RigAnimator</string>
+            <string name="Source"><![CDATA[--!strict
+-- Animations des personnages non-joueurs (clients et anomalies).
+-- Ce sont les animations R15 par défaut de Roblox : marche quand le personnage
+-- bouge, respiration (« idle ») quand il est immobile.
+
+local WALK_ANIMATION = "rbxassetid://913402848"
+local IDLE_ANIMATION = "rbxassetid://507766666"
+local MOVING_SPEED = 0.5 -- vitesse au-dessus de laquelle on joue la marche
+
+local RigAnimator = {}
+
+local function loadTrack(animator: Animator, id: string, priority: Enum.AnimationPriority): AnimationTrack?
+	local animation = Instance.new("Animation")
+	animation.AnimationId = id
+	local ok, track = pcall(function()
+		return animator:LoadAnimation(animation)
+	end)
+	if not ok then
+		warn(`[RigAnimator] Animation impossible à charger ({id})`)
+		return nil
+	end
+	track.Priority = priority
+	track.Looped = true
+	return track
+end
+
+local function getAnimator(model: Model): (Humanoid?, Animator?)
+	local humanoid = model:FindFirstChildOfClass("Humanoid")
+	if not humanoid then
+		return nil, nil
+	end
+	local animator = humanoid:FindFirstChildOfClass("Animator")
+	if not animator then
+		animator = Instance.new("Animator")
+		animator.Parent = humanoid
+	end
+	return humanoid, animator
+end
+
+-- Respiration seule (anomalie dans sa cellule). À appeler une fois le modèle dans workspace.
+function RigAnimator.idle(model: Model)
+	local _, animator = getAnimator(model)
+	if not animator then
+		return
+	end
+	local track = loadTrack(animator, IDLE_ANIMATION, Enum.AnimationPriority.Idle)
+	if track then
+		-- Décalage aléatoire : les anomalies ne respirent pas toutes en même temps
+		track:Play(0.1, 1, 0.8 + math.random() * 0.4)
+	end
+end
+
+-- Marche / respiration selon la vitesse (clients). À appeler une fois le modèle dans workspace.
+function RigAnimator.walker(model: Model)
+	local humanoid, animator = getAnimator(model)
+	if not humanoid or not animator then
+		return
+	end
+	local idle = loadTrack(animator, IDLE_ANIMATION, Enum.AnimationPriority.Idle)
+	local walk = loadTrack(animator, WALK_ANIMATION, Enum.AnimationPriority.Movement)
+	if idle then
+		idle:Play()
+	end
+	local walking = false
+	humanoid.Running:Connect(function(speed)
+		local moving = speed > MOVING_SPEED
+		if moving == walking or not walk then
+			return
+		end
+		walking = moving
+		if moving then
+			walk:Play(0.2, 1, humanoid.WalkSpeed / 16)
+		else
+			walk:Stop(0.2)
+		end
+	end)
+end
+
+return RigAnimator
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">RigFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -2046,11 +2530,11 @@ return RigFactory
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="33">
+      <Item class="Folder" referent="37">
         <Properties>
           <string name="Name">Services</string>
         </Properties>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="38">
           <Properties>
             <string name="Name">AnomalyService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2076,6 +2560,7 @@ local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppea
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local IncomeCalculator = require(Server:WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local RigFactory = require(Server:WaitForChild("Modules"):WaitForChild("RigFactory"))
+local RigAnimator = require(Server:WaitForChild("Modules"):WaitForChild("RigAnimator"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 
@@ -2171,6 +2656,37 @@ local function resetCellVisuals(hotel: Model)
 	end
 end
 
+-- Lueur de la couleur de la rareté ; particules à partir d'Épique
+local SPARKLING_RARITIES: { [string]: boolean } = { Epic = true, Legendary = true, Mythic = true, Secret = true }
+
+local function addAura(rig: Model, rarityId: Types.RarityId)
+	local root = rig:FindFirstChild("HumanoidRootPart")
+	local rarity = RarityConfig[rarityId]
+	if not root or not rarity then
+		return
+	end
+	local color: Color3 = rarity.Color
+	local light = Instance.new("PointLight")
+	light.Color = color
+	light.Range = if SPARKLING_RARITIES[rarityId] then 12 else 7
+	light.Brightness = if SPARKLING_RARITIES[rarityId] then 2 else 0.8
+	light.Shadows = false
+	light.Parent = root
+	if SPARKLING_RARITIES[rarityId] then
+		local sparkles = Instance.new("ParticleEmitter")
+		sparkles.Name = "Aura"
+		sparkles.Color = ColorSequence.new(color)
+		sparkles.LightEmission = 1
+		sparkles.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0) })
+		sparkles.Transparency = NumberSequence.new(0.2, 1)
+		sparkles.Lifetime = NumberRange.new(1, 2)
+		sparkles.Rate = if rarityId == "Epic" then 6 else 14
+		sparkles.Speed = NumberRange.new(0.5, 1.5)
+		sparkles.SpreadAngle = Vector2.new(180, 180)
+		sparkles.Parent = root
+	end
+end
+
 -- Personnage de l'anomalie sous sa vraie forme (couleurs, mutation, yeux)
 function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId): Model
 	local def = AnomalyConfig.ById[anomalyId]
@@ -2187,6 +2703,7 @@ function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId
 			descendant.CanCollide = false
 		end
 	end
+	addAura(rig, def.Rarity)
 	return rig
 end
 
@@ -2201,13 +2718,14 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 
 	local rig = AnomalyService.BuildRig(owned.Id, owned.Mutation)
 	rig.Name = `Anomaly_{uid}`
-	for _, descendant in rig:GetDescendants() do
-		if descendant:IsA("BasePart") then
-			descendant.Anchored = true
-		end
+	-- Seul le tronc est ancré : les membres restent libres pour l'animation
+	local rigRoot = rig:FindFirstChild("HumanoidRootPart")
+	if rigRoot and rigRoot:IsA("BasePart") then
+		rigRoot.Anchored = true
 	end
 	RigAppearance.placeOnFloor(rig, spot.CFrame)
 	rig.Parent = cell
+	RigAnimator.idle(rig)
 
 	-- Invite « Voler », visible seulement des autres joueurs (voir PromptController)
 	local root = rig:FindFirstChild("HumanoidRootPart")
@@ -2394,7 +2912,7 @@ return AnomalyService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="39">
           <Properties>
             <string name="Name">CatalogService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2454,7 +2972,7 @@ return CatalogService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="36">
+        <Item class="ModuleScript" referent="40">
           <Properties>
             <string name="Name">DebugService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2614,7 +3132,7 @@ return DebugService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="37">
+        <Item class="ModuleScript" referent="41">
           <Properties>
             <string name="Name">GuestService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2643,6 +3161,7 @@ local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
+local RigAnimator = require(Modules:WaitForChild("RigAnimator"))
 local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
 local Analytics = require(Modules:WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
@@ -2757,6 +3276,7 @@ local function buildGuestModel(session: Session, profile: Types.GuestProfile): M
 
 	RigAppearance.placeOnFloor(rig, getMarker(session.hotel, "GuestSpawn").CFrame)
 	rig.Parent = guestsFolder
+	RigAnimator.walker(rig)
 
 	-- Le serveur contrôle la physique du client (empêche les joueurs de le déplacer)
 	local root = getRoot(rig)
@@ -3100,7 +3620,7 @@ return GuestService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="38">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">HotelService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3235,7 +3755,7 @@ return HotelService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="39">
+        <Item class="ModuleScript" referent="43">
           <Properties>
             <string name="Name">IncomeService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3323,7 +3843,7 @@ return IncomeService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="44">
           <Properties>
             <string name="Name">LeaderboardService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3477,7 +3997,7 @@ return LeaderboardService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="41">
+        <Item class="ModuleScript" referent="45">
           <Properties>
             <string name="Name">LockService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3614,7 +4134,7 @@ return LockService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="46">
           <Properties>
             <string name="Name">MonetizationService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3798,7 +4318,7 @@ return MonetizationService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="43">
+        <Item class="ModuleScript" referent="47">
           <Properties>
             <string name="Name">PlayerDataService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3985,7 +4505,7 @@ return PlayerDataService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="44">
+        <Item class="ModuleScript" referent="48">
           <Properties>
             <string name="Name">ShopService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4079,7 +4599,7 @@ return ShopService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="45">
+        <Item class="ModuleScript" referent="49">
           <Properties>
             <string name="Name">StealService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4339,7 +4859,7 @@ return StealService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="46">
+        <Item class="ModuleScript" referent="50">
           <Properties>
             <string name="Name">TutorialService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4384,11 +4904,11 @@ return TutorialService
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="47">
+      <Item class="Folder" referent="51">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="48">
+        <Item class="ModuleScript" referent="52">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -4452,11 +4972,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="49">
+      <Item class="Folder" referent="53">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="50">
+        <Item class="ModuleScript" referent="54">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -6583,23 +7103,23 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="51">
+  <Item class="StarterPlayer" referent="55">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="52">
+    <Item class="StarterPlayerScripts" referent="56">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="53">
+      <Item class="Folder" referent="57">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="54">
+        <Item class="Folder" referent="58">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="55">
+          <Item class="ModuleScript" referent="59">
             <Properties>
               <string name="Name">CatalogController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6782,7 +7302,7 @@ return CatalogController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="56">
+          <Item class="ModuleScript" referent="60">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7014,7 +7534,7 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="57">
+          <Item class="ModuleScript" referent="61">
             <Properties>
               <string name="Name">LockController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7063,7 +7583,7 @@ return LockController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="58">
+          <Item class="ModuleScript" referent="62">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7106,7 +7626,7 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="59">
+          <Item class="ModuleScript" referent="63">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7604,7 +8124,7 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="60">
+          <Item class="ModuleScript" referent="64">
             <Properties>
               <string name="Name">ShopController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7889,7 +8409,7 @@ return ShopController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="61">
+          <Item class="ModuleScript" referent="65">
             <Properties>
               <string name="Name">SoundController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7972,7 +8492,7 @@ return SoundController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="62">
+          <Item class="ModuleScript" referent="66">
             <Properties>
               <string name="Name">TutorialController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8141,7 +8661,7 @@ return TutorialController
             </Properties>
           </Item>
         </Item>
-        <Item class="LocalScript" referent="63">
+        <Item class="LocalScript" referent="67">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -8159,11 +8679,11 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="64">
+        <Item class="Folder" referent="68">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="65">
+          <Item class="ModuleScript" referent="69">
             <Properties>
               <string name="Name">HudBar</string>
               <string name="Source"><![CDATA[--!strict
@@ -8195,7 +8715,7 @@ return HudBar
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="66">
+          <Item class="ModuleScript" referent="70">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -8259,7 +8779,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="67">
+  <Item class="Workspace" referent="71">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

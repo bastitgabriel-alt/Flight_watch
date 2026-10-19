@@ -414,6 +414,20 @@ test("Chemins des clients et du propriétaire dégagés", function()
 	end
 end)
 
+test("Décor de la place : loin des hôtels, du spawn et du classement", function()
+	local spawnPos = map.PlazaSpawn.Position + V.new(0, ROOT_HEIGHT, 0)
+	for _, part in map.Decor:GetChildren() do
+		assert(not S.pointInPart(spawnPos, part, 3), "apparition dans " .. part.Name)
+		assert((part.Position - map.Leaderboard.Position).Magnitude > 12, part.Name .. " devant le classement")
+		for _, hotel in hotels do
+			local p = part.Position
+			p = V.new(p.X, hotel.Floor.Position.Y + 2, p.Z)
+			assert(not S.pointInPart(p, hotel.Floor, 6), part.Name .. " dans " .. hotel.Name)
+		end
+	end
+	assert(#map.Decor:GetChildren() > 20, "décor manquant")
+end)
+
 print(string.format("\n%d test(s) réussi(s), %d échec(s)", passed, failed))
 if failed > 0 then
 	error("des tests ont échoué")

@@ -24,6 +24,7 @@ local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
+local RigAnimator = require(Modules:WaitForChild("RigAnimator"))
 local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
 local Analytics = require(Modules:WaitForChild("Analytics"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
@@ -138,6 +139,7 @@ local function buildGuestModel(session: Session, profile: Types.GuestProfile): M
 
 	RigAppearance.placeOnFloor(rig, getMarker(session.hotel, "GuestSpawn").CFrame)
 	rig.Parent = guestsFolder
+	RigAnimator.walker(rig)
 
 	-- Le serveur contrôle la physique du client (empêche les joueurs de le déplacer)
 	local root = getRoot(rig)
