@@ -6,7 +6,8 @@ local SoundConfig = {
 	Good = { Id = "rbxasset://sounds/electronicpingshort.wav", Volume = 0.6 },
 	Bad = { Id = "rbxasset://sounds/uuhhh.mp3", Volume = 0.5 },
 	Click = { Id = "rbxasset://sounds/button.wav", Volume = 0.4 },
-	Scare = { Id = "rbxasset://sounds/swoosh.wav", Volume = 0.9 },
+	-- swoosh.wav n'existe plus chez Roblox
+	Scare = { Id = "rbxasset://sounds/uuhhh.mp3", Volume = 1 },
 }
 
 return SoundConfig
