@@ -346,6 +346,7 @@ return {
 -- (voir AnomalyConfig) et plus ses indices sont rares et discrets.
 --
 -- SpawnWeight : chances relatives qu'une anomalie soit de cette rareté.
+-- HiddenClueChance : indice en plus, visible seulement avec la lampe UV ou le scanner.
 -- Total = 100, donc chaque poids = pourcentage parmi les anomalies.
 -- Objectif : 1re rare vers 10 min, 1re légendaire vers 1 h (voir tests/run.luau).
 
@@ -359,6 +360,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 93,
 		ClueCount = 2,
 		SubtleChance = 0,
+		HiddenClueChance = 0,
 	},
 	Rare = {
 		DisplayName = "Rare",
@@ -367,6 +369,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 4,
 		ClueCount = 1,
 		SubtleChance = 0.2,
+		HiddenClueChance = 0.4,
 	},
 	Epic = {
 		DisplayName = "Épique",
@@ -375,6 +378,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 1.7,
 		ClueCount = 1,
 		SubtleChance = 0.5,
+		HiddenClueChance = 0.6,
 	},
 	Legendary = {
 		DisplayName = "Légendaire",
@@ -383,6 +387,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 1.1,
 		ClueCount = 1,
 		SubtleChance = 0.8,
+		HiddenClueChance = 0.8,
 	},
 	Mythic = {
 		DisplayName = "Mythique",
@@ -391,6 +396,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 0.2,
 		ClueCount = 1,
 		SubtleChance = 1,
+		HiddenClueChance = 1,
 	},
 	-- Réservée aux événements admin (après le MVP) : n'apparaît jamais seule
 	Secret = {
@@ -400,6 +406,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 0,
 		ClueCount = 1,
 		SubtleChance = 1,
+		HiddenClueChance = 1,
 	},
 }
 
@@ -407,8 +414,97 @@ return RarityConfig
 ]]></string>
           </Properties>
         </Item>
+        <Item class="ModuleScript" referent="9">
+          <Properties>
+            <string name="Name">ShopConfig</string>
+            <string name="Source"><![CDATA[--!strict
+-- Boutique, verrou et vol. Tous les prix et durées sont ici.
+
+local ShopConfig = {
+	-- Cellules supplémentaires : prix = BasePrice x PriceGrowth ^ (nombre déjà achetées)
+	Cells = {
+		BasePrice = 150,
+		PriceGrowth = 1.9,
+		MaxPurchasable = 5, -- 8 de base + 5 achetées (+ 3 avec le gamepass) = 16 max
+	},
+
+	-- Outils de détection (achat unique). Chacun révèle un indice caché.
+	Tools = {
+		UVLamp = {
+			DisplayName = "Lampe UV",
+			Description = "Révèle les traces fluorescentes laissées par certaines anomalies.",
+			Price = 400,
+			Order = 1,
+		},
+		ThermalScanner = {
+			DisplayName = "Scanner thermique",
+			Description = "Mesure la température du client. Une anomalie est glacée.",
+			Price = 2500,
+			Order = 2,
+		},
+	},
+
+	-- Améliorations de sécurité (plusieurs niveaux)
+	Security = {
+		LockPlus = {
+			DisplayName = "Verrou renforcé",
+			Description = "Ta porte reste verrouillée 20 s de plus par niveau.",
+			Prices = { 800, 5000 },
+			Order = 1,
+		},
+		SlowTrap = {
+			DisplayName = "Piège ralentisseur",
+			Description = "Les voleurs qui emportent tes anomalies avancent plus lentement.",
+			Prices = { 1200, 7000 },
+			Order = 2,
+		},
+	},
+
+	Lock = {
+		BaseDuration = 60, -- secondes de verrouillage
+		BonusPerLevel = 20, -- + par niveau de « Verrou renforcé »
+		Cooldown = 60, -- attente avant de pouvoir reverrouiller
+	},
+
+	Steal = {
+		HoldDuration = 1.5, -- secondes à maintenir pour voler
+		CarrySpeed = 11, -- vitesse du voleur chargé (normale : 16)
+		TrapSpeeds = { 8, 6 }, -- vitesse selon le niveau du « Piège ralentisseur » de la victime
+		Timeout = 90, -- l'anomalie retourne dans sa cellule après ce délai
+	},
+}
+
+-- Prix de la prochaine cellule, ou nil si le maximum est atteint
+function ShopConfig.nextCellPrice(purchased: number): number?
+	if purchased >= ShopConfig.Cells.MaxPurchasable then
+		return nil
+	end
+	return math.floor(ShopConfig.Cells.BasePrice * ShopConfig.Cells.PriceGrowth ^ purchased)
+end
+
+-- Prix du prochain niveau d'une amélioration, ou nil si niveau max
+function ShopConfig.nextSecurityPrice(upgradeId: string, level: number): number?
+	local upgrade = (ShopConfig.Security :: any)[upgradeId]
+	if not upgrade then
+		return nil
+	end
+	return upgrade.Prices[level + 1]
+end
+
+function ShopConfig.lockDuration(lockPlusLevel: number): number
+	return ShopConfig.Lock.BaseDuration + ShopConfig.Lock.BonusPerLevel * lockPlusLevel
+end
+
+function ShopConfig.carrySpeed(slowTrapLevel: number): number
+	return ShopConfig.Steal.TrapSpeeds[slowTrapLevel] or ShopConfig.Steal.CarrySpeed
+end
+
+return ShopConfig
+]]></string>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="ModuleScript" referent="9">
+      <Item class="ModuleScript" referent="10">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[--!strict
@@ -429,6 +525,8 @@ local EVENT_NAMES: { string } = {
 	"ReceptionShow", -- serveur -> client : (ReceptionInfo) ouvre la réception
 	"ReceptionDecision", -- client -> serveur : (token, "Accept" | "Capture")
 	"ReceptionResult", -- serveur -> client : (token, outcome, details)
+	"ShopBuy", -- client -> serveur : ("Cell" | "Tool" | "Security", itemId)
+	"LockRequest", -- client -> serveur : verrouiller sa porte
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)
@@ -486,7 +584,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="10">
+      <Item class="ModuleScript" referent="11">
         <Properties>
           <string name="Name">Types</string>
           <string name="Source"><![CDATA[--!strict
@@ -496,8 +594,8 @@ export type RarityId = "Common" | "Rare" | "Epic" | "Legendary" | "Mythic" | "Se
 
 export type MutationId = "None" | "Golden" | "Neon"
 
--- Les 4 types d'indices du MVP
-export type ClueType = "Registry" | "Shadow" | "Eyes" | "Photo"
+-- Indices visibles par tous + indices cachés (révélés par un outil acheté)
+export type ClueType = "Registry" | "Shadow" | "Eyes" | "Photo" | "UV" | "Thermal"
 
 -- Strong = indice évident, Subtle = indice discret (anomalies rares)
 export type ClueStrength = "Strong" | "Subtle"
@@ -516,6 +614,7 @@ export type Rarity = {
 	SpawnWeight: number, -- poids de tirage (0 = n'apparaît jamais)
 	ClueCount: number, -- nombre d'indices montrés par une anomalie de cette rareté
 	SubtleChance: number, -- probabilité (0 à 1) que chaque indice soit discret
+	HiddenClueChance: number, -- probabilité d'un indice caché en plus (UV ou thermique)
 }
 
 export type Mutation = {
@@ -554,6 +653,7 @@ export type GuestProfile = {
 	PhotoAppearance: Appearance, -- apparence sur la photo d'identité
 	Registry: { string }, -- noms écrits dans le registre des réservations
 	Clues: { [ClueType]: ClueStrength },
+	Temperature: number, -- °C, mesurée par le scanner thermique
 }
 
 -- Ce que le client a le droit de voir quand il reçoit un client
@@ -564,17 +664,22 @@ export type ReceptionInfo = {
 	Registry: { string },
 	Deadline: number, -- workspace:GetServerTimeNow() limite
 	Guest: Model?, -- le modèle 3D du client (pour cadrer la caméra)
+	-- Résultats des outils possédés (absent = outil non acheté)
+	ToolResults: {
+		UV: boolean?, -- true = traces fluorescentes
+		Thermal: number?, -- température en °C
+	},
 }
 
 return {}
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="11">
+      <Item class="Folder" referent="12">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="12">
+        <Item class="ModuleScript" referent="13">
           <Properties>
             <string name="Name">Format</string>
             <string name="Source"><![CDATA[--!strict
@@ -620,7 +725,7 @@ return Format
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="13">
+        <Item class="ModuleScript" referent="14">
           <Properties>
             <string name="Name">Loader</string>
             <string name="Source"><![CDATA[--!strict
@@ -682,7 +787,34 @@ return Loader
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="14">
+        <Item class="ModuleScript" referent="15">
+          <Properties>
+            <string name="Name">ReceptionCamera</string>
+            <string name="Source"><![CDATA[--!strict
+-- Position de la caméra quand on inspecte un client à la réception.
+-- Isolé ici pour être testé (tests/run.luau vérifie que rien ne cache le client).
+
+local ReceptionCamera = {}
+
+-- rootCFrame : le HumanoidRootPart du client (il regarde le comptoir).
+-- Renvoie la position de la caméra et le point visé.
+function ReceptionCamera.compute(rootCFrame: CFrame): (Vector3, Vector3)
+	local rootPosition = rootCFrame.Position
+	-- Entre le comptoir et le client : rien ne cache ses pieds ni son ombre
+	local eye = rootPosition + rootCFrame.LookVector * 5.5 + Vector3.new(0, 1.5, 0)
+	-- On vise à droite du client pour qu'il apparaisse dans la moitié gauche
+	-- (le panneau d'inspection occupe la droite de l'écran)
+	local toGuest = (rootPosition - eye) * Vector3.new(1, 0, 1)
+	local right = toGuest.Unit:Cross(Vector3.yAxis)
+	local target = rootPosition - Vector3.new(0, 1.2, 0) + right * 3
+	return eye, target
+end
+
+return ReceptionCamera
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="16">
           <Properties>
             <string name="Name">RigAppearance</string>
             <string name="Source"><![CDATA[--!strict
@@ -791,7 +923,7 @@ return RigAppearance
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="15">
+        <Item class="ModuleScript" referent="17">
           <Properties>
             <string name="Name">Signal</string>
             <string name="Source"><![CDATA[--!strict
@@ -846,15 +978,15 @@ return Signal
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="16">
+  <Item class="ServerScriptService" referent="18">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Folder" referent="17">
+    <Item class="Folder" referent="19">
       <Properties>
         <string name="Name">Server</string>
       </Properties>
-      <Item class="Script" referent="18">
+      <Item class="Script" referent="20">
         <Properties>
           <string name="Name">Main</string>
           <token name="RunContext">0</token>
@@ -877,11 +1009,69 @@ print("[Serveur] Serveur prêt")
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="19">
+      <Item class="Folder" referent="21">
         <Properties>
           <string name="Name">Modules</string>
         </Properties>
-        <Item class="ModuleScript" referent="20">
+        <Item class="ModuleScript" referent="22">
+          <Properties>
+            <string name="Name">CollisionGroups</string>
+            <string name="Source"><![CDATA[--!strict
+-- Groupes de collision : la barrière de verrou d'un hôtel bloque tout le monde
+-- sauf son propriétaire et les clients de la réception.
+
+local PhysicsService = game:GetService("PhysicsService")
+
+local CollisionGroups = {}
+
+CollisionGroups.GUESTS = "Guests"
+
+function CollisionGroups.barrier(hotelIndex: number): string
+	return `Barrier{hotelIndex}`
+end
+
+function CollisionGroups.owner(hotelIndex: number): string
+	return `Owner{hotelIndex}`
+end
+
+local function register(name: string)
+	if not PhysicsService:IsCollisionGroupRegistered(name) then
+		PhysicsService:RegisterCollisionGroup(name)
+	end
+end
+
+-- À appeler une fois au démarrage (sans risque si appelé plusieurs fois)
+function CollisionGroups.setup(hotelCount: number)
+	register(CollisionGroups.GUESTS)
+	for index = 1, hotelCount do
+		local barrier = CollisionGroups.barrier(index)
+		local owner = CollisionGroups.owner(index)
+		register(barrier)
+		register(owner)
+		PhysicsService:CollisionGroupSetCollidable(owner, barrier, false)
+		PhysicsService:CollisionGroupSetCollidable(CollisionGroups.GUESTS, barrier, false)
+	end
+end
+
+-- Met toutes les pièces d'un modèle (et celles ajoutées plus tard) dans un groupe
+function CollisionGroups.assign(model: Instance, group: string): RBXScriptConnection
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("BasePart") then
+			descendant.CollisionGroup = group
+		end
+	end
+	return model.DescendantAdded:Connect(function(descendant)
+		if descendant:IsA("BasePart") then
+			descendant.CollisionGroup = group
+		end
+	end)
+end
+
+return CollisionGroups
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="23">
           <Properties>
             <string name="Name">DataSchema</string>
             <string name="Source"><![CDATA[--!strict
@@ -960,7 +1150,7 @@ return DataSchema
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="21">
+        <Item class="ModuleScript" referent="24">
           <Properties>
             <string name="Name">GuestGenerator</string>
             <string name="Source"><![CDATA[--!strict
@@ -986,6 +1176,16 @@ export type Options = {
 }
 
 local GuestGenerator = {}
+
+local HIDDEN_CLUES: { Types.ClueType } = { "UV", "Thermal" }
+
+-- Température d'un humain normal, ou d'une anomalie glacée
+local function normalTemperature(rng: Random): number
+	return math.floor(rng:NextNumber(36.2, 37.4) * 10) / 10
+end
+local function coldTemperature(rng: Random): number
+	return math.floor(rng:NextNumber(6, 18) * 10) / 10
+end
 
 local function pick<T>(rng: Random, list: { T }): T
 	return list[rng:NextInteger(1, #list)]
@@ -1151,6 +1351,7 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 			PhotoAppearance = table.clone(appearance),
 			Registry = buildRegistry(rng, name, name),
 			Clues = {},
+			Temperature = normalTemperature(rng),
 		}
 	end
 
@@ -1168,6 +1369,10 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 	local clues: { [Types.ClueType]: Types.ClueStrength } = {}
 	for i = 1, math.min(rarity.ClueCount, #pool) do
 		clues[pool[i]] = if rng:NextNumber() < rarity.SubtleChance then "Subtle" else "Strong"
+	end
+	-- Indice caché en plus (seulement visible avec l'outil correspondant)
+	if rng:NextNumber() < rarity.HiddenClueChance then
+		clues[pick(rng, HIDDEN_CLUES)] = "Strong"
 	end
 
 	-- Photo d'identité
@@ -1198,6 +1403,7 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 		PhotoAppearance = photo,
 		Registry = buildRegistry(rng, registryName, name),
 		Clues = clues,
+		Temperature = if clues.Thermal then coldTemperature(rng) else normalTemperature(rng),
 	}
 end
 
@@ -1205,7 +1411,7 @@ return GuestGenerator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="22">
+        <Item class="ModuleScript" referent="25">
           <Properties>
             <string name="Name">IncomeCalculator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1247,7 +1453,7 @@ return IncomeCalculator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="23">
+        <Item class="ModuleScript" referent="26">
           <Properties>
             <string name="Name">MapBuilder</string>
             <string name="Source"><![CDATA[--!strict
@@ -1567,7 +1773,7 @@ return MapBuilder
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="24">
+        <Item class="ModuleScript" referent="27">
           <Properties>
             <string name="Name">Notify</string>
             <string name="Source"><![CDATA[--!strict
@@ -1588,7 +1794,7 @@ return Notify
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="25">
+        <Item class="ModuleScript" referent="28">
           <Properties>
             <string name="Name">RigFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -1677,11 +1883,11 @@ return RigFactory
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="26">
+      <Item class="Folder" referent="29">
         <Properties>
           <string name="Name">Services</string>
         </Properties>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">AnomalyService</string>
             <string name="Source"><![CDATA[--!strict
@@ -1700,6 +1906,7 @@ local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local GameConfig = require(Config:WaitForChild("GameConfig"))
 local MutationConfig = require(Config:WaitForChild("MutationConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
+local ShopConfig = require(Config:WaitForChild("ShopConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
@@ -1712,6 +1919,8 @@ local AnomalyService = {}
 
 -- (player) : la liste des anomalies du joueur a changé (revenu à recalculer)
 AnomalyService.AnomaliesChanged = Signal.new()
+-- (thief, owner, uid) : un joueur a activé « Voler » sur une anomalie
+AnomalyService.StealRequested = Signal.new()
 
 -- Modèles affichés : models[player][uid] = Model
 local models: { [Player]: { [string]: Model } } = {}
@@ -1795,6 +2004,25 @@ local function resetCellVisuals(hotel: Model)
 	end
 end
 
+-- Personnage de l'anomalie sous sa vraie forme (couleurs, mutation, yeux)
+function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId): Model
+	local def = AnomalyConfig.ById[anomalyId]
+	local rig = RigFactory.newRig()
+	RigAppearance.apply(rig, def.TrueForm)
+	local mutation = MutationConfig.Mutations[mutationId]
+	if mutation and mutation.Color and mutation.Material then
+		RigAppearance.applyMaterial(rig, mutation.Color, mutation.Material)
+	end
+	RigAppearance.addGlowingEyes(rig, def.EyeColor, 0.25)
+	RigAppearance.setCastShadow(rig, false)
+	for _, descendant in rig:GetDescendants() do
+		if descendant:IsA("BasePart") then
+			descendant.CanCollide = false
+		end
+	end
+	return rig
+end
+
 -- Crée le modèle 3D de l'anomalie dans sa cellule (sa vraie forme)
 local function spawnModel(player: Player, hotel: Model, uid: string, owned: Types.OwnedAnomaly)
 	local def = AnomalyConfig.ById[owned.Id]
@@ -1804,29 +2032,38 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 		return
 	end
 
-	local rig = RigFactory.newRig()
+	local rig = AnomalyService.BuildRig(owned.Id, owned.Mutation)
 	rig.Name = `Anomaly_{uid}`
-	RigAppearance.apply(rig, def.TrueForm)
-	local mutation = MutationConfig.Mutations[owned.Mutation]
-	if mutation and mutation.Color and mutation.Material then
-		RigAppearance.applyMaterial(rig, mutation.Color, mutation.Material)
-	end
-	RigAppearance.addGlowingEyes(rig, def.EyeColor, 0.25)
-	RigAppearance.setCastShadow(rig, false)
 	for _, descendant in rig:GetDescendants() do
 		if descendant:IsA("BasePart") then
 			descendant.Anchored = true
-			descendant.CanCollide = false
 		end
 	end
 	RigAppearance.placeOnFloor(rig, spot.CFrame)
 	rig.Parent = cell
+
+	-- Invite « Voler », visible seulement des autres joueurs (voir PromptController)
+	local root = rig:FindFirstChild("HumanoidRootPart")
+	if root then
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Voler"
+		prompt.ObjectText = def.DisplayName
+		prompt.HoldDuration = ShopConfig.Steal.HoldDuration
+		prompt.MaxActivationDistance = 10
+		prompt.RequiresLineOfSight = false
+		prompt:SetAttribute("ExceptUserId", player.UserId)
+		prompt.Triggered:Connect(function(thief)
+			AnomalyService.StealRequested:Fire(thief, player, uid)
+		end)
+		prompt.Parent = root
+	end
 
 	-- Étiquette : nom, rareté, mutation, revenu
 	local label = getCellLabel(cell)
 	if label then
 		local rarity = RarityConfig[def.Rarity]
 		local income = IncomeCalculator.anomalyIncome(owned.Id, owned.Mutation)
+		local mutation = MutationConfig.Mutations[owned.Mutation]
 		local mutationText = if owned.Mutation ~= "None" and mutation then ` [{mutation.DisplayName}]` else ""
 		label.Text = `{def.DisplayName}{mutationText}\n{rarity.DisplayName} • {Format.money(income)}/s`
 		label.TextColor3 = rarity.Color
@@ -1915,6 +2152,67 @@ function AnomalyService.AddAnomaly(player: Player, anomalyId: string, mutation: 
 	return cellIndex
 end
 
+-- Anomalie possédée (ou nil)
+function AnomalyService.GetOwned(player: Player, uid: string): Types.OwnedAnomaly?
+	local data = PlayerDataService.GetData(player)
+	return if data then data.Anomalies[uid] else nil
+end
+
+function AnomalyService.HasFreeCell(player: Player): boolean
+	local data = PlayerDataService.GetData(player)
+	return data ~= nil and findFreeCell(data, AnomalyService.GetCellCapacity(player)) ~= nil
+end
+
+-- Modèle 3D de l'anomalie dans sa cellule (ou nil)
+function AnomalyService.GetModel(player: Player, uid: string): Model?
+	local playerModels = models[player]
+	return if playerModels then playerModels[uid] else nil
+end
+
+-- Retire le modèle de la cellule (pendant un vol) sans toucher aux données
+function AnomalyService.HideModel(player: Player, uid: string)
+	local playerModels = models[player]
+	local model = playerModels and playerModels[uid]
+	if model and playerModels then
+		model:Destroy()
+		playerModels[uid] = nil
+	end
+end
+
+-- Remet le modèle dans sa cellule (vol raté)
+function AnomalyService.ShowModel(player: Player, uid: string)
+	local owned = AnomalyService.GetOwned(player, uid)
+	local hotel = HotelService.GetHotel(player)
+	if owned and hotel and owned.Cell > 0 and not AnomalyService.GetModel(player, uid) then
+		spawnModel(player, hotel, uid, owned)
+	end
+end
+
+-- Supprime définitivement une anomalie (vol réussi). Renvoie ce qui a été retiré.
+function AnomalyService.RemoveAnomaly(player: Player, uid: string): Types.OwnedAnomaly?
+	local data = PlayerDataService.GetData(player)
+	local owned = data and data.Anomalies[uid]
+	if not data or not owned then
+		return nil
+	end
+	AnomalyService.HideModel(player, uid)
+	data.Anomalies[uid] = nil
+	local hotel = HotelService.GetHotel(player)
+	if hotel then
+		refreshCellVisuals(player, hotel)
+	end
+	AnomalyService.AnomaliesChanged:Fire(player)
+	return owned
+end
+
+-- Rafraîchit l'aspect des cellules (après l'achat d'une cellule)
+function AnomalyService.RefreshCells(player: Player)
+	local hotel = HotelService.GetHotel(player)
+	if hotel then
+		refreshCellVisuals(player, hotel)
+	end
+end
+
 function AnomalyService.Init(_self: typeof(AnomalyService))
 	HotelService.HotelAssigned:Connect(onHotelAssigned)
 	HotelService.HotelReleased:Connect(onHotelReleased)
@@ -1924,7 +2222,7 @@ return AnomalyService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">DebugService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2039,7 +2337,7 @@ return DebugService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">GuestService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2067,6 +2365,7 @@ local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
+local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
@@ -2174,6 +2473,8 @@ local function buildGuestModel(session: Session, profile: Types.GuestProfile): M
 		humanoid.WalkSpeed = GUEST_WALK_SPEED
 	end
 	rig:SetAttribute("OwnerUserId", session.player.UserId)
+	-- Les clients traversent la barrière de verrou
+	CollisionGroups.assign(rig, CollisionGroups.GUESTS):Disconnect()
 
 	RigAppearance.placeOnFloor(rig, getMarker(session.hotel, "GuestSpawn").CFrame)
 	rig.Parent = guestsFolder
@@ -2340,6 +2641,13 @@ local function onPromptTriggered(session: Session, guest: Guest, player: Player,
 	if not promptLimiter:allow(player) then
 		return
 	end
+	-- Résultats des outils : envoyés seulement si le joueur les a achetés
+	local data = PlayerDataService.GetData(player)
+	local tools = if data then data.Tools else {}
+	local toolResults = {
+		UV = if tools.UVLamp then guest.profile.Clues.UV ~= nil else nil,
+		Thermal = if tools.ThermalScanner then guest.profile.Temperature else nil,
+	}
 	local info: Types.ReceptionInfo = {
 		Token = guest.token,
 		Name = guest.profile.Name,
@@ -2347,6 +2655,7 @@ local function onPromptTriggered(session: Session, guest: Guest, player: Player,
 		Registry = guest.profile.Registry,
 		Deadline = deadline,
 		Guest = guest.model,
+		ToolResults = toolResults,
 	}
 	Remotes.getEvent("ReceptionShow"):FireClient(player, info)
 end
@@ -2385,6 +2694,7 @@ local function serveOneGuest(session: Session)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 14
 	prompt.RequiresLineOfSight = false
+	prompt:SetAttribute("OnlyUserId", session.player.UserId)
 	prompt.Parent = root or model
 	prompt.Triggered:Connect(function(player)
 		onPromptTriggered(session, guest, player, deadline)
@@ -2498,7 +2808,7 @@ return GuestService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="33">
           <Properties>
             <string name="Name">HotelService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2632,7 +2942,7 @@ return HotelService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">IncomeService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2717,7 +3027,144 @@ return IncomeService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="35">
+          <Properties>
+            <string name="Name">LockService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Verrou de base : le propriétaire ferme sa porte pendant un temps (60 s + bonus),
+-- puis doit attendre avant de pouvoir reverrouiller.
+-- La barrière bloque tout le monde sauf le propriétaire et les clients (groupes de collision).
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Server = ServerScriptService:WaitForChild("Server")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local GameConfig = require(Config:WaitForChild("GameConfig"))
+local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local CollisionGroups = require(Server:WaitForChild("Modules"):WaitForChild("CollisionGroups"))
+local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
+local HotelService = require(script.Parent:WaitForChild("HotelService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local LockService = {}
+
+local lockLimiter = RateLimiter.new(2, 1)
+local characterConnections: { [Player]: { RBXScriptConnection } } = {}
+
+local function getBarrier(hotel: Model): BasePart?
+	local barrier = hotel:FindFirstChild("DoorBarrier")
+	return if barrier and barrier:IsA("BasePart") then barrier else nil
+end
+
+local function setBarrierLocked(hotel: Model, locked: boolean)
+	local barrier = getBarrier(hotel)
+	if barrier then
+		barrier.CanCollide = locked
+		barrier.Transparency = if locked then 0.35 else 1
+	end
+	hotel:SetAttribute("Locked", locked)
+end
+
+function LockService.IsLocked(hotel: Model): boolean
+	return hotel:GetAttribute("Locked") == true
+end
+
+local function disconnectAll(player: Player)
+	local connections = characterConnections[player]
+	if connections then
+		for _, connection in connections do
+			connection:Disconnect()
+		end
+	end
+	characterConnections[player] = nil
+end
+
+-- Le personnage du propriétaire traverse sa propre barrière
+local function onHotelAssigned(player: Player, hotel: Model)
+	local index = hotel:GetAttribute("HotelIndex") :: number
+	local group = CollisionGroups.owner(index)
+	local connections: { RBXScriptConnection } = {}
+	characterConnections[player] = connections
+	local function onCharacter(character: Model)
+		table.insert(connections, CollisionGroups.assign(character, group))
+	end
+	if player.Character then
+		onCharacter(player.Character)
+	end
+	table.insert(connections, player.CharacterAdded:Connect(onCharacter))
+	player:SetAttribute("LockEndsAt", nil)
+	player:SetAttribute("LockReadyAt", nil)
+end
+
+local function onHotelReleased(player: Player, hotel: Model)
+	disconnectAll(player)
+	setBarrierLocked(hotel, false)
+	if player.Character then
+		CollisionGroups.assign(player.Character, "Default"):Disconnect()
+	end
+end
+
+local function onLockRequest(player: Player)
+	if not lockLimiter:allow(player) then
+		return
+	end
+	local hotel = HotelService.GetHotel(player)
+	local data = PlayerDataService.GetData(player)
+	if not hotel or not data then
+		return
+	end
+	local now = workspace:GetServerTimeNow()
+	local readyAt = (player:GetAttribute("LockReadyAt") :: number?) or 0
+	if now < readyAt then
+		return
+	end
+
+	local duration = ShopConfig.lockDuration(data.SecurityUpgrades.LockPlus or 0)
+	local endsAt = now + duration
+	player:SetAttribute("LockEndsAt", endsAt)
+	player:SetAttribute("LockReadyAt", endsAt + ShopConfig.Lock.Cooldown)
+	setBarrierLocked(hotel, true)
+	Notify.send(player, `Porte verrouillée pendant {duration} s`, "Good")
+
+	task.delay(duration, function()
+		-- Toujours le même propriétaire et le même verrouillage ?
+		if HotelService.GetHotel(player) == hotel and player:GetAttribute("LockEndsAt") == endsAt then
+			setBarrierLocked(hotel, false)
+			Notify.send(player, "Ta porte est déverrouillée !", "Bad")
+		end
+	end)
+end
+
+function LockService.Init(_self: typeof(LockService))
+	HotelService.HotelAssigned:Connect(onHotelAssigned)
+	HotelService.HotelReleased:Connect(onHotelReleased)
+	Players.PlayerRemoving:Connect(disconnectAll)
+	Remotes.getEvent("LockRequest").OnServerEvent:Connect(onLockRequest)
+end
+
+function LockService.Start(_self: typeof(LockService))
+	CollisionGroups.setup(GameConfig.HotelCount)
+	local hotels = workspace:WaitForChild("Map"):WaitForChild("Hotels")
+	for _, hotel in hotels:GetChildren() do
+		local index = hotel:GetAttribute("HotelIndex")
+		local barrier = hotel:IsA("Model") and getBarrier(hotel)
+		if typeof(index) == "number" and barrier then
+			barrier.CollisionGroup = CollisionGroups.barrier(index)
+		end
+	end
+end
+
+return LockService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">PlayerDataService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2870,12 +3317,359 @@ return PlayerDataService
 ]]></string>
           </Properties>
         </Item>
+        <Item class="ModuleScript" referent="37">
+          <Properties>
+            <string name="Name">ShopService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Boutique : cellules supplémentaires, outils de détection, améliorations de sécurité.
+-- Le client envoie seulement « je veux acheter X » ; le serveur vérifie le prix et l'argent.
+-- Ce que possède le joueur est publié en attributs (lus par l'interface) :
+--   CellsUnlocked, Tool_<id> = true, Sec_<id> = niveau
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Server = ServerScriptService:WaitForChild("Server")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local GameConfig = require(Config:WaitForChild("GameConfig"))
+local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
+local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local ShopService = {}
+
+local buyLimiter = RateLimiter.new(4, 1)
+
+local function publishOwnership(player: Player, data: any)
+	player:SetAttribute("CellsUnlocked", data.CellsUnlocked)
+	for toolId in ShopConfig.Tools do
+		player:SetAttribute(`Tool_{toolId}`, data.Tools[toolId] == true)
+	end
+	for upgradeId in ShopConfig.Security do
+		player:SetAttribute(`Sec_{upgradeId}`, data.SecurityUpgrades[upgradeId] or 0)
+	end
+end
+
+local function pay(player: Player, price: number, itemName: string): boolean
+	if PlayerDataService.TrySpend(player, price) then
+		Notify.send(player, `Acheté : {itemName} (-{Format.money(price)})`, "Good")
+		return true
+	end
+	Notify.send(player, `Pas assez d'argent pour {itemName}`, "Bad")
+	return false
+end
+
+local function onBuy(player: Player, category: any, itemId: any)
+	if typeof(category) ~= "string" or typeof(itemId) ~= "string" or not buyLimiter:allow(player) then
+		return
+	end
+	local data = PlayerDataService.GetData(player)
+	if not data then
+		return
+	end
+
+	if category == "Cell" then
+		local purchased = data.CellsUnlocked - GameConfig.BaseCells
+		local price = ShopConfig.nextCellPrice(purchased)
+		if price and pay(player, price, "Cellule") then
+			data.CellsUnlocked += 1
+			AnomalyService.RefreshCells(player)
+		end
+	elseif category == "Tool" then
+		local tool = (ShopConfig.Tools :: any)[itemId]
+		if tool and not data.Tools[itemId] and pay(player, tool.Price, tool.DisplayName) then
+			data.Tools[itemId] = true
+		end
+	elseif category == "Security" then
+		local upgrade = (ShopConfig.Security :: any)[itemId]
+		local level = data.SecurityUpgrades[itemId] or 0
+		local price = ShopConfig.nextSecurityPrice(itemId, level)
+		if upgrade and price and pay(player, price, `{upgrade.DisplayName} niv. {level + 1}`) then
+			data.SecurityUpgrades[itemId] = level + 1
+		end
+	end
+	publishOwnership(player, data)
+end
+
+function ShopService.Init(_self: typeof(ShopService))
+	PlayerDataService.DataLoaded:Connect(publishOwnership)
+	Remotes.getEvent("ShopBuy").OnServerEvent:Connect(onBuy)
+end
+
+return ShopService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="38">
+          <Properties>
+            <string name="Name">StealService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Vol entre joueurs : un voleur prend une anomalie dans la cellule d'un autre,
+-- la porte au-dessus de sa tête (vitesse réduite) et doit rejoindre son hôtel.
+-- Le propriétaire peut la récupérer en touchant le voleur (invite « Récupérer »).
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Server = ServerScriptService:WaitForChild("Server")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+
+local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
+local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
+local HotelService = require(script.Parent:WaitForChild("HotelService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local NORMAL_WALK_SPEED = 16
+local MAX_START_DISTANCE = 16
+
+type Steal = {
+	thief: Player,
+	owner: Player,
+	uid: string,
+	anomalyId: string,
+	carried: Model,
+	startedAt: number,
+	diedConnection: RBXScriptConnection?,
+}
+
+local StealService = {}
+
+local stealsByThief: { [Player]: Steal } = {}
+
+local function getRoot(player: Player): BasePart?
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	return if root and root:IsA("BasePart") then root else nil
+end
+
+local function setWalkSpeed(player: Player, speed: number)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.WalkSpeed = speed
+	end
+end
+
+local function isUidBeingStolen(owner: Player, uid: string): boolean
+	for _, steal in stealsByThief do
+		if steal.owner == owner and steal.uid == uid then
+			return true
+		end
+	end
+	return false
+end
+
+-- Le voleur est-il dans son propre hôtel ?
+local function isInsideOwnHotel(thief: Player, root: BasePart): boolean
+	local hotel = HotelService.GetHotel(thief)
+	local floor = hotel and hotel:FindFirstChild("Floor")
+	if not floor or not floor:IsA("BasePart") then
+		return false
+	end
+	local localPos = floor.CFrame:PointToObjectSpace(root.Position)
+	return math.abs(localPos.X) < floor.Size.X / 2 and math.abs(localPos.Z) < floor.Size.Z / 2 and localPos.Y < 25
+end
+
+-- Termine un vol. success = l'anomalie change de propriétaire.
+local function finish(steal: Steal, success: boolean, reason: string?)
+	if stealsByThief[steal.thief] ~= steal then
+		return
+	end
+	stealsByThief[steal.thief] = nil
+	steal.carried:Destroy()
+	if steal.diedConnection then
+		steal.diedConnection:Disconnect()
+	end
+	if steal.thief.Parent == Players then
+		setWalkSpeed(steal.thief, NORMAL_WALK_SPEED)
+	end
+
+	local def = AnomalyConfig.ById[steal.anomalyId]
+	local name = if def then def.DisplayName else "l'anomalie"
+
+	if success then
+		local owned = AnomalyService.RemoveAnomaly(steal.owner, steal.uid)
+		if owned and AnomalyService.AddAnomaly(steal.thief, owned.Id, owned.Mutation) then
+			local thiefData = PlayerDataService.GetData(steal.thief)
+			local ownerData = PlayerDataService.GetData(steal.owner)
+			if thiefData then
+				thiefData.Stats.StealsSucceeded += 1
+			end
+			if ownerData then
+				ownerData.Stats.StealsSuffered += 1
+			end
+			Notify.send(steal.thief, `Vol réussi : {name} est à toi !`, "Good")
+			Notify.send(steal.owner, `{steal.thief.DisplayName} t'a volé {name} !`, "Bad")
+			return
+		elseif owned then
+			-- Impossible de l'ajouter au voleur (cellules pleines) : on la rend
+			local ownerData = PlayerDataService.GetData(steal.owner)
+			if ownerData then
+				ownerData.Anomalies[steal.uid] = owned
+				AnomalyService.ShowModel(steal.owner, steal.uid)
+				AnomalyService.AnomaliesChanged:Fire(steal.owner)
+			end
+			Notify.send(steal.thief, "Tes cellules sont pleines, l'anomalie s'échappe !", "Bad")
+			return
+		end
+	end
+
+	-- Échec : l'anomalie retourne dans sa cellule
+	if steal.owner.Parent == Players then
+		AnomalyService.ShowModel(steal.owner, steal.uid)
+		if reason then
+			Notify.send(steal.owner, reason, "Good")
+		end
+	end
+	if steal.thief.Parent == Players then
+		Notify.send(steal.thief, `Vol raté : {name} est retournée dans sa cellule`, "Bad")
+	end
+end
+
+-- Copie de l'anomalie portée au-dessus de la tête du voleur
+local function buildCarried(steal: Steal, root: BasePart): Model
+	local owned = AnomalyService.GetOwned(steal.owner, steal.uid)
+	assert(owned, "anomalie introuvable")
+	local rig = AnomalyService.BuildRig(owned.Id, owned.Mutation)
+	rig.Name = "CarriedAnomaly"
+	local humanoid = rig:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid:Destroy() -- simple objet porté, pas un personnage
+	end
+	rig:ScaleTo(0.6)
+	for _, descendant in rig:GetDescendants() do
+		if descendant:IsA("BasePart") then
+			descendant.Anchored = false
+			descendant.Massless = true
+			descendant.CanCollide = false
+			descendant.CanQuery = true
+		end
+	end
+	local rigRoot = rig:FindFirstChild("HumanoidRootPart") :: BasePart
+	rig:PivotTo(root.CFrame * CFrame.new(0, 5, 0))
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = root
+	weld.Part1 = rigRoot
+	weld.Parent = rigRoot
+
+	-- Seul le propriétaire voit l'invite « Récupérer »
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.ActionText = "Récupérer"
+	prompt.ObjectText = steal.thief.DisplayName
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 12
+	prompt.RequiresLineOfSight = false
+	prompt:SetAttribute("OnlyUserId", steal.owner.UserId)
+	prompt.Triggered:Connect(function(player)
+		if player == steal.owner then
+			finish(steal, false, "Tu as récupéré ton anomalie !")
+		end
+	end)
+	prompt.Parent = rigRoot
+
+	rig.Parent = root.Parent
+	return rig
+end
+
+local function tryStart(thief: Player, owner: Player, uid: string)
+	if thief == owner or stealsByThief[thief] or thief.Parent ~= Players or owner.Parent ~= Players then
+		return
+	end
+	local owned = AnomalyService.GetOwned(owner, uid)
+	local model = AnomalyService.GetModel(owner, uid)
+	local root = getRoot(thief)
+	if not owned or not model or not root or isUidBeingStolen(owner, uid) then
+		return
+	end
+	if not HotelService.GetHotel(thief) then
+		return
+	end
+	if (model:GetPivot().Position - root.Position).Magnitude > MAX_START_DISTANCE then
+		return
+	end
+	if not AnomalyService.HasFreeCell(thief) then
+		Notify.send(thief, "Tes cellules sont pleines : achète-en une à la boutique !", "Bad")
+		return
+	end
+
+	local steal: Steal = {
+		thief = thief,
+		owner = owner,
+		uid = uid,
+		anomalyId = owned.Id,
+		carried = (nil :: any) :: Model,
+		startedAt = os.clock(),
+		diedConnection = nil,
+	}
+	steal.carried = buildCarried(steal, root)
+	stealsByThief[thief] = steal
+	AnomalyService.HideModel(owner, uid)
+
+	local ownerData = PlayerDataService.GetData(owner)
+	local trapLevel = if ownerData then ownerData.SecurityUpgrades.SlowTrap or 0 else 0
+	setWalkSpeed(thief, ShopConfig.carrySpeed(trapLevel))
+
+	local humanoid = thief.Character and thief.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		steal.diedConnection = humanoid.Died:Connect(function()
+			finish(steal, false, nil)
+		end)
+	end
+
+	local def = AnomalyConfig.ById[owned.Id]
+	Notify.send(owner, `ALERTE : {thief.DisplayName} vole {def.DisplayName} ! Rattrape-le !`, "Bad")
+	Notify.send(thief, "Ramène-la dans ton hôtel !", "Info")
+end
+
+function StealService.Init(_self: typeof(StealService))
+	AnomalyService.StealRequested:Connect(tryStart)
+
+	Players.PlayerRemoving:Connect(function(player)
+		for _, steal in table.clone(stealsByThief) do
+			if steal.thief == player or steal.owner == player then
+				finish(steal, false, nil)
+			end
+		end
+	end)
+end
+
+function StealService.Start(_self: typeof(StealService))
+	-- Vérifie régulièrement : arrivée à l'hôtel, délai dépassé, personnage disparu
+	while true do
+		task.wait(0.25)
+		for _, steal in table.clone(stealsByThief) do
+			local root = getRoot(steal.thief)
+			if not root or not steal.carried.Parent then
+				finish(steal, false, nil)
+			elseif isInsideOwnHotel(steal.thief, root) then
+				finish(steal, true, nil)
+			elseif os.clock() - steal.startedAt > ShopConfig.Steal.Timeout then
+				finish(steal, false, "Le voleur a mis trop de temps, ton anomalie est revenue.")
+			end
+		end
+	end
+end
+
+return StealService
+]]></string>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Folder" referent="33">
+      <Item class="Folder" referent="39">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="40">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -2939,11 +3733,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="35">
+      <Item class="Folder" referent="41">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="36">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -5070,23 +5864,23 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="37">
+  <Item class="StarterPlayer" referent="43">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="38">
+    <Item class="StarterPlayerScripts" referent="44">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="39">
+      <Item class="Folder" referent="45">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="40">
+        <Item class="Folder" referent="46">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="41">
+          <Item class="ModuleScript" referent="47">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -5129,20 +5923,36 @@ local function buildGui()
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 
-	-- Panneau d'argent en bas au centre : libre sur PC comme sur téléphone
-	-- (chat en haut à gauche, joystick en bas à gauche, saut en bas à droite)
-	local panel = UI.new("Frame", {
-		Name = "MoneyPanel",
+	-- Barre du bas : [Boutique] [Argent] [Verrou]. Libre sur PC comme sur téléphone
+	-- (chat en haut à gauche, joystick en bas à gauche, saut en bas à droite).
+	-- Les boutons Boutique et Verrou sont ajoutés par leurs contrôleurs.
+	local bar = UI.new("Frame", {
+		Name = "BottomBar",
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -10),
-		Size = UDim2.new(0.3, 0, 0, 70),
+		Size = UDim2.new(1, 0, 0, 72),
+		BackgroundTransparency = 1,
+		Parent = gui,
+	}, {
+		UI.new("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, 8),
+		}),
+	})
+
+	local panel = UI.new("Frame", {
+		Name = "MoneyPanel",
+		LayoutOrder = 2,
+		Size = UDim2.fromOffset(210, 70),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
-		Parent = gui,
+		Parent = bar,
 	}, {
 		UI.corner(16),
 		UI.stroke(Color3.fromRGB(255, 200, 80), 2),
-		UI.new("UISizeConstraint", { MinSize = Vector2.new(150, 56), MaxSize = Vector2.new(260, 76) }),
 	})
 	moneyScale = UI.new("UIScale", { Parent = panel })
 
@@ -5288,12 +6098,62 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="42">
+          <Item class="ModuleScript" referent="48">
+            <Properties>
+              <string name="Name">LockController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Bouton « Verrouiller » : ferme la porte de son hôtel aux autres joueurs.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local HudBar = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("HudBar"))
+
+local player = Players.LocalPlayer
+
+local READY_COLOR = Color3.fromRGB(60, 110, 200)
+local LOCKED_COLOR = Color3.fromRGB(190, 40, 50)
+local COOLDOWN_COLOR = Color3.fromRGB(80, 80, 90)
+
+local LockController = {}
+
+function LockController.Start(_self: typeof(LockController))
+	local button = HudBar.addButton("Verrou", 3, READY_COLOR)
+
+	button.Activated:Connect(function()
+		Remotes.getEvent("LockRequest"):FireServer()
+	end)
+
+	while true do
+		local now = workspace:GetServerTimeNow()
+		local endsAt = (player:GetAttribute("LockEndsAt") :: number?) or 0
+		local readyAt = (player:GetAttribute("LockReadyAt") :: number?) or 0
+		if now < endsAt then
+			button.Text = `🔒 {math.ceil(endsAt - now)} s`
+			button.BackgroundColor3 = LOCKED_COLOR
+		elseif now < readyAt then
+			button.Text = `⏳ {math.ceil(readyAt - now)} s`
+			button.BackgroundColor3 = COOLDOWN_COLOR
+		else
+			button.Text = "🔒 Verrouiller"
+			button.BackgroundColor3 = READY_COLOR
+		end
+		task.wait(0.25)
+	end
+end
+
+return LockController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="49">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
--- Cache les invites « Recevoir » des clients des autres hôtels :
--- chaque joueur ne voit que celles de son propre hôtel.
+-- Affiche chaque invite (ProximityPrompt) seulement aux bons joueurs :
+--   attribut OnlyUserId   -> visible uniquement par ce joueur (ex. « Recevoir »)
+--   attribut ExceptUserId -> visible par tous sauf ce joueur (ex. « Voler »)
 
 local Players = game:GetService("Players")
 
@@ -5302,20 +6162,24 @@ local player = Players.LocalPlayer
 local PromptController = {}
 
 local function updatePrompt(prompt: ProximityPrompt)
-	local model = prompt:FindFirstAncestorWhichIsA("Model")
-	local owner = model and model:GetAttribute("OwnerUserId")
+	local only = prompt:GetAttribute("OnlyUserId")
+	local except = prompt:GetAttribute("ExceptUserId")
 	-- Modification locale : n'affecte que l'écran de ce joueur
-	prompt.Enabled = owner == nil or owner == player.UserId
+	if only ~= nil then
+		prompt.Enabled = only == player.UserId
+	elseif except ~= nil then
+		prompt.Enabled = except ~= player.UserId
+	end
 end
 
 function PromptController.Start(_self: typeof(PromptController))
-	local guests = workspace:WaitForChild("Guests")
-	guests.DescendantAdded:Connect(function(descendant)
+	workspace.DescendantAdded:Connect(function(descendant)
 		if descendant:IsA("ProximityPrompt") then
-			updatePrompt(descendant)
+			-- Les attributs arrivent avec l'objet ; on attend une image par sécurité
+			task.defer(updatePrompt, descendant)
 		end
 	end)
-	for _, descendant in guests:GetDescendants() do
+	for _, descendant in workspace:GetDescendants() do
 		if descendant:IsA("ProximityPrompt") then
 			updatePrompt(descendant)
 		end
@@ -5326,7 +6190,7 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="43">
+          <Item class="ModuleScript" referent="50">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -5348,6 +6212,7 @@ local GuestConfig = require(Config:WaitForChild("GuestConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
+local ReceptionCamera = require(Shared:WaitForChild("Util"):WaitForChild("ReceptionCamera"))
 local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
 
 local player = Players.LocalPlayer
@@ -5361,6 +6226,8 @@ local CLUE_TEXT: { [string]: { [string]: string } } = {
 	Shadow = { Strong = "pas d'ombre", Subtle = "pas d'ombre" },
 	Eyes = { Strong = "yeux rouges lumineux", Subtle = "petits yeux orangés" },
 	Photo = { Strong = "photo différente", Subtle = "pantalon différent sur la photo" },
+	UV = { Strong = "traces fluorescentes (lampe UV)" },
+	Thermal = { Strong = "corps glacé (scanner thermique)" },
 }
 
 local ReceptionController = {}
@@ -5375,6 +6242,7 @@ local registryList: Frame
 local acceptButton: TextButton
 local captureButton: TextButton
 local resultLabel: TextLabel
+local toolsLabel: TextLabel
 
 local current: Types.ReceptionInfo? = nil
 local cameraFocused = false
@@ -5467,7 +6335,7 @@ local function buildGui()
 	local card = UI.new("Frame", {
 		Name = "IdCard",
 		Position = UDim2.fromScale(0, 0.165),
-		Size = UDim2.new(1, 0, 0.33, 0),
+		Size = UDim2.new(1, 0, 0.31, 0),
 		BackgroundColor3 = Color3.fromRGB(235, 225, 200),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -5504,8 +6372,8 @@ local function buildGui()
 	-- Registre des réservations (à droite)
 	local registry = UI.new("Frame", {
 		Name = "Registry",
-		Position = UDim2.fromScale(0, 0.515),
-		Size = UDim2.new(1, 0, 0.29, 0),
+		Position = UDim2.fromScale(0, 0.49),
+		Size = UDim2.new(1, 0, 0.22, 0),
 		BackgroundColor3 = Color3.fromRGB(245, 240, 225),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -5527,6 +6395,20 @@ local function buildGui()
 	}, {
 		UI.new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2) }),
 	})
+
+	-- Résultats des outils de détection (lampe UV, scanner thermique)
+	toolsLabel = UI.new("TextLabel", {
+		Name = "Tools",
+		Position = UDim2.fromScale(0, 0.725),
+		Size = UDim2.new(1, 0, 0.08, 0),
+		BackgroundColor3 = Color3.fromRGB(40, 30, 50),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		RichText = true,
+		Text = "",
+		Parent = panel,
+	}, { UI.corner(8), UI.padding(4), UI.textSize(10, 18) })
 
 	acceptButton = makeButton("Accept", "🔑 Donner la clé", Color3.fromRGB(40, 160, 80), UDim2.fromScale(0, 1))
 	captureButton = makeButton("Capture", "🪤 Capturer", Color3.fromRGB(190, 40, 50), UDim2.fromScale(0.52, 1))
@@ -5628,12 +6510,7 @@ local function focusCamera(guest: Model?)
 	cameraFocused = true
 	camera.CameraType = Enum.CameraType.Scriptable
 	setOwnCharacterHidden(true)
-	-- Caméra entre le comptoir et le client (rien ne cache ses pieds ni son ombre)
-	local eye = root.Position + root.CFrame.LookVector * 5.5 + Vector3.new(0, 1.5, 0)
-	-- On vise à droite du client pour qu'il apparaisse dans la moitié gauche
-	local toGuest = (root.Position - eye) * Vector3.new(1, 0, 1)
-	local right = toGuest.Unit:Cross(Vector3.yAxis)
-	local target = root.Position - Vector3.new(0, 1.2, 0) + right * 3
+	local eye, target = ReceptionCamera.compute(root.CFrame)
 	TweenService:Create(camera, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
 		CFrame = CFrame.lookAt(eye, target),
 	}):Play()
@@ -5656,12 +6533,34 @@ local function setButtonsEnabled(enabled: boolean)
 	captureButton.TextTransparency = if enabled then 0 else 0.5
 end
 
+-- Texte des outils : résultat si acheté, sinon rappel qu'il existe
+local function describeTools(info: Types.ReceptionInfo): string
+	local results = info.ToolResults or {}
+	local parts = {}
+	if results.UV ~= nil then
+		table.insert(parts, if results.UV
+			then `<font color="#FF5AF0">UV : traces fluorescentes !</font>`
+			else "UV : rien")
+	else
+		table.insert(parts, `<font color="#888888">🔒 Lampe UV</font>`)
+	end
+	if results.Thermal ~= nil then
+		local cold = results.Thermal < 30
+		local text = `{string.format("%.1f", results.Thermal)} °C`
+		table.insert(parts, if cold then `<font color="#5AC8FF">Temp. : {text} !</font>` else `Temp. : {text}`)
+	else
+		table.insert(parts, `<font color="#888888">🔒 Scanner</font>`)
+	end
+	return table.concat(parts, "   •   ")
+end
+
 function ReceptionController.Open(info: Types.ReceptionInfo)
 	current = info
 	speechLabel.Text = `« Bonsoir, je suis {info.Name}. J'ai réservé une chambre. »`
 	cardName.Text = info.Name
 	showRegistry(info.Registry)
 	showPhoto(info.PhotoAppearance)
+	toolsLabel.Text = describeTools(info)
 	setButtonsEnabled(true)
 	gui.Enabled = true
 	ProximityPromptService.Enabled = false -- l'invite cacherait le client
@@ -5779,8 +6678,242 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
+          <Item class="ModuleScript" referent="51">
+            <Properties>
+              <string name="Name">ShopController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Boutique : bouton dans la barre du bas, fenêtre avec la liste des achats.
+-- Les prix affichés viennent de ShopConfig ; le serveur revérifie tout.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local GameConfig = require(Config:WaitForChild("GameConfig"))
+local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Util = script.Parent.Parent:WaitForChild("Util")
+local UI = require(Util:WaitForChild("UI"))
+local HudBar = require(Util:WaitForChild("HudBar"))
+
+local player = Players.LocalPlayer
+
+local ShopController = {}
+
+type Row = {
+	category: string,
+	itemId: string,
+	order: number,
+	-- Renvoie : titre, description, prix (nil = rien à acheter), texte si pas de prix
+	describe: () -> (string, string, number?, string),
+}
+
+local rows: { Row } = {}
+local gui: ScreenGui
+local list: ScrollingFrame
+
+local function attribute(name: string): any
+	return player:GetAttribute(name)
+end
+
+local function buildRows()
+	table.insert(rows, {
+		category = "Cell",
+		itemId = "Cell",
+		order = 1,
+		describe = function()
+			local unlocked = (attribute("CellsUnlocked") :: number?) or GameConfig.BaseCells
+			local purchased = unlocked - GameConfig.BaseCells
+			local price = ShopConfig.nextCellPrice(purchased)
+			return `Cellule supplémentaire ({purchased}/{ShopConfig.Cells.MaxPurchasable})`,
+				"Une place de plus pour enfermer une anomalie.",
+				price,
+				"MAX"
+		end,
+	})
+	for toolId, tool in ShopConfig.Tools do
+		table.insert(rows, {
+			category = "Tool",
+			itemId = toolId,
+			order = 10 + tool.Order,
+			describe = function()
+				local owned = attribute(`Tool_{toolId}`) == true
+				return tool.DisplayName, tool.Description, if owned then nil else tool.Price, "Acheté"
+			end,
+		})
+	end
+	for upgradeId, upgrade in ShopConfig.Security do
+		table.insert(rows, {
+			category = "Security",
+			itemId = upgradeId,
+			order = 20 + upgrade.Order,
+			describe = function()
+				local level = (attribute(`Sec_{upgradeId}`) :: number?) or 0
+				local price = ShopConfig.nextSecurityPrice(upgradeId, level)
+				return `{upgrade.DisplayName} (niv. {level}/{#upgrade.Prices})`, upgrade.Description, price, "MAX"
+			end,
+		})
+	end
+	table.sort(rows, function(a, b)
+		return a.order < b.order
+	end)
+end
+
+type RowWidgets = { row: Row, title: TextLabel, button: TextButton }
+local widgets: { RowWidgets } = {}
+
+-- Crée les lignes une seule fois (les recréer à chaque seconde ferait rater des clics)
+local function createRowWidgets()
+	for index, row in rows do
+		local frame = UI.new("Frame", {
+			LayoutOrder = index,
+			Size = UDim2.new(1, -8, 0, 70),
+			BackgroundColor3 = Color3.fromRGB(45, 35, 55),
+			Parent = list,
+		}, { UI.corner(10), UI.padding(6) })
+		local _, description = row.describe()
+		local title = UI.new("TextLabel", {
+			BackgroundTransparency = 1,
+			Size = UDim2.fromScale(0.68, 0.45),
+			Font = Enum.Font.GothamBold,
+			TextScaled = true,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextColor3 = Color3.new(1, 1, 1),
+			Parent = frame,
+		}, { UI.textSize(10, 20) })
+		UI.new("TextLabel", {
+			BackgroundTransparency = 1,
+			Position = UDim2.fromScale(0, 0.48),
+			Size = UDim2.fromScale(0.68, 0.52),
+			Font = Enum.Font.Gotham,
+			TextScaled = true,
+			TextWrapped = true,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextColor3 = Color3.fromRGB(200, 190, 210),
+			Text = description,
+			Parent = frame,
+		}, { UI.textSize(8, 16) })
+		local button = UI.new("TextButton", {
+			AnchorPoint = Vector2.new(1, 0.5),
+			Position = UDim2.fromScale(1, 0.5),
+			Size = UDim2.fromScale(0.3, 0.9),
+			Font = Enum.Font.FredokaOne,
+			TextScaled = true,
+			TextColor3 = Color3.new(1, 1, 1),
+			Parent = frame,
+		}, { UI.corner(10), UI.padding(4), UI.textSize(10, 22) })
+		button.Activated:Connect(function()
+			local _, _, price = row.describe()
+			if price then
+				Remotes.getEvent("ShopBuy"):FireServer(row.category, row.itemId)
+			end
+		end)
+		table.insert(widgets, { row = row, title = title, button = button })
+	end
+end
+
+-- Met à jour textes, prix et couleurs (argent, achats)
+local function refresh()
+	if not gui or not gui.Enabled then
+		return
+	end
+	local money = (attribute("Money") :: number?) or 0
+	for _, w in widgets do
+		local title, _, price, doneText = w.row.describe()
+		w.title.Text = title
+		w.button.Text = if price then Format.money(price) else doneText
+		w.button.AutoButtonColor = price ~= nil
+		w.button.BackgroundColor3 = if price == nil
+			then Color3.fromRGB(70, 70, 80)
+			elseif money >= price then Color3.fromRGB(40, 160, 80)
+			else Color3.fromRGB(120, 60, 60)
+	end
+end
+
+local function buildGui()
+	gui = UI.new("ScreenGui", {
+		Name = "Shop",
+		ResetOnSpawn = false,
+		Enabled = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local window = UI.new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.45),
+		Size = UDim2.fromScale(0.7, 0.75),
+		BackgroundColor3 = Color3.fromRGB(25, 18, 30),
+		Parent = gui,
+	}, {
+		UI.corner(18),
+		UI.stroke(Color3.fromRGB(255, 200, 80), 2),
+		UI.padding(10),
+		UI.new("UISizeConstraint", { MaxSize = Vector2.new(560, 480), MinSize = Vector2.new(300, 240) }),
+	})
+	UI.new("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, -50, 0, 36),
+		Font = Enum.Font.FredokaOne,
+		TextScaled = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = Color3.fromRGB(255, 220, 90),
+		Text = "🛒 Boutique",
+		Parent = window,
+	})
+	UI.new("TextButton", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromScale(1, 0),
+		Size = UDim2.fromOffset(40, 40),
+		BackgroundColor3 = Color3.fromRGB(70, 60, 80),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Text = "X",
+		Parent = window,
+	}, { UI.corner(8) }).Activated:Connect(function()
+		gui.Enabled = false
+	end)
+	list = UI.new("ScrollingFrame", {
+		Position = UDim2.fromOffset(0, 46),
+		Size = UDim2.new(1, 0, 1, -46),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		Parent = window,
+	}, {
+		UI.new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6) }),
+	})
+end
+
+function ShopController.Start(_self: typeof(ShopController))
+	buildRows()
+	buildGui()
+	createRowWidgets()
+
+	local button = HudBar.addButton("Boutique", 1, Color3.fromRGB(200, 130, 30))
+	button.Text = "🛒 Boutique"
+	button.Activated:Connect(function()
+		gui.Enabled = not gui.Enabled
+		refresh()
+	end)
+
+	-- Mise à jour quand l'argent ou les possessions changent
+	player.AttributeChanged:Connect(function(name)
+		if name == "Money" or name == "CellsUnlocked" or string.sub(name, 1, 5) == "Tool_" or string.sub(name, 1, 4) == "Sec_" then
+			refresh()
+		end
+	end)
+end
+
+return ShopController
+]]></string>
+            </Properties>
+          </Item>
         </Item>
-        <Item class="LocalScript" referent="44">
+        <Item class="LocalScript" referent="52">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -5798,11 +6931,43 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="45">
+        <Item class="Folder" referent="53">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="46">
+          <Item class="ModuleScript" referent="54">
+            <Properties>
+              <string name="Name">HudBar</string>
+              <string name="Source"><![CDATA[--!strict
+-- Ajoute un bouton dans la barre du bas (à côté de l'argent).
+
+local Players = game:GetService("Players")
+
+local UI = require(script.Parent:WaitForChild("UI"))
+
+local HudBar = {}
+
+function HudBar.addButton(name: string, layoutOrder: number, color: Color3): TextButton
+	local gui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("Hud")
+	local bar = gui:WaitForChild("BottomBar")
+	return UI.new("TextButton", {
+		Name = name,
+		LayoutOrder = layoutOrder,
+		Size = UDim2.fromOffset(112, 64),
+		BackgroundColor3 = color,
+		Font = Enum.Font.FredokaOne,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Text = name,
+		Parent = bar,
+	}, { UI.corner(14), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6), UI.textSize(12, 22) })
+end
+
+return HudBar
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="55">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -5866,7 +7031,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="47">
+  <Item class="Workspace" referent="56">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

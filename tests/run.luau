@@ -63,12 +63,16 @@ local function makeNode(path, name, parent)
 	})
 end
 
+local S = __load(__readfile("tests/stubs.luau"), "tests/stubs.luau", setmetatable({}, { __index = _G }))()
+
 local shared = makeNode(ROOT .. "/shared", "Shared")
 local server = makeNode(ROOT .. "/server", "Server")
 local services = {
 	ReplicatedStorage = setmetatable({}, { __index = function(_, k) return k == "Shared" and shared or nil end }),
 	ServerScriptService = setmetatable({}, { __index = function(_, k) return k == "Server" and server or nil end }),
 	RunService = { IsServer = function() return true end, IsStudio = function() return true end },
+	Lighting = S.Lighting,
+	Workspace = S.workspace,
 }
 services.ReplicatedStorage.WaitForChild = function(self, k) return self[k] end
 services.ServerScriptService.WaitForChild = function(self, k) return self[k] end
@@ -81,6 +85,8 @@ local function robloxRequire(node)
 		local source = assert(__readfile(path), "Fichier introuvable : " .. path)
 		local env = setmetatable({
 			script = node, game = game, Color3 = Color3, Random = Random, require = robloxRequire,
+			Vector3 = S.Vector3, CFrame = S.CFrame, Instance = S.Instance, Enum = S.Enum,
+			UDim2 = S.UDim2, UDim = S.UDim, workspace = S.workspace,
 			task = { spawn = function(f, ...) f(...) end, wait = function() return 0 end },
 		}, { __index = _G })
 		local fn = __load(source, path, env)
@@ -162,7 +168,7 @@ end)
 
 test("Clients générés cohérents (20 000 tirages)", function()
 	local rng = Random.new(42)
-	local anomalies, total = 0, 20000
+	local anomalies, total, hidden = 0, 20000, 0
 	local rarityCount, mutationCount = {}, {}
 	for _ = 1, total do
 		local g = GuestGenerator.generate(rng)
@@ -175,6 +181,7 @@ test("Clients générés cohérents (20 000 tirages)", function()
 		if not g.IsAnomaly then
 			assert(seen[g.Name], "vrai client absent du registre")
 			assert(next(g.Clues) == nil, "vrai client avec indices")
+			assert(g.Temperature > 36 and g.Temperature < 38, "vrai client glacé")
 			eq(g.PhotoAppearance.Skin, g.Appearance.Skin)
 			eq(g.PhotoAppearance.Shirt, g.Appearance.Shirt)
 			eq(g.PhotoAppearance.Pants, g.Appearance.Pants)
@@ -186,8 +193,17 @@ test("Clients générés cohérents (20 000 tirages)", function()
 			mutationCount[g.Mutation] = (mutationCount[g.Mutation] or 0) + 1
 			local n = 0
 			for clue in g.Clues do
-				n += 1
-				assert(table.find(def.Clues, clue), "indice non autorisé")
+				if clue == "UV" or clue == "Thermal" then
+					hidden += 1
+				else
+					n += 1
+					assert(table.find(def.Clues, clue), "indice non autorisé")
+				end
+			end
+			if g.Clues.Thermal then
+				assert(g.Temperature < 20, "anomalie glacée trop chaude")
+			else
+				assert(g.Temperature > 36, "température anormale sans indice")
 			end
 			eq(n, RarityConfig[def.Rarity].ClueCount, "nombre d'indices " .. def.Rarity)
 			-- Registre
@@ -212,6 +228,7 @@ test("Clients générés cohérents (20 000 tirages)", function()
 			assert(n >= 1, "anomalie sans indice")
 		end
 	end
+	print(string.format("  Indices cachés (UV/thermique) : %.1f %% des anomalies", hidden / anomalies * 100))
 	local ratio = anomalies / total
 	assert(math.abs(ratio - GuestConfig.AnomalyChance) < 0.02, "taux d'anomalies " .. ratio)
 	print(string.format("  Anomalies : %.1f %% des clients", ratio * 100))
@@ -264,6 +281,127 @@ test("Courbe de progression (estimation)", function()
 	local pLegend = (weights.Legendary + weights.Mythic) / total
 	print(string.format("  1re rare (ou mieux) : ~%.0f min", 1 / (pRare * anomaliesPerMinute)))
 	print(string.format("  1re légendaire (ou mieux) : ~%.0f min", 1 / (pLegend * anomaliesPerMinute)))
+end)
+
+
+------------------------------------------------------------------ géométrie de la carte
+local MapBuilder = robloxRequire(server.Modules.MapBuilder)
+local ReceptionCamera = robloxRequire(shared.Util.ReceptionCamera)
+local GameConfig = robloxRequire(Config.GameConfig)
+local V = S.Vector3
+local map = MapBuilder.build()
+local hotels = map.Hotels:GetChildren()
+local ROOT_HEIGHT = 3 -- hauteur du HumanoidRootPart d'un R15 au-dessus du sol
+local VERTICAL_HALF_FOV = math.tan(math.rad(35)) -- champ de vision vertical Roblox : 70°
+local HORIZONTAL_HALF_FOV = VERTICAL_HALF_FOV * 16 / 9
+-- Le panneau de réception couvre les 42 % de droite de l'écran
+local PANEL_LEFT_EDGE = HORIZONTAL_HALF_FOV * (1 - 2 * 0.42)
+
+-- Pièces opaques et solides d'un hôtel (hors sol)
+local function solids(hotel)
+	local list = {}
+	for _, d in hotel:GetDescendants() do
+		if d:IsA("BasePart") and d.Name ~= "Floor" and d.CanCollide ~= false and d.Transparency < 0.7 then
+			table.insert(list, d)
+		end
+	end
+	return list
+end
+local function visibleParts(hotel)
+	local list = {}
+	for _, d in hotel:GetDescendants() do
+		if d:IsA("BasePart") and d.Name ~= "Floor" and d.Transparency < 0.7 then
+			table.insert(list, d)
+		end
+	end
+	return list
+end
+local function noHit(a, b, parts, what)
+	local hit = S.segmentHits(a, b, parts)
+	assert(hit == nil, what .. " bloqué par " .. tostring(hit and hit.Name))
+end
+
+test("Carte : 6 hôtels complets", function()
+	eq(#hotels, GameConfig.HotelCount, "hôtels")
+	for _, hotel in hotels do
+		for _, name in { "GuestSpawn", "GuestSpot", "GuestExit", "OwnerSpawn", "Lobby", "DoorBarrier", "Sign", "Counter", "Floor" } do
+			assert(hotel:FindFirstChild(name), hotel.Name .. " : " .. name .. " manquant")
+		end
+		eq(#hotel.Cells:GetChildren(), GameConfig.MaxCells, "cellules")
+	end
+end)
+
+test("Carte : hôtels et cellules ne se chevauchent pas", function()
+	for i, a in hotels do
+		for j, b in hotels do
+			if i < j then
+				assert((a.Floor.Position - b.Floor.Position).Magnitude > 56, "hôtels trop proches")
+			end
+		end
+		local pads = {}
+		for _, cell in a.Cells:GetChildren() do
+			local pad = cell.Pad
+			assert(S.pointInPart(pad.Position - V.new(0, 0.7, 0), a.Floor), cell.Name .. " hors de l'hôtel")
+			for _, other in pads do
+				assert((other.Position - pad.Position).Magnitude >= 6, cell.Name .. " chevauche une autre cellule")
+			end
+			table.insert(pads, pad)
+		end
+	end
+end)
+
+test("Réception : la caméra voit le client en entier, à gauche du panneau", function()
+	for _, hotel in hotels do
+		local root = hotel.GuestSpot.CFrame + V.new(0, ROOT_HEIGHT, 0)
+		local eye, target = ReceptionCamera.compute(root)
+		for _, part in solids(hotel) do
+			assert(not S.pointInPart(eye, part, 0.5), "caméra dans " .. part.Name)
+		end
+		local head = root.Position + V.new(0, 1.8, 0)
+		local feet = root.Position - V.new(0, ROOT_HEIGHT - 0.2, 0)
+		local shadow = feet + root.RightVector * 1.5
+		local parts = visibleParts(hotel)
+		noHit(eye, head, parts, "vue de la tête")
+		noHit(eye, feet, parts, "vue des pieds")
+		noHit(eye, shadow, parts, "vue de l'ombre")
+		local cam = S.CFrame.lookAt(eye, target)
+		for label, point in { tete = head, pieds = feet } do
+			local l = cam:PointToObjectSpace(point)
+			assert(l.Z < 0, label .. " derrière la caméra")
+			local sx, sy = l.X / -l.Z, l.Y / -l.Z
+			assert(math.abs(sy) < VERTICAL_HALF_FOV, label .. " hors écran (vertical)")
+			assert(sx > -HORIZONTAL_HALF_FOV and sx < PANEL_LEFT_EDGE, label .. " caché par le panneau ou hors écran")
+		end
+	end
+end)
+
+test("Chemins des clients et du propriétaire dégagés", function()
+	for _, hotel in hotels do
+		local up = V.new(0, ROOT_HEIGHT, 0)
+		local parts = solids(hotel)
+		local spot = hotel.GuestSpot.CFrame
+		noHit(hotel.GuestSpawn.Position + up, spot.Position + up, parts, "arrivée du client")
+		local side = (spot * S.CFrame.new(10, 0, 0)).Position + up
+		local inside = (spot * S.CFrame.new(10, 0, -14)).Position + up
+		noHit(spot.Position + up, side, parts, "entrée (1)")
+		noHit(side, inside, parts, "entrée (2)")
+		noHit(hotel.GuestSpawn.Position + up, hotel.GuestExit.Position + up, parts, "sortie")
+		local owner = hotel.OwnerSpawn.Position + up
+		for _, part in parts do
+			assert(not S.pointInPart(owner, part), "apparition du propriétaire dans " .. part.Name)
+		end
+		assert((owner - (spot.Position + up)).Magnitude < 14, "propriétaire trop loin pour « Recevoir »")
+		-- La zone d'errance ne touche ni le comptoir ni les cellules
+		local lobby = hotel.Lobby
+		for _, sx in { -0.5, 0.5 } do
+			for _, sz in { -0.5, 0.5 } do
+				local corner = lobby.CFrame * V.new(sx * lobby.Size.X, 2, sz * lobby.Size.Z)
+				for _, part in parts do
+					assert(not S.pointInPart(corner, part), "zone d'errance dans " .. part.Name)
+				end
+			end
+		end
+	end
 end)
 
 print(string.format("\n%d test(s) réussi(s), %d échec(s)", passed, failed))

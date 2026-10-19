@@ -5,8 +5,8 @@ export type RarityId = "Common" | "Rare" | "Epic" | "Legendary" | "Mythic" | "Se
 
 export type MutationId = "None" | "Golden" | "Neon"
 
--- Les 4 types d'indices du MVP
-export type ClueType = "Registry" | "Shadow" | "Eyes" | "Photo"
+-- Indices visibles par tous + indices cachés (révélés par un outil acheté)
+export type ClueType = "Registry" | "Shadow" | "Eyes" | "Photo" | "UV" | "Thermal"
 
 -- Strong = indice évident, Subtle = indice discret (anomalies rares)
 export type ClueStrength = "Strong" | "Subtle"
@@ -25,6 +25,7 @@ export type Rarity = {
 	SpawnWeight: number, -- poids de tirage (0 = n'apparaît jamais)
 	ClueCount: number, -- nombre d'indices montrés par une anomalie de cette rareté
 	SubtleChance: number, -- probabilité (0 à 1) que chaque indice soit discret
+	HiddenClueChance: number, -- probabilité d'un indice caché en plus (UV ou thermique)
 }
 
 export type Mutation = {
@@ -63,6 +64,7 @@ export type GuestProfile = {
 	PhotoAppearance: Appearance, -- apparence sur la photo d'identité
 	Registry: { string }, -- noms écrits dans le registre des réservations
 	Clues: { [ClueType]: ClueStrength },
+	Temperature: number, -- °C, mesurée par le scanner thermique
 }
 
 -- Ce que le client a le droit de voir quand il reçoit un client
@@ -73,6 +75,11 @@ export type ReceptionInfo = {
 	Registry: { string },
 	Deadline: number, -- workspace:GetServerTimeNow() limite
 	Guest: Model?, -- le modèle 3D du client (pour cadrer la caméra)
+	-- Résultats des outils possédés (absent = outil non acheté)
+	ToolResults: {
+		UV: boolean?, -- true = traces fluorescentes
+		Thermal: number?, -- température en °C
+	},
 }
 
 return {}

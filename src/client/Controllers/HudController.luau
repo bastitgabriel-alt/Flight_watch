@@ -38,20 +38,36 @@ local function buildGui()
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 
-	-- Panneau d'argent en bas au centre : libre sur PC comme sur téléphone
-	-- (chat en haut à gauche, joystick en bas à gauche, saut en bas à droite)
-	local panel = UI.new("Frame", {
-		Name = "MoneyPanel",
+	-- Barre du bas : [Boutique] [Argent] [Verrou]. Libre sur PC comme sur téléphone
+	-- (chat en haut à gauche, joystick en bas à gauche, saut en bas à droite).
+	-- Les boutons Boutique et Verrou sont ajoutés par leurs contrôleurs.
+	local bar = UI.new("Frame", {
+		Name = "BottomBar",
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -10),
-		Size = UDim2.new(0.3, 0, 0, 70),
+		Size = UDim2.new(1, 0, 0, 72),
+		BackgroundTransparency = 1,
+		Parent = gui,
+	}, {
+		UI.new("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, 8),
+		}),
+	})
+
+	local panel = UI.new("Frame", {
+		Name = "MoneyPanel",
+		LayoutOrder = 2,
+		Size = UDim2.fromOffset(210, 70),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
-		Parent = gui,
+		Parent = bar,
 	}, {
 		UI.corner(16),
 		UI.stroke(Color3.fromRGB(255, 200, 80), 2),
-		UI.new("UISizeConstraint", { MinSize = Vector2.new(150, 56), MaxSize = Vector2.new(260, 76) }),
 	})
 	moneyScale = UI.new("UIScale", { Parent = panel })
 

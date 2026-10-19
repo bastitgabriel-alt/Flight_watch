@@ -3,6 +3,7 @@
 -- (voir AnomalyConfig) et plus ses indices sont rares et discrets.
 --
 -- SpawnWeight : chances relatives qu'une anomalie soit de cette rareté.
+-- HiddenClueChance : indice en plus, visible seulement avec la lampe UV ou le scanner.
 -- Total = 100, donc chaque poids = pourcentage parmi les anomalies.
 -- Objectif : 1re rare vers 10 min, 1re légendaire vers 1 h (voir tests/run.luau).
 
@@ -16,6 +17,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 93,
 		ClueCount = 2,
 		SubtleChance = 0,
+		HiddenClueChance = 0,
 	},
 	Rare = {
 		DisplayName = "Rare",
@@ -24,6 +26,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 4,
 		ClueCount = 1,
 		SubtleChance = 0.2,
+		HiddenClueChance = 0.4,
 	},
 	Epic = {
 		DisplayName = "Épique",
@@ -32,6 +35,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 1.7,
 		ClueCount = 1,
 		SubtleChance = 0.5,
+		HiddenClueChance = 0.6,
 	},
 	Legendary = {
 		DisplayName = "Légendaire",
@@ -40,6 +44,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 1.1,
 		ClueCount = 1,
 		SubtleChance = 0.8,
+		HiddenClueChance = 0.8,
 	},
 	Mythic = {
 		DisplayName = "Mythique",
@@ -48,6 +53,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 0.2,
 		ClueCount = 1,
 		SubtleChance = 1,
+		HiddenClueChance = 1,
 	},
 	-- Réservée aux événements admin (après le MVP) : n'apparaît jamais seule
 	Secret = {
@@ -57,6 +63,7 @@ local RarityConfig: { [Types.RarityId]: Types.Rarity } = {
 		SpawnWeight = 0,
 		ClueCount = 1,
 		SubtleChance = 1,
+		HiddenClueChance = 1,
 	},
 }
 

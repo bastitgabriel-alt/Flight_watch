@@ -23,6 +23,7 @@ local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
 local Notify = require(Modules:WaitForChild("Notify"))
 local RigFactory = require(Modules:WaitForChild("RigFactory"))
+local CollisionGroups = require(Modules:WaitForChild("CollisionGroups"))
 local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
 local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
@@ -130,6 +131,8 @@ local function buildGuestModel(session: Session, profile: Types.GuestProfile): M
 		humanoid.WalkSpeed = GUEST_WALK_SPEED
 	end
 	rig:SetAttribute("OwnerUserId", session.player.UserId)
+	-- Les clients traversent la barrière de verrou
+	CollisionGroups.assign(rig, CollisionGroups.GUESTS):Disconnect()
 
 	RigAppearance.placeOnFloor(rig, getMarker(session.hotel, "GuestSpawn").CFrame)
 	rig.Parent = guestsFolder
@@ -296,6 +299,13 @@ local function onPromptTriggered(session: Session, guest: Guest, player: Player,
 	if not promptLimiter:allow(player) then
 		return
 	end
+	-- Résultats des outils : envoyés seulement si le joueur les a achetés
+	local data = PlayerDataService.GetData(player)
+	local tools = if data then data.Tools else {}
+	local toolResults = {
+		UV = if tools.UVLamp then guest.profile.Clues.UV ~= nil else nil,
+		Thermal = if tools.ThermalScanner then guest.profile.Temperature else nil,
+	}
 	local info: Types.ReceptionInfo = {
 		Token = guest.token,
 		Name = guest.profile.Name,
@@ -303,6 +313,7 @@ local function onPromptTriggered(session: Session, guest: Guest, player: Player,
 		Registry = guest.profile.Registry,
 		Deadline = deadline,
 		Guest = guest.model,
+		ToolResults = toolResults,
 	}
 	Remotes.getEvent("ReceptionShow"):FireClient(player, info)
 end
@@ -341,6 +352,7 @@ local function serveOneGuest(session: Session)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 14
 	prompt.RequiresLineOfSight = false
+	prompt:SetAttribute("OnlyUserId", session.player.UserId)
 	prompt.Parent = root or model
 	prompt.Triggered:Connect(function(player)
 		onPromptTriggered(session, guest, player, deadline)

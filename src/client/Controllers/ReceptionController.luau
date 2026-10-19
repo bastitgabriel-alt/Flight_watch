@@ -17,6 +17,7 @@ local GuestConfig = require(Config:WaitForChild("GuestConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
+local ReceptionCamera = require(Shared:WaitForChild("Util"):WaitForChild("ReceptionCamera"))
 local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
 
 local player = Players.LocalPlayer
@@ -30,6 +31,8 @@ local CLUE_TEXT: { [string]: { [string]: string } } = {
 	Shadow = { Strong = "pas d'ombre", Subtle = "pas d'ombre" },
 	Eyes = { Strong = "yeux rouges lumineux", Subtle = "petits yeux orangés" },
 	Photo = { Strong = "photo différente", Subtle = "pantalon différent sur la photo" },
+	UV = { Strong = "traces fluorescentes (lampe UV)" },
+	Thermal = { Strong = "corps glacé (scanner thermique)" },
 }
 
 local ReceptionController = {}
@@ -44,6 +47,7 @@ local registryList: Frame
 local acceptButton: TextButton
 local captureButton: TextButton
 local resultLabel: TextLabel
+local toolsLabel: TextLabel
 
 local current: Types.ReceptionInfo? = nil
 local cameraFocused = false
@@ -136,7 +140,7 @@ local function buildGui()
 	local card = UI.new("Frame", {
 		Name = "IdCard",
 		Position = UDim2.fromScale(0, 0.165),
-		Size = UDim2.new(1, 0, 0.33, 0),
+		Size = UDim2.new(1, 0, 0.31, 0),
 		BackgroundColor3 = Color3.fromRGB(235, 225, 200),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -173,8 +177,8 @@ local function buildGui()
 	-- Registre des réservations (à droite)
 	local registry = UI.new("Frame", {
 		Name = "Registry",
-		Position = UDim2.fromScale(0, 0.515),
-		Size = UDim2.new(1, 0, 0.29, 0),
+		Position = UDim2.fromScale(0, 0.49),
+		Size = UDim2.new(1, 0, 0.22, 0),
 		BackgroundColor3 = Color3.fromRGB(245, 240, 225),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -196,6 +200,20 @@ local function buildGui()
 	}, {
 		UI.new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2) }),
 	})
+
+	-- Résultats des outils de détection (lampe UV, scanner thermique)
+	toolsLabel = UI.new("TextLabel", {
+		Name = "Tools",
+		Position = UDim2.fromScale(0, 0.725),
+		Size = UDim2.new(1, 0, 0.08, 0),
+		BackgroundColor3 = Color3.fromRGB(40, 30, 50),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		RichText = true,
+		Text = "",
+		Parent = panel,
+	}, { UI.corner(8), UI.padding(4), UI.textSize(10, 18) })
 
 	acceptButton = makeButton("Accept", "🔑 Donner la clé", Color3.fromRGB(40, 160, 80), UDim2.fromScale(0, 1))
 	captureButton = makeButton("Capture", "🪤 Capturer", Color3.fromRGB(190, 40, 50), UDim2.fromScale(0.52, 1))
@@ -297,12 +315,7 @@ local function focusCamera(guest: Model?)
 	cameraFocused = true
 	camera.CameraType = Enum.CameraType.Scriptable
 	setOwnCharacterHidden(true)
-	-- Caméra entre le comptoir et le client (rien ne cache ses pieds ni son ombre)
-	local eye = root.Position + root.CFrame.LookVector * 5.5 + Vector3.new(0, 1.5, 0)
-	-- On vise à droite du client pour qu'il apparaisse dans la moitié gauche
-	local toGuest = (root.Position - eye) * Vector3.new(1, 0, 1)
-	local right = toGuest.Unit:Cross(Vector3.yAxis)
-	local target = root.Position - Vector3.new(0, 1.2, 0) + right * 3
+	local eye, target = ReceptionCamera.compute(root.CFrame)
 	TweenService:Create(camera, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
 		CFrame = CFrame.lookAt(eye, target),
 	}):Play()
@@ -325,12 +338,34 @@ local function setButtonsEnabled(enabled: boolean)
 	captureButton.TextTransparency = if enabled then 0 else 0.5
 end
 
+-- Texte des outils : résultat si acheté, sinon rappel qu'il existe
+local function describeTools(info: Types.ReceptionInfo): string
+	local results = info.ToolResults or {}
+	local parts = {}
+	if results.UV ~= nil then
+		table.insert(parts, if results.UV
+			then `<font color="#FF5AF0">UV : traces fluorescentes !</font>`
+			else "UV : rien")
+	else
+		table.insert(parts, `<font color="#888888">🔒 Lampe UV</font>`)
+	end
+	if results.Thermal ~= nil then
+		local cold = results.Thermal < 30
+		local text = `{string.format("%.1f", results.Thermal)} °C`
+		table.insert(parts, if cold then `<font color="#5AC8FF">Temp. : {text} !</font>` else `Temp. : {text}`)
+	else
+		table.insert(parts, `<font color="#888888">🔒 Scanner</font>`)
+	end
+	return table.concat(parts, "   •   ")
+end
+
 function ReceptionController.Open(info: Types.ReceptionInfo)
 	current = info
 	speechLabel.Text = `« Bonsoir, je suis {info.Name}. J'ai réservé une chambre. »`
 	cardName.Text = info.Name
 	showRegistry(info.Registry)
 	showPhoto(info.PhotoAppearance)
+	toolsLabel.Text = describeTools(info)
 	setButtonsEnabled(true)
 	gui.Enabled = true
 	ProximityPromptService.Enabled = false -- l'invite cacherait le client

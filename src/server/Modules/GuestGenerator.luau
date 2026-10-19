@@ -22,6 +22,16 @@ export type Options = {
 
 local GuestGenerator = {}
 
+local HIDDEN_CLUES: { Types.ClueType } = { "UV", "Thermal" }
+
+-- Température d'un humain normal, ou d'une anomalie glacée
+local function normalTemperature(rng: Random): number
+	return math.floor(rng:NextNumber(36.2, 37.4) * 10) / 10
+end
+local function coldTemperature(rng: Random): number
+	return math.floor(rng:NextNumber(6, 18) * 10) / 10
+end
+
 local function pick<T>(rng: Random, list: { T }): T
 	return list[rng:NextInteger(1, #list)]
 end
@@ -186,6 +196,7 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 			PhotoAppearance = table.clone(appearance),
 			Registry = buildRegistry(rng, name, name),
 			Clues = {},
+			Temperature = normalTemperature(rng),
 		}
 	end
 
@@ -203,6 +214,10 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 	local clues: { [Types.ClueType]: Types.ClueStrength } = {}
 	for i = 1, math.min(rarity.ClueCount, #pool) do
 		clues[pool[i]] = if rng:NextNumber() < rarity.SubtleChance then "Subtle" else "Strong"
+	end
+	-- Indice caché en plus (seulement visible avec l'outil correspondant)
+	if rng:NextNumber() < rarity.HiddenClueChance then
+		clues[pick(rng, HIDDEN_CLUES)] = "Strong"
 	end
 
 	-- Photo d'identité
@@ -233,6 +248,7 @@ function GuestGenerator.generate(rng: Random, options: Options?): Types.GuestPro
 		PhotoAppearance = photo,
 		Registry = buildRegistry(rng, registryName, name),
 		Clues = clues,
+		Temperature = if clues.Thermal then coldTemperature(rng) else normalTemperature(rng),
 	}
 end
 

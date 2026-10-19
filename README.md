@@ -14,7 +14,9 @@ rapportent de l'argent chaque seconde dans leurs cellules.
 | 3. Carte placeholder + attribution des hôtels | ✅ à tester dans Studio |
 | 4. Réception : clients, indices, capture | ✅ à tester dans Studio |
 | 5. Cellules + revenu passif + argent animé | ✅ à tester dans Studio |
-| 6 à 12. Boutique, vol, catalogue, monétisation... | à venir |
+| 6. Boutique : cellules, lampe UV, scanner thermique, sécurité | ✅ à tester dans Studio |
+| 7. Vol entre joueurs + verrou de porte | ✅ à tester dans Studio |
+| 8 à 12. Catalogue, classement, monétisation, tutoriel, publication | à venir |
 
 ---
 
@@ -61,9 +63,12 @@ Ids des anomalies : `Doppelganger`, `Shadowless`, `MrsSmile`, `GreyTraveler`, `S
 `MirrorLady`, `ForgottenMailman`, `InvertedGuest`, `PhantomConcierge`, `MidnightBride`,
 `FacelessWarden`, `TheOwner`.
 
-### Tester à plusieurs
+### Tester à plusieurs (vol et verrou)
 Onglet **Test** > zone **Clients and Servers** > choisis **2 Players** > **Start**.
-Chaque joueur doit recevoir un hôtel différent.
+Deux fenêtres de jeu s'ouvrent, chacune avec son hôtel. Dans la fenêtre du joueur 2,
+entre dans l'hôtel du joueur 1, maintiens **E** devant une anomalie (« Voler ») et
+ramène-la chez toi. Le joueur 1 peut la récupérer en touchant le voleur (« Récupérer »),
+ou fermer sa porte avec le bouton **Verrouiller**.
 
 ### Sauvegarde réelle
 Dans un fichier local, la sauvegarde est simulée (tout repart de zéro à chaque Play).
@@ -89,7 +94,7 @@ src/
   shared/
     Config/             TOUS les chiffres d'équilibrage, modifiables sans toucher au reste
     Types.luau, Remotes.luau, Util/
-tests/run.luau          tests de la logique (hors Roblox)
+tests/run.luau          tests de la logique et de la géométrie de la carte (hors Roblox)
 build/                  fichier de jeu prêt à ouvrir dans Studio
 ```
 

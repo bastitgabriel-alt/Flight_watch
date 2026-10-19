@@ -16,6 +16,8 @@ local EVENT_NAMES: { string } = {
 	"ReceptionShow", -- serveur -> client : (ReceptionInfo) ouvre la réception
 	"ReceptionDecision", -- client -> serveur : (token, "Accept" | "Capture")
 	"ReceptionResult", -- serveur -> client : (token, outcome, details)
+	"ShopBuy", -- client -> serveur : ("Cell" | "Tool" | "Security", itemId)
+	"LockRequest", -- client -> serveur : verrouiller sa porte
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)
