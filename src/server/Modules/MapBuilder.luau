@@ -57,6 +57,23 @@ local function buildCell(index: number, origin: CFrame, localCFrame: CFrame, par
 		Parent = cell,
 	})
 
+	-- Liseré lumineux autour du pad (couleur de la rareté, voir AnomalyService)
+	local trims = Instance.new("Folder")
+	trims.Name = "Trim"
+	trims.Parent = cell
+	local edge = CELL_WIDTH - 0.5
+	for _, offset in { CFrame.new(0, 0.45, edge / 2), CFrame.new(0, 0.45, -edge / 2), CFrame.new(edge / 2, 0.45, 0) * CFrame.Angles(0, math.rad(90), 0), CFrame.new(-edge / 2, 0.45, 0) * CFrame.Angles(0, math.rad(90), 0) } do
+		PartFactory.decor({
+			Name = "TrimStrip",
+			Size = Vector3.new(edge, 0.12, 0.25),
+			CFrame = cf * offset,
+			Color = Color3.fromRGB(40, 40, 50),
+			Material = Enum.Material.SmoothPlastic,
+			CastShadow = false,
+			Parent = trims,
+		})
+	end
+
 	-- Où l'anomalie se tient : sur le pad, tournée vers l'ouverture
 	makeMarker("Spot", cf * CFrame.new(0, 0.4, 0), cell)
 
@@ -97,7 +114,7 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	hotel:SetAttribute("HotelIndex", index)
 
 	local half = HOTEL_SIZE / 2
-	local wallColor = Color3.fromRGB(92, 64, 80)
+	local wallColor = MapDecor.wallColor(index)
 
 	local floor = makePart({
 		Name = "Floor",
@@ -223,7 +240,7 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	end
 	assert(cellIndex >= GameConfig.MaxCells, "Pas assez d'emplacements de cellules construits")
 
-	MapDecor.decorateHotel(hotel, origin, { Size = HOTEL_SIZE, WallHeight = WALL_HEIGHT, DoorWidth = DOOR_WIDTH })
+	MapDecor.decorateHotel(hotel, origin, { Index = index, Size = HOTEL_SIZE, WallHeight = WALL_HEIGHT, DoorWidth = DOOR_WIDTH })
 
 	hotel.PrimaryPart = floor
 	hotel.Parent = parent
@@ -238,14 +255,8 @@ function MapBuilder.build(): Folder
 	local map = Instance.new("Folder")
 	map.Name = "Map"
 
-	makePart({
-		Name = "Ground",
-		Size = Vector3.new(700, 2, 700),
-		CFrame = CFrame.new(0, -1, 0),
-		Color = Color3.fromRGB(58, 79, 52),
-		Material = Enum.Material.Grass,
-		Parent = map,
-	})
+	-- Le sol est en terrain (herbe), voir MapDecor.setupTerrain
+	MapDecor.setupTerrain()
 	makePart({
 		Name = "Plaza",
 		Size = Vector3.new(220, 0.4, 130),
@@ -306,6 +317,7 @@ function MapBuilder.build(): Folder
 
 	-- 3 hôtels au nord (porte vers le sud), 3 au sud (porte vers le nord)
 	local perSide = math.ceil(GameConfig.HotelCount / 2)
+	local hotelXs: { number } = {}
 	for index = 1, GameConfig.HotelCount do
 		local north = index <= perSide
 		local column = if north then index - 1 else index - perSide - 1
@@ -317,9 +329,12 @@ function MapBuilder.build(): Folder
 			origin = CFrame.new(x, 0, HOTEL_DISTANCE) * CFrame.Angles(0, math.pi, 0)
 		end
 		buildHotel(index, origin, hotels)
+		if not table.find(hotelXs, x) then
+			table.insert(hotelXs, x)
+		end
 	end
 
-	MapDecor.decoratePlaza(map)
+	MapDecor.decoratePlaza(map, hotelXs)
 	MapDecor.setupLighting()
 
 	map.Parent = workspace

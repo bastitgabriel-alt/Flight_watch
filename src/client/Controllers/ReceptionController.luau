@@ -231,7 +231,7 @@ local function buildGui()
 		Size = UDim2.new(0.9, 0, 0.18, 0),
 		BackgroundColor3 = Color3.fromRGB(15, 10, 20),
 		BackgroundTransparency = 0.2,
-		Font = Enum.Font.FredokaOne,
+		Font = Enum.Font.Creepster,
 		TextScaled = true,
 		TextColor3 = Color3.new(1, 1, 1),
 		Text = "",

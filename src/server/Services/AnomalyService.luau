@@ -22,6 +22,7 @@ local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local IncomeCalculator = require(Server:WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local RigFactory = require(Server:WaitForChild("Modules"):WaitForChild("RigFactory"))
 local RigAnimator = require(Server:WaitForChild("Modules"):WaitForChild("RigAnimator"))
+local AnomalyLooks = require(Server:WaitForChild("Modules"):WaitForChild("AnomalyLooks"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 
@@ -73,6 +74,20 @@ local function findFreeCell(data: any, capacity: number): number?
 	return nil
 end
 
+-- Liseré autour du pad : couleur de la rareté (néon) ou éteint
+local function setTrim(cell: Model, color: Color3, glowing: boolean)
+	local trims = cell:FindFirstChild("Trim")
+	if not trims then
+		return
+	end
+	for _, strip in trims:GetChildren() do
+		if strip:IsA("BasePart") then
+			strip.Color = color
+			strip.Material = if glowing then Enum.Material.Neon else Enum.Material.SmoothPlastic
+		end
+	end
+end
+
 -- Met à jour l'aspect des cellules vides / verrouillées
 local function refreshCellVisuals(player: Player, hotel: Model)
 	local data = PlayerDataService.GetData(player)
@@ -93,9 +108,12 @@ local function refreshCellVisuals(player: Player, hotel: Model)
 			if pad and pad:IsA("BasePart") then
 				pad.Color = if unlocked then Color3.fromRGB(70, 90, 110) else Color3.fromRGB(35, 35, 40)
 			end
-			if label and not occupied[index] then
-				label.Text = if unlocked then "Cellule libre" else "🔒 Verrouillée"
-				label.TextColor3 = Color3.new(1, 1, 1)
+			if not occupied[index] then
+				if label then
+					label.Text = if unlocked then "Cellule libre" else "🔒 Verrouillée"
+					label.TextColor3 = Color3.new(1, 1, 1)
+				end
+				setTrim(cell, if unlocked then Color3.fromRGB(60, 80, 110) else Color3.fromRGB(30, 30, 35), false)
 			end
 		end
 	end
@@ -113,6 +131,7 @@ local function resetCellVisuals(hotel: Model)
 			if pad and pad:IsA("BasePart") then
 				pad.Color = Color3.fromRGB(60, 60, 70)
 			end
+			setTrim(cell, Color3.fromRGB(40, 40, 50), false)
 		end
 	end
 end
@@ -153,6 +172,10 @@ function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId
 	local def = AnomalyConfig.ById[anomalyId]
 	local rig = RigFactory.newRig()
 	RigAppearance.apply(rig, def.TrueForm)
+	if def.Scale and def.Scale ~= 1 then
+		rig:ScaleTo(def.Scale)
+	end
+	AnomalyLooks.apply(rig, def.Look, def.TrueForm, def.EyeColor)
 	local mutation = MutationConfig.Mutations[mutationId]
 	if mutation and mutation.Color and mutation.Material then
 		RigAppearance.applyMaterial(rig, mutation.Color, mutation.Material)
@@ -214,6 +237,7 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 		label.Text = `{def.DisplayName}{mutationText}\n{rarity.DisplayName} • {Format.money(income)}/s`
 		label.TextColor3 = rarity.Color
 	end
+	setTrim(cell, RarityConfig[def.Rarity].Color, true)
 
 	local playerModels = models[player]
 	if playerModels then

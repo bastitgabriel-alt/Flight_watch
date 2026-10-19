@@ -174,7 +174,7 @@ InstanceMeta.__newindex = function(inst, key, value)
 end
 function Instance.new(className)
 	local inst = setmetatable({ _props = { ClassName = className, Name = className }, _children = {}, _attributes = {} }, InstanceMeta)
-	if className == "Part" or className == "SpawnLocation" then
+	if className == "Part" or className == "SpawnLocation" or className == "WedgePart" or className == "CornerWedgePart" then
 		inst.Size = Vector3.new(4, 1, 2)
 		inst.CFrame = CFrame.new()
 		inst.Transparency = 0
@@ -217,7 +217,7 @@ end
 function Instance.IsA(inst, className)
 	local c = rawget(inst, "_props").ClassName
 	if className == "BasePart" then
-		return c == "Part" or c == "SpawnLocation"
+		return c == "Part" or c == "SpawnLocation" or c == "WedgePart" or c == "CornerWedgePart"
 	end
 	return c == className
 end
@@ -246,6 +246,23 @@ S.UDim2 = { new = udim2, fromScale = udim2, fromOffset = udim2 }
 S.UDim = { new = udim2 }
 
 S.workspace = Instance.new("Workspace")
+local terrain = Instance.new("Terrain")
+terrain.Name = "Terrain"
+terrain.Parent = S.workspace
+-- Terrain : les remplissages ne font rien hors de Roblox
+function Instance.FillBlock() end
+function Instance.FillBall() end
+function Instance.FillCylinder() end
+
+-- Types de valeurs utilisés seulement pour l'affichage (particules...)
+local function opaque(...)
+	return { ... }
+end
+S.ColorSequence = { new = opaque }
+S.NumberSequence = { new = opaque }
+S.NumberSequenceKeypoint = { new = opaque }
+S.NumberRange = { new = opaque }
+S.Vector2 = { new = opaque }
 S.Lighting = Instance.new("Lighting")
 
 ------------------------------------------------------------------ géométrie

@@ -45,6 +45,8 @@ export type AnomalyDef = {
 	TrueForm: Appearance, -- apparence révélée une fois dans la cellule
 	EyeColor: Color3,
 	Clues: { ClueType }, -- indices que cette anomalie peut montrer
+	Look: { string }?, -- traits visibles dans la cellule (voir AnomalyLooks)
+	Scale: number?, -- taille dans la cellule (1 = normale)
 }
 
 -- Une anomalie possédée par un joueur (sauvegardée)

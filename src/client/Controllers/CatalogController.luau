@@ -58,7 +58,7 @@ local function buildGui()
 	header = UI.new("TextLabel", {
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, -50, 0, 40),
-		Font = Enum.Font.FredokaOne,
+		Font = Enum.Font.Creepster,
 		TextScaled = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Color3.fromRGB(220, 180, 255),

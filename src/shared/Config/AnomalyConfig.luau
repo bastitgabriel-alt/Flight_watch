@@ -5,6 +5,8 @@
 --
 -- Income   : argent par seconde
 -- TrueForm : couleurs révélées dans la cellule (peau, haut, bas)
+-- Look     : traits monstrueux visibles dans la cellule (liste dans AnomalyLooks)
+-- Scale    : taille dans la cellule (1 = normale)
 -- Clues    : indices possibles ("Registry", "Shadow", "Eyes", "Photo").
 --            Le nombre d'indices montrés dépend de la rareté (RarityConfig).
 
@@ -23,6 +25,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(163, 162, 165), Shirt = rgb(40, 40, 40), Pants = rgb(40, 40, 40) },
 		EyeColor = rgb(255, 255, 255),
 		Clues = { "Photo", "Registry", "Eyes", "Shadow" },
+		Look = { "Faceless", "ExtraEyes" },
 	},
 	{
 		Id = "Shadowless",
@@ -33,6 +36,8 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(235, 235, 225), Shirt = rgb(20, 20, 20), Pants = rgb(20, 20, 20) },
 		EyeColor = rgb(120, 200, 255),
 		Clues = { "Shadow", "Registry", "Eyes" },
+		Look = { "Faceless", "Wisps" },
+		Scale = 1.15,
 	},
 	{
 		Id = "MrsSmile",
@@ -43,6 +48,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(255, 230, 230), Shirt = rgb(255, 120, 170), Pants = rgb(255, 120, 170) },
 		EyeColor = rgb(255, 80, 160),
 		Clues = { "Eyes", "Photo", "Registry" },
+		Look = { "Smile" },
 	},
 	{
 		Id = "GreyTraveler",
@@ -53,6 +59,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(120, 120, 120), Shirt = rgb(90, 90, 90), Pants = rgb(70, 70, 70) },
 		EyeColor = rgb(200, 200, 200),
 		Clues = { "Registry", "Photo", "Shadow" },
+		Look = { "TopHat", "Suitcase" },
 	},
 
 	-- Rares
@@ -65,6 +72,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(200, 210, 255), Shirt = rgb(60, 60, 120), Pants = rgb(60, 60, 120) },
 		EyeColor = rgb(150, 150, 255),
 		Clues = { "Eyes", "Shadow", "Registry" },
+		Look = { "NightCap", "Hover" },
 	},
 	{
 		Id = "MirrorLady",
@@ -75,6 +83,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(220, 240, 255), Shirt = rgb(180, 220, 255), Pants = rgb(140, 180, 220) },
 		EyeColor = rgb(0, 220, 255),
 		Clues = { "Photo", "Eyes", "Registry" },
+		Look = { "Mirror" },
 	},
 	{
 		Id = "ForgottenMailman",
@@ -85,6 +94,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(210, 190, 150), Shirt = rgb(30, 60, 120), Pants = rgb(30, 30, 60) },
 		EyeColor = rgb(255, 220, 120),
 		Clues = { "Registry", "Shadow", "Photo" },
+		Look = { "Cap", "MailBag" },
 	},
 
 	-- Épiques
@@ -97,6 +107,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(40, 255, 200), Shirt = rgb(255, 0, 90), Pants = rgb(0, 30, 255) },
 		EyeColor = rgb(255, 255, 0),
 		Clues = { "Photo", "Shadow", "Eyes" },
+		Look = { "TwistedHead" },
 	},
 	{
 		Id = "PhantomConcierge",
@@ -107,6 +118,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(240, 250, 255), Shirt = rgb(120, 0, 0), Pants = rgb(20, 20, 20) },
 		EyeColor = rgb(170, 255, 255),
 		Clues = { "Registry", "Eyes", "Shadow" },
+		Look = { "Ghost", "Cap" },
 	},
 
 	-- Légendaires
@@ -119,6 +131,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(250, 250, 255), Shirt = rgb(255, 255, 255), Pants = rgb(230, 230, 240) },
 		EyeColor = rgb(255, 40, 40),
 		Clues = { "Eyes", "Photo", "Registry" },
+		Look = { "Veil", "Dress", "Hover" },
 	},
 	{
 		Id = "FacelessWarden",
@@ -129,6 +142,8 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(10, 10, 10), Shirt = rgb(50, 0, 80), Pants = rgb(10, 10, 10) },
 		EyeColor = rgb(180, 0, 255),
 		Clues = { "Shadow", "Registry", "Photo" },
+		Look = { "Faceless", "LongArms", "Wisps" },
+		Scale = 1.25,
 	},
 
 	-- Mythique
@@ -141,6 +156,8 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(255, 215, 0), Shirt = rgb(15, 15, 15), Pants = rgb(15, 15, 15) },
 		EyeColor = rgb(255, 0, 0),
 		Clues = { "Registry", "Eyes", "Photo", "Shadow" },
+		Look = { "Crown", "Cape", "Halo" },
+		Scale = 1.3,
 	},
 }
 

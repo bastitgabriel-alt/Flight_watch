@@ -27,6 +27,8 @@
 --
 -- Income   : argent par seconde
 -- TrueForm : couleurs révélées dans la cellule (peau, haut, bas)
+-- Look     : traits monstrueux visibles dans la cellule (liste dans AnomalyLooks)
+-- Scale    : taille dans la cellule (1 = normale)
 -- Clues    : indices possibles ("Registry", "Shadow", "Eyes", "Photo").
 --            Le nombre d'indices montrés dépend de la rareté (RarityConfig).
 
@@ -45,6 +47,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(163, 162, 165), Shirt = rgb(40, 40, 40), Pants = rgb(40, 40, 40) },
 		EyeColor = rgb(255, 255, 255),
 		Clues = { "Photo", "Registry", "Eyes", "Shadow" },
+		Look = { "Faceless", "ExtraEyes" },
 	},
 	{
 		Id = "Shadowless",
@@ -55,6 +58,8 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(235, 235, 225), Shirt = rgb(20, 20, 20), Pants = rgb(20, 20, 20) },
 		EyeColor = rgb(120, 200, 255),
 		Clues = { "Shadow", "Registry", "Eyes" },
+		Look = { "Faceless", "Wisps" },
+		Scale = 1.15,
 	},
 	{
 		Id = "MrsSmile",
@@ -65,6 +70,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(255, 230, 230), Shirt = rgb(255, 120, 170), Pants = rgb(255, 120, 170) },
 		EyeColor = rgb(255, 80, 160),
 		Clues = { "Eyes", "Photo", "Registry" },
+		Look = { "Smile" },
 	},
 	{
 		Id = "GreyTraveler",
@@ -75,6 +81,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(120, 120, 120), Shirt = rgb(90, 90, 90), Pants = rgb(70, 70, 70) },
 		EyeColor = rgb(200, 200, 200),
 		Clues = { "Registry", "Photo", "Shadow" },
+		Look = { "TopHat", "Suitcase" },
 	},
 
 	-- Rares
@@ -87,6 +94,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(200, 210, 255), Shirt = rgb(60, 60, 120), Pants = rgb(60, 60, 120) },
 		EyeColor = rgb(150, 150, 255),
 		Clues = { "Eyes", "Shadow", "Registry" },
+		Look = { "NightCap", "Hover" },
 	},
 	{
 		Id = "MirrorLady",
@@ -97,6 +105,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(220, 240, 255), Shirt = rgb(180, 220, 255), Pants = rgb(140, 180, 220) },
 		EyeColor = rgb(0, 220, 255),
 		Clues = { "Photo", "Eyes", "Registry" },
+		Look = { "Mirror" },
 	},
 	{
 		Id = "ForgottenMailman",
@@ -107,6 +116,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(210, 190, 150), Shirt = rgb(30, 60, 120), Pants = rgb(30, 30, 60) },
 		EyeColor = rgb(255, 220, 120),
 		Clues = { "Registry", "Shadow", "Photo" },
+		Look = { "Cap", "MailBag" },
 	},
 
 	-- Épiques
@@ -119,6 +129,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(40, 255, 200), Shirt = rgb(255, 0, 90), Pants = rgb(0, 30, 255) },
 		EyeColor = rgb(255, 255, 0),
 		Clues = { "Photo", "Shadow", "Eyes" },
+		Look = { "TwistedHead" },
 	},
 	{
 		Id = "PhantomConcierge",
@@ -129,6 +140,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(240, 250, 255), Shirt = rgb(120, 0, 0), Pants = rgb(20, 20, 20) },
 		EyeColor = rgb(170, 255, 255),
 		Clues = { "Registry", "Eyes", "Shadow" },
+		Look = { "Ghost", "Cap" },
 	},
 
 	-- Légendaires
@@ -141,6 +153,7 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(250, 250, 255), Shirt = rgb(255, 255, 255), Pants = rgb(230, 230, 240) },
 		EyeColor = rgb(255, 40, 40),
 		Clues = { "Eyes", "Photo", "Registry" },
+		Look = { "Veil", "Dress", "Hover" },
 	},
 	{
 		Id = "FacelessWarden",
@@ -151,6 +164,8 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(10, 10, 10), Shirt = rgb(50, 0, 80), Pants = rgb(10, 10, 10) },
 		EyeColor = rgb(180, 0, 255),
 		Clues = { "Shadow", "Registry", "Photo" },
+		Look = { "Faceless", "LongArms", "Wisps" },
+		Scale = 1.25,
 	},
 
 	-- Mythique
@@ -163,6 +178,8 @@ local list: { Types.AnomalyDef } = {
 		TrueForm = { Skin = rgb(255, 215, 0), Shirt = rgb(15, 15, 15), Pants = rgb(15, 15, 15) },
 		EyeColor = rgb(255, 0, 0),
 		Clues = { "Registry", "Eyes", "Photo", "Shadow" },
+		Look = { "Crown", "Cape", "Halo" },
+		Scale = 1.3,
 	},
 }
 
@@ -725,6 +742,8 @@ export type AnomalyDef = {
 	TrueForm: Appearance, -- apparence révélée une fois dans la cellule
 	EyeColor: Color3,
 	Clues: { ClueType }, -- indices que cette anomalie peut montrer
+	Look: { string }?, -- traits visibles dans la cellule (voir AnomalyLooks)
+	Scale: number?, -- taille dans la cellule (1 = normale)
 }
 
 -- Une anomalie possédée par un joueur (sauvegardée)
@@ -1145,6 +1164,542 @@ return Analytics
         </Item>
         <Item class="ModuleScript" referent="27">
           <Properties>
+            <string name="Name">AnomalyLooks</string>
+            <string name="Source"><![CDATA[--!strict
+-- Forme monstrueuse des anomalies dans leur cellule : chapeaux, voile, bras trop
+-- longs, tête à l'envers... Chaque anomalie liste ses « traits » dans
+-- AnomalyConfig (champ Look). Les pièces ajoutées sont soudées au corps :
+-- elles suivent les animations et ne gênent personne (ni collision ni clic).
+
+local AnomalyLooks = {}
+
+local SMOKE_TEXTURE = "rbxasset://textures/particles/smoke_main.dds"
+
+local rgb = Color3.fromRGB
+
+type Context = {
+	rig: Model,
+	skin: Color3,
+	shirt: Color3,
+	eye: Color3,
+}
+
+local function bodyPart(rig: Model, name: string): BasePart?
+	local part = rig:FindFirstChild(name)
+	if part and part:IsA("BasePart") then
+		return part
+	end
+	return nil
+end
+
+-- Pièce décorative soudée à `base`, placée à `cframe` (repère du monde)
+local function attach(ctx: Context, base: BasePart, props: { [string]: any }, cframe: CFrame): Part
+	local part = Instance.new("Part")
+	part.Name = "LookPart"
+	part.Anchored = false
+	part.Massless = true
+	part.CanCollide = false
+	part.CanQuery = false
+	part.CanTouch = false
+	part.CastShadow = false
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	for key, value in props do
+		(part :: any)[key] = value
+	end
+	part.CFrame = cframe
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = base
+	weld.Part1 = part
+	weld.Parent = part
+	part.Parent = ctx.rig
+	return part
+end
+
+-- Cylindre debout (les cylindres Roblox sont couchés sur l'axe X)
+local UPRIGHT = CFrame.Angles(0, 0, math.rad(90))
+local function cylinderSize(height: number, diameter: number): Vector3
+	return Vector3.new(height, diameter, diameter)
+end
+
+-- Bas des pieds (pour que robes et bras ne passent pas sous le sol)
+local function feetBottom(rig: Model): number
+	local foot = bodyPart(rig, "LeftFoot")
+	if foot then
+		return foot.Position.Y - foot.Size.Y / 2
+	end
+	local cf, size = rig:GetBoundingBox()
+	return cf.Position.Y - size.Y / 2
+end
+
+local function smoke(parent: BasePart, color: Color3, rate: number, size: number)
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "LookSmoke"
+	emitter.Texture = SMOKE_TEXTURE
+	emitter.Color = ColorSequence.new(color)
+	emitter.LightInfluence = 0.6
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, size * 0.5), NumberSequenceKeypoint.new(1, size * 1.6) })
+	emitter.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.2, 0.55), NumberSequenceKeypoint.new(1, 1) })
+	emitter.Lifetime = NumberRange.new(1.5, 2.5)
+	emitter.Rate = rate
+	emitter.Speed = NumberRange.new(0.3, 0.8)
+	emitter.SpreadAngle = Vector2.new(30, 30)
+	emitter.RotSpeed = NumberRange.new(-30, 30)
+	emitter.Rotation = NumberRange.new(0, 360)
+	emitter.Acceleration = Vector3.new(0, 0.6, 0)
+	emitter.Parent = parent
+end
+
+local function removeFace(rig: Model)
+	local head = bodyPart(rig, "Head")
+	local face = head and head:FindFirstChildWhichIsA("Decal")
+	if face then
+		face:Destroy()
+	end
+end
+
+-- Repère de la tête : avant = -Z
+local function headFrame(head: BasePart): (CFrame, Vector3)
+	return head.CFrame, head.Size
+end
+
+local Traits: { [string]: (ctx: Context) -> () } = {}
+
+-- Pas de visage du tout
+function Traits.Faceless(ctx: Context)
+	removeFace(ctx.rig)
+end
+
+-- Deux yeux de plus, sur le front
+function Traits.ExtraEyes(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local cf, size = headFrame(head)
+	for _, offset in { Vector3.new(-0.12, 0.32, -0.5), Vector3.new(0.12, 0.32, -0.5), Vector3.new(0, -0.18, -0.5) } do
+		local d = size.X * 0.13
+		attach(ctx, head, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(d, d, d),
+			Material = Enum.Material.Neon,
+			Color = ctx.eye,
+		}, cf * CFrame.new(offset.X * size.X, offset.Y * size.Y, offset.Z * size.Z))
+	end
+end
+
+-- Sourire immense qui monte jusqu'aux joues
+function Traits.Smile(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	removeFace(ctx.rig)
+	local cf, size = headFrame(head)
+	for i = -4, 4 do
+		local x = i * 0.1 * size.X
+		local y = (-0.22 + 0.014 * i * i) * size.Y
+		local tooth = attach(ctx, head, {
+			Size = Vector3.new(0.09 * size.X, 0.1 * size.Y, 0.05),
+			Material = Enum.Material.Neon,
+			Color = rgb(255, 250, 240),
+		}, cf * CFrame.new(x, y, -size.Z * 0.5) * CFrame.Angles(0, 0, math.rad(i * 6)))
+		tooth.Name = "Tooth"
+	end
+	attach(ctx, head, {
+		Size = Vector3.new(0.85 * size.X, 0.16 * size.Y, 0.04),
+		Material = Enum.Material.SmoothPlastic,
+		Color = rgb(60, 0, 10),
+	}, cf * CFrame.new(0, -0.17 * size.Y, -size.Z * 0.49))
+end
+
+-- Haut-de-forme
+function Traits.TopHat(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local top = head.CFrame * CFrame.new(0, head.Size.Y / 2, 0)
+	local w = head.Size.X
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = cylinderSize(0.08, w * 1.5),
+		Color = rgb(20, 20, 22),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, 0.04, 0) * UPRIGHT)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = cylinderSize(w * 0.9, w * 0.95),
+		Color = rgb(25, 25, 28),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, w * 0.45, 0) * UPRIGHT)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = cylinderSize(w * 0.15, w * 0.97),
+		Color = rgb(120, 20, 30),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, w * 0.12, 0) * UPRIGHT)
+end
+
+-- Casquette (groom, facteur)
+function Traits.Cap(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local top = head.CFrame * CFrame.new(0, head.Size.Y / 2, 0)
+	local w = head.Size.X
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = cylinderSize(w * 0.35, w * 1.02),
+		Color = ctx.shirt,
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, w * 0.1, 0) * UPRIGHT)
+	attach(ctx, head, {
+		Size = Vector3.new(w * 0.8, 0.06, w * 0.35),
+		Color = rgb(20, 20, 20),
+		Material = Enum.Material.SmoothPlastic,
+	}, top * CFrame.new(0, -0.02, -w * 0.55))
+	attach(ctx, head, {
+		Size = Vector3.new(w * 0.25, w * 0.12, 0.05),
+		Color = rgb(230, 190, 60),
+		Material = Enum.Material.Metal,
+	}, top * CFrame.new(0, w * 0.12, -w * 0.52))
+end
+
+-- Bonnet de nuit avec pompon
+function Traits.NightCap(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local top = head.CFrame * CFrame.new(0, head.Size.Y / 2, 0)
+	local w = head.Size.X
+	attach(ctx, head, {
+		Size = Vector3.new(w * 0.95, w * 0.4, w * 0.95),
+		Color = rgb(70, 80, 160),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(0, w * 0.1, 0))
+	attach(ctx, head, {
+		Size = Vector3.new(w * 0.5, w * 0.7, w * 0.5),
+		Color = rgb(70, 80, 160),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(w * 0.25, w * 0.5, w * 0.1) * CFrame.Angles(0, 0, math.rad(-35)))
+	attach(ctx, head, {
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(w * 0.3, w * 0.3, w * 0.3),
+		Color = rgb(240, 240, 255),
+		Material = Enum.Material.Fabric,
+	}, top * CFrame.new(w * 0.6, w * 0.75, w * 0.1))
+end
+
+-- Valise à la main
+function Traits.Suitcase(ctx: Context)
+	local hand = bodyPart(ctx.rig, "RightHand")
+	if not hand then
+		return
+	end
+	local base = hand.CFrame * CFrame.new(0, -hand.Size.Y / 2 - 0.5, 0)
+	attach(ctx, hand, {
+		Size = Vector3.new(0.35, 0.9, 1.3),
+		Color = rgb(90, 60, 40),
+		Material = Enum.Material.Leather,
+	}, base)
+	attach(ctx, hand, {
+		Size = Vector3.new(0.38, 0.12, 1.32),
+		Color = rgb(200, 170, 80),
+		Material = Enum.Material.Metal,
+	}, base * CFrame.new(0, 0.2, 0))
+end
+
+-- Sacoche de facteur en bandoulière
+function Traits.MailBag(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	local cf, size = torso.CFrame, torso.Size
+	attach(ctx, torso, {
+		Size = Vector3.new(0.5, 1, 1.1),
+		Color = rgb(110, 70, 40),
+		Material = Enum.Material.Leather,
+	}, cf * CFrame.new(size.X / 2 + 0.25, -size.Y * 0.6, 0))
+	attach(ctx, torso, {
+		Size = Vector3.new(0.18, size.Y * 1.5, size.Z + 0.06),
+		Color = rgb(90, 55, 30),
+		Material = Enum.Material.Leather,
+	}, cf * CFrame.Angles(0, 0, math.rad(-35)))
+	-- Lettres qui s'échappent de la sacoche
+	for i = 1, 3 do
+		attach(ctx, torso, {
+			Size = Vector3.new(0.05, 0.4, 0.6),
+			Color = rgb(245, 240, 220),
+			Material = Enum.Material.SmoothPlastic,
+		}, cf * CFrame.new(size.X / 2 + 0.25, -size.Y * 0.1 + i * 0.05, (i - 2) * 0.25) * CFrame.Angles(math.rad((i - 2) * 15), 0, 0))
+	end
+end
+
+-- Corps de miroir et éclats autour de la tête
+function Traits.Mirror(ctx: Context)
+	for _, descendant in ctx.rig:GetDescendants() do
+		if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" and descendant.Name ~= "AnomalyEye" then
+			descendant.Material = Enum.Material.Glass
+			descendant.Reflectance = 0.45
+			descendant.Transparency = 0.15
+		end
+	end
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local w = head.Size.X
+	for i = 0, 6 do
+		local angle = math.rad(-90 + i * 30)
+		attach(ctx, head, {
+			Size = Vector3.new(0.08, w * (0.5 + (i % 2) * 0.3), w * 0.18),
+			Color = rgb(170, 240, 255),
+			Material = Enum.Material.Neon,
+			Transparency = 0.2,
+		}, head.CFrame * CFrame.Angles(0, 0, angle) * CFrame.new(0, w * 0.75, 0))
+	end
+end
+
+-- Tête retournée à l'envers
+function Traits.TwistedHead(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	local neck = head and head:FindFirstChild("Neck")
+	if neck and neck:IsA("Motor6D") then
+		-- Rotation autour du centre de la tête (elle reste sur le cou)
+		neck.C1 = CFrame.Angles(0, 0, math.pi) * neck.C1
+	end
+	-- Bras tordus vers l'arrière
+	for _, side in { "Left", "Right" } do
+		local upper = bodyPart(ctx.rig, `{side}UpperArm`)
+		local shoulder = upper and upper:FindFirstChild(`{side}Shoulder`)
+		if shoulder and shoulder:IsA("Motor6D") then
+			shoulder.C1 = shoulder.C1 * CFrame.Angles(math.rad(-25), math.rad(180), 0)
+		end
+	end
+end
+
+-- Fantôme : translucide, sans jambes, traînée de brume
+function Traits.Ghost(ctx: Context)
+	for _, descendant in ctx.rig:GetDescendants() do
+		if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" and descendant.Name ~= "AnomalyEye" then
+			descendant.Transparency = if string.find(descendant.Name, "Leg") or string.find(descendant.Name, "Foot")
+				then 1
+				else 0.45
+		end
+	end
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if lower then
+		smoke(lower, ctx.skin, 10, 1.2)
+	end
+	ctx.rig:SetAttribute("Hover", 1.2)
+end
+
+-- Flotte au-dessus du sol (animé par le client, voir AmbienceController)
+function Traits.Hover(ctx: Context)
+	if not ctx.rig:GetAttribute("Hover") then
+		ctx.rig:SetAttribute("Hover", 0.8)
+	end
+end
+
+-- Voile de mariée translucide
+function Traits.Veil(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local size = head.Size
+	attach(ctx, head, {
+		Size = Vector3.new(size.X * 1.25, size.Y * 2.2, size.Z * 1.25),
+		Color = rgb(250, 250, 255),
+		Material = Enum.Material.Fabric,
+		Transparency = 0.45,
+	}, head.CFrame * CFrame.new(0, -size.Y * 0.35, size.Z * 0.08))
+	-- Couronne de fleurs fanées
+	for i = 0, 7 do
+		local angle = math.rad(i * 45)
+		attach(ctx, head, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(0.28, 0.28, 0.28),
+			Color = if i % 2 == 0 then rgb(120, 10, 30) else rgb(240, 240, 240),
+			Material = Enum.Material.Fabric,
+		}, head.CFrame * CFrame.new(math.cos(angle) * size.X * 0.55, size.Y * 0.5, math.sin(angle) * size.Z * 0.55))
+	end
+end
+
+-- Robe longue jusqu'au sol (cache les jambes)
+function Traits.Dress(ctx: Context)
+	local lower = bodyPart(ctx.rig, "LowerTorso")
+	if not lower then
+		return
+	end
+	local top = lower.Position.Y + lower.Size.Y / 2
+	local bottom = feetBottom(ctx.rig) + 0.05
+	local tiers = 4
+	local step = (top - bottom) / tiers
+	for i = 0, tiers - 1 do
+		local y = top - step * (i + 0.5)
+		local diameter = lower.Size.X * (1.1 + i * 0.45)
+		attach(ctx, lower, {
+			Shape = Enum.PartType.Cylinder,
+			Size = cylinderSize(step + 0.02, diameter),
+			Color = ctx.shirt,
+			Material = Enum.Material.Fabric,
+		}, CFrame.new(lower.Position.X, y, lower.Position.Z) * UPRIGHT)
+	end
+	-- Pétales rouges qui tombent
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "Petals"
+	emitter.Color = ColorSequence.new(rgb(170, 0, 30))
+	emitter.LightEmission = 0.3
+	emitter.Size = NumberSequence.new(0.18)
+	emitter.Lifetime = NumberRange.new(2, 3)
+	emitter.Rate = 4
+	emitter.Speed = NumberRange.new(0.2, 0.5)
+	emitter.Acceleration = Vector3.new(0, -1.5, 0)
+	emitter.RotSpeed = NumberRange.new(-90, 90)
+	emitter.SpreadAngle = Vector2.new(60, 60)
+	emitter.Parent = lower
+end
+
+-- Bras trop longs qui traînent jusqu'au sol, avec des griffes
+function Traits.LongArms(ctx: Context)
+	local bottom = feetBottom(ctx.rig)
+	for _, side in { "Left", "Right" } do
+		local hand = bodyPart(ctx.rig, `{side}Hand`)
+		if hand then
+			local handBottom = hand.Position.Y - hand.Size.Y / 2
+			local length = math.max(handBottom - bottom - 0.6, 0.5)
+			local center = hand.CFrame * CFrame.new(0, -hand.Size.Y / 2 - length / 2, 0)
+			attach(ctx, hand, {
+				Size = Vector3.new(hand.Size.X * 0.8, length, hand.Size.Z * 0.8),
+				Color = ctx.skin,
+				Material = Enum.Material.SmoothPlastic,
+			}, center)
+			for i = -1, 1 do
+				attach(ctx, hand, {
+					Size = Vector3.new(0.08, 0.6, 0.08),
+					Color = ctx.eye,
+					Material = Enum.Material.Neon,
+				}, center * CFrame.new(i * 0.15, -length / 2 - 0.25, -0.1) * CFrame.Angles(math.rad(-20), 0, math.rad(i * 12)))
+			end
+		end
+	end
+end
+
+-- Brume noire qui s'échappe du corps
+function Traits.Wisps(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if torso then
+		smoke(torso, rgb(15, 10, 20), 8, 1.4)
+	end
+end
+
+-- Couronne dorée sertie de rubis
+function Traits.Crown(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local w = head.Size.X
+	local top = head.CFrame * CFrame.new(0, head.Size.Y / 2 + 0.05, 0)
+	attach(ctx, head, {
+		Shape = Enum.PartType.Cylinder,
+		Size = cylinderSize(w * 0.22, w * 1.05),
+		Color = rgb(255, 200, 40),
+		Material = Enum.Material.Foil,
+	}, top * UPRIGHT)
+	for i = 0, 7 do
+		local angle = math.rad(i * 45)
+		local spike = top * CFrame.new(math.cos(angle) * w * 0.48, w * 0.25, math.sin(angle) * w * 0.48)
+		attach(ctx, head, {
+			Size = Vector3.new(w * 0.12, w * 0.4, w * 0.12),
+			Color = rgb(255, 200, 40),
+			Material = Enum.Material.Foil,
+		}, spike)
+		if i % 2 == 0 then
+			attach(ctx, head, {
+				Shape = Enum.PartType.Ball,
+				Size = Vector3.new(w * 0.14, w * 0.14, w * 0.14),
+				Color = rgb(255, 0, 40),
+				Material = Enum.Material.Neon,
+			}, spike * CFrame.new(0, w * 0.25, 0))
+		end
+	end
+end
+
+-- Auréole sombre au-dessus de la tête
+function Traits.Halo(ctx: Context)
+	local head = bodyPart(ctx.rig, "Head")
+	if not head then
+		return
+	end
+	local w = head.Size.X
+	local center = head.CFrame * CFrame.new(0, head.Size.Y / 2 + w * 0.85, w * 0.25)
+	for i = 0, 15 do
+		local angle = math.rad(i * 22.5)
+		attach(ctx, head, {
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(0.16, 0.16, 0.16),
+			Color = ctx.eye,
+			Material = Enum.Material.Neon,
+		}, center * CFrame.new(math.cos(angle) * w * 0.7, 0, math.sin(angle) * w * 0.7))
+	end
+end
+
+-- Longue cape dans le dos
+function Traits.Cape(ctx: Context)
+	local torso = bodyPart(ctx.rig, "UpperTorso")
+	if not torso then
+		return
+	end
+	local shoulderY = torso.Position.Y + torso.Size.Y / 2
+	local bottom = feetBottom(ctx.rig) + 0.4
+	local height = shoulderY - bottom
+	local back = torso.CFrame * CFrame.new(0, 0, torso.Size.Z / 2 + 0.12)
+	local center = CFrame.new(back.Position.X, shoulderY - height / 2, back.Position.Z) * (torso.CFrame - torso.CFrame.Position)
+	attach(ctx, torso, {
+		Size = Vector3.new(torso.Size.X * 1.35, height, 0.1),
+		Color = rgb(110, 0, 15),
+		Material = Enum.Material.Fabric,
+	}, center * CFrame.new(0, 0, 0.15) * CFrame.Angles(math.rad(6), 0, 0))
+	attach(ctx, torso, {
+		Size = Vector3.new(torso.Size.X * 1.5, 0.35, torso.Size.Z * 1.3),
+		Color = rgb(240, 235, 230),
+		Material = Enum.Material.Fabric,
+	}, torso.CFrame * CFrame.new(0, torso.Size.Y / 2 - 0.1, 0))
+end
+
+-- Ajoute les traits listés. Le modèle n'est pas encore dans workspace.
+function AnomalyLooks.apply(rig: Model, look: { string }?, appearance: { Skin: Color3, Shirt: Color3 }, eyeColor: Color3)
+	if not look then
+		return
+	end
+	local ctx: Context = { rig = rig, skin = appearance.Skin, shirt = appearance.Shirt, eye = eyeColor }
+	for _, traitName in look do
+		local trait = Traits[traitName]
+		if trait then
+			local ok, err = pcall(trait, ctx)
+			if not ok then
+				warn(`[AnomalyLooks] Trait {traitName} : {err}`)
+			end
+		else
+			warn(`[AnomalyLooks] Trait inconnu : {traitName}`)
+		end
+	end
+end
+
+AnomalyLooks.Traits = Traits
+
+return AnomalyLooks
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="28">
+          <Properties>
             <string name="Name">CollisionGroups</string>
             <string name="Source"><![CDATA[--!strict
 -- Groupes de collision : la barrière de verrou d'un hôtel bloque tout le monde
@@ -1201,7 +1756,7 @@ return CollisionGroups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">DataSchema</string>
             <string name="Source"><![CDATA[--!strict
@@ -1284,7 +1839,7 @@ return DataSchema
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="29">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">GuestGenerator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1545,7 +2100,7 @@ return GuestGenerator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="31">
           <Properties>
             <string name="Name">IncomeCalculator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1587,7 +2142,7 @@ return IncomeCalculator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">MapBuilder</string>
             <string name="Source"><![CDATA[--!strict
@@ -1649,6 +2204,23 @@ local function buildCell(index: number, origin: CFrame, localCFrame: CFrame, par
 		Parent = cell,
 	})
 
+	-- Liseré lumineux autour du pad (couleur de la rareté, voir AnomalyService)
+	local trims = Instance.new("Folder")
+	trims.Name = "Trim"
+	trims.Parent = cell
+	local edge = CELL_WIDTH - 0.5
+	for _, offset in { CFrame.new(0, 0.45, edge / 2), CFrame.new(0, 0.45, -edge / 2), CFrame.new(edge / 2, 0.45, 0) * CFrame.Angles(0, math.rad(90), 0), CFrame.new(-edge / 2, 0.45, 0) * CFrame.Angles(0, math.rad(90), 0) } do
+		PartFactory.decor({
+			Name = "TrimStrip",
+			Size = Vector3.new(edge, 0.12, 0.25),
+			CFrame = cf * offset,
+			Color = Color3.fromRGB(40, 40, 50),
+			Material = Enum.Material.SmoothPlastic,
+			CastShadow = false,
+			Parent = trims,
+		})
+	end
+
 	-- Où l'anomalie se tient : sur le pad, tournée vers l'ouverture
 	makeMarker("Spot", cf * CFrame.new(0, 0.4, 0), cell)
 
@@ -1689,7 +2261,7 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	hotel:SetAttribute("HotelIndex", index)
 
 	local half = HOTEL_SIZE / 2
-	local wallColor = Color3.fromRGB(92, 64, 80)
+	local wallColor = MapDecor.wallColor(index)
 
 	local floor = makePart({
 		Name = "Floor",
@@ -1815,7 +2387,7 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	end
 	assert(cellIndex >= GameConfig.MaxCells, "Pas assez d'emplacements de cellules construits")
 
-	MapDecor.decorateHotel(hotel, origin, { Size = HOTEL_SIZE, WallHeight = WALL_HEIGHT, DoorWidth = DOOR_WIDTH })
+	MapDecor.decorateHotel(hotel, origin, { Index = index, Size = HOTEL_SIZE, WallHeight = WALL_HEIGHT, DoorWidth = DOOR_WIDTH })
 
 	hotel.PrimaryPart = floor
 	hotel.Parent = parent
@@ -1830,14 +2402,8 @@ function MapBuilder.build(): Folder
 	local map = Instance.new("Folder")
 	map.Name = "Map"
 
-	makePart({
-		Name = "Ground",
-		Size = Vector3.new(700, 2, 700),
-		CFrame = CFrame.new(0, -1, 0),
-		Color = Color3.fromRGB(58, 79, 52),
-		Material = Enum.Material.Grass,
-		Parent = map,
-	})
+	-- Le sol est en terrain (herbe), voir MapDecor.setupTerrain
+	MapDecor.setupTerrain()
 	makePart({
 		Name = "Plaza",
 		Size = Vector3.new(220, 0.4, 130),
@@ -1898,6 +2464,7 @@ function MapBuilder.build(): Folder
 
 	-- 3 hôtels au nord (porte vers le sud), 3 au sud (porte vers le nord)
 	local perSide = math.ceil(GameConfig.HotelCount / 2)
+	local hotelXs: { number } = {}
 	for index = 1, GameConfig.HotelCount do
 		local north = index <= perSide
 		local column = if north then index - 1 else index - perSide - 1
@@ -1909,9 +2476,12 @@ function MapBuilder.build(): Folder
 			origin = CFrame.new(x, 0, HOTEL_DISTANCE) * CFrame.Angles(0, math.pi, 0)
 		end
 		buildHotel(index, origin, hotels)
+		if not table.find(hotelXs, x) then
+			table.insert(hotelXs, x)
+		end
 	end
 
-	MapDecor.decoratePlaza(map)
+	MapDecor.decoratePlaza(map, hotelXs)
 	MapDecor.setupLighting()
 
 	map.Parent = workspace
@@ -1922,13 +2492,16 @@ return MapBuilder
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="33">
           <Properties>
             <string name="Name">MapDecor</string>
             <string name="Source"><![CDATA[--!strict
--- Habillage de la carte : ambiance (lumière, brume), décor des hôtels et de la place.
--- Purement visuel : rien ici ne doit gêner les chemins des clients ni la caméra
--- de réception (vérifié par tests/run.luau).
+-- Habillage de la carte : nuit (lune, étoiles, nuages, brume), terrain, façades
+-- d'hôtel à étages, intérieurs décorés, fontaine, cimetières...
+-- Purement visuel : rien ici ne gêne les chemins des clients ni la caméra de
+-- réception (vérifié par tests/run.luau).
+--
+-- Les lumières marquées de l'attribut Flicker clignotent (AmbienceController).
 
 local Lighting = game:GetService("Lighting")
 
@@ -1938,9 +2511,22 @@ local decor = PartFactory.decor
 local light = PartFactory.light
 local rgb = Color3.fromRGB
 
-local WARM_LIGHT = rgb(255, 196, 130)
+local WARM_LIGHT = rgb(255, 190, 120)
+local SMOKE_TEXTURE = "rbxasset://textures/particles/smoke_main.dds"
+local UPRIGHT = CFrame.Angles(0, 0, math.rad(90)) -- cylindre debout
+
+-- Couleur de façade de chaque hôtel (pour les reconnaître de loin)
+local WALL_PALETTE = {
+	rgb(92, 64, 80), -- prune
+	rgb(58, 78, 70), -- vert sapin
+	rgb(62, 66, 96), -- bleu nuit
+	rgb(110, 52, 52), -- bordeaux
+	rgb(70, 64, 60), -- anthracite
+	rgb(52, 82, 92), -- bleu canard
+}
 
 export type HotelLayout = {
+	Index: number,
 	Size: number,
 	WallHeight: number,
 	DoorWidth: number,
@@ -1948,57 +2534,244 @@ export type HotelLayout = {
 
 local MapDecor = {}
 
--- Cylindre debout (les cylindres Roblox sont couchés sur l'axe X)
-local function standingCylinder(props: { [string]: any }, height: number, diameter: number, position: Vector3): Part
+function MapDecor.wallColor(index: number): Color3
+	return WALL_PALETTE[(index - 1) % #WALL_PALETTE + 1]
+end
+
+local function cylinder(props: { [string]: any }, height: number, diameter: number, cframe: CFrame): Part
 	props.Shape = Enum.PartType.Cylinder
 	props.Size = Vector3.new(height, diameter, diameter)
-	props.CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90))
+	props.CFrame = cframe * UPRIGHT
 	return decor(props)
 end
 
--- Ambiance : coucher de soleil violet, brume légère, éclairage réaliste
+local function ball(props: { [string]: any }, diameter: number, cframe: CFrame): Part
+	props.Shape = Enum.PartType.Ball
+	props.Size = Vector3.new(diameter, diameter, diameter)
+	props.CFrame = cframe
+	return decor(props)
+end
+
+local function wedge(props: { [string]: any }): WedgePart
+	local part = Instance.new("WedgePart")
+	part.Anchored = true
+	part.CanQuery = false
+	part.CanTouch = false
+	for key, value in props do
+		(part :: any)[key] = value
+	end
+	return part
+end
+
+-- Brume au ras du sol, émise depuis une zone invisible
+local function mist(parent: Instance, cframe: CFrame, size: Vector3, rate: number)
+	local zone = decor({
+		Name = "MistZone",
+		Size = size,
+		CFrame = cframe,
+		Transparency = 1,
+		Parent = parent,
+	})
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "Mist"
+	emitter.Texture = SMOKE_TEXTURE
+	emitter.Shape = Enum.ParticleEmitterShape.Box
+	emitter.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+	emitter.Color = ColorSequence.new(rgb(175, 165, 210))
+	emitter.LightInfluence = 1
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 8), NumberSequenceKeypoint.new(1, 16) })
+	emitter.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1),
+		NumberSequenceKeypoint.new(0.3, 0.86),
+		NumberSequenceKeypoint.new(0.7, 0.88),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	emitter.Lifetime = NumberRange.new(10, 14)
+	emitter.Rate = rate
+	emitter.Speed = NumberRange.new(0.2, 0.6)
+	emitter.SpreadAngle = Vector2.new(80, 80)
+	emitter.Rotation = NumberRange.new(0, 360)
+	emitter.RotSpeed = NumberRange.new(-8, 8)
+	emitter.Parent = zone
+end
+
+-- Petites lueurs qui flottent (feux follets)
+local function wisps(parent: BasePart, color: Color3, rate: number)
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "Wisps"
+	emitter.Shape = Enum.ParticleEmitterShape.Box
+	emitter.Color = ColorSequence.new(color)
+	emitter.LightEmission = 1
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.5, 0.35), NumberSequenceKeypoint.new(1, 0) })
+	emitter.Lifetime = NumberRange.new(4, 7)
+	emitter.Rate = rate
+	emitter.Speed = NumberRange.new(0.3, 1)
+	emitter.SpreadAngle = Vector2.new(180, 180)
+	emitter.Acceleration = Vector3.new(0, 0.3, 0)
+	emitter.Parent = parent
+end
+
+-- Petite flamme : boule lumineuse + vrai feu Roblox
+local function flame(parent: Instance, cframe: CFrame, size: number, range: number, flicker: boolean): Part
+	local core = ball({
+		Name = "Flame",
+		Color = rgb(255, 160, 60),
+		Material = Enum.Material.Neon,
+		Parent = parent,
+	}, size, cframe)
+	local fire = Instance.new("Fire")
+	fire.Size = size * 2
+	fire.Heat = 2
+	fire.Color = rgb(255, 140, 40)
+	fire.SecondaryColor = rgb(255, 220, 120)
+	fire.Parent = core
+	light(core, rgb(255, 150, 70), range, 1.4)
+	if flicker then
+		core:SetAttribute("Flicker", true)
+	end
+	return core
+end
+
+------------------------------------------------------------------ ambiance
+
 function MapDecor.setupLighting()
-	Lighting.ClockTime = 18.6
-	Lighting.Brightness = 2
-	Lighting.Ambient = rgb(70, 60, 85)
-	Lighting.OutdoorAmbient = rgb(110, 95, 130)
-	Lighting.EnvironmentDiffuseScale = 0.5
-	Lighting.EnvironmentSpecularScale = 0.5
+	Lighting.ClockTime = 21.3
+	Lighting.GeographicLatitude = 25
+	Lighting.Brightness = 1.6
+	Lighting.ExposureCompensation = 0.25
+	Lighting.Ambient = rgb(85, 75, 105)
+	Lighting.OutdoorAmbient = rgb(105, 95, 135)
+	Lighting.EnvironmentDiffuseScale = 0.6
+	Lighting.EnvironmentSpecularScale = 0.8
+	Lighting.GlobalShadows = true
+
+	local sky = Instance.new("Sky")
+	sky.StarCount = 4000
+	sky.MoonAngularSize = 18
+	sky.SunAngularSize = 10
+	sky.CelestialBodiesShown = true
+	sky.Parent = Lighting
 
 	local atmosphere = Instance.new("Atmosphere")
-	atmosphere.Density = 0.32
-	atmosphere.Offset = 0.2
-	atmosphere.Color = rgb(200, 170, 230)
-	atmosphere.Decay = rgb(90, 60, 120)
-	atmosphere.Glare = 0.3
-	atmosphere.Haze = 1.6
+	atmosphere.Density = 0.38
+	atmosphere.Offset = 0.15
+	atmosphere.Color = rgb(120, 100, 160)
+	atmosphere.Decay = rgb(60, 40, 90)
+	atmosphere.Glare = 0
+	atmosphere.Haze = 1.2
 	atmosphere.Parent = Lighting
 
 	local bloom = Instance.new("BloomEffect")
-	bloom.Intensity = 0.6
-	bloom.Size = 24
-	bloom.Threshold = 1.3
+	bloom.Intensity = 0.8
+	bloom.Size = 28
+	bloom.Threshold = 1.1
 	bloom.Parent = Lighting
 
 	local color = Instance.new("ColorCorrectionEffect")
-	color.Contrast = 0.1
-	color.Saturation = -0.08
-	color.TintColor = rgb(238, 228, 255)
+	color.Contrast = 0.12
+	color.Saturation = -0.05
+	color.TintColor = rgb(235, 228, 255)
 	color.Parent = Lighting
+
+	local rays = Instance.new("SunRaysEffect")
+	rays.Intensity = 0.04
+	rays.Spread = 0.6
+	rays.Parent = Lighting
+
+	-- Léger flou au loin (la caméra de jeu reste nette)
+	local depth = Instance.new("DepthOfFieldEffect")
+	depth.FarIntensity = 0.12
+	depth.FocusDistance = 80
+	depth.InFocusRadius = 90
+	depth.NearIntensity = 0
+	depth.Parent = Lighting
 end
 
-function MapDecor.decorateHotel(hotel: Model, origin: CFrame, layout: HotelLayout)
-	local half = layout.Size / 2
-	local top = 1 + layout.WallHeight -- haut des murs
-	local folder = Instance.new("Folder")
-	folder.Name = "Decor"
-	folder.Parent = hotel
+-- Sol en terrain (herbe animée), collines à l'horizon, nuages, eau
+function MapDecor.setupTerrain()
+	local terrain = workspace.Terrain
+	terrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(900, 8, 900), Enum.Material.Grass)
 
-	local function at(x: number, y: number, z: number): CFrame
-		return origin * CFrame.new(x, y, z)
+	-- Collines tout autour (ferment l'horizon)
+	for i = 0, 23 do
+		local angle = math.rad(i * 15)
+		local radius = 400 + (i % 3) * 25
+		local size = 60 + (i * 7) % 30
+		terrain:FillBall(Vector3.new(math.cos(angle) * radius, -15, math.sin(angle) * radius), size, Enum.Material.Grass)
+		if i % 4 == 0 then
+			terrain:FillBall(Vector3.new(math.cos(angle) * (radius - 30), 5, math.sin(angle) * (radius - 30)), 18, Enum.Material.Rock)
+		end
 	end
+	-- Terre battue des cimetières
+	for _, x in { -150, 150 } do
+		terrain:FillBlock(CFrame.new(x, -2, 0), Vector3.new(36, 4, 44), Enum.Material.Mud)
+	end
+	-- Eau de la fontaine
+	terrain:FillCylinder(CFrame.new(0, 0.9, 0), 1.6, 7.6, Enum.Material.Water)
 
-	-- Toit (avec un léger débord)
+	pcall(function()
+		terrain:SetMaterialColor(Enum.Material.Grass, rgb(58, 78, 52))
+		terrain:SetMaterialColor(Enum.Material.Mud, rgb(60, 48, 40))
+		terrain:SetMaterialColor(Enum.Material.Rock, rgb(85, 82, 92))
+	end)
+	pcall(function()
+		terrain.Decoration = true -- brins d'herbe animés
+	end)
+	terrain.WaterColor = rgb(40, 90, 110)
+	terrain.WaterTransparency = 0.6
+	terrain.WaterReflectance = 0.8
+	terrain.WaterWaveSize = 0.05
+	terrain.WaterWaveSpeed = 4
+
+	local clouds = Instance.new("Clouds")
+	clouds.Cover = 0.62
+	clouds.Density = 0.45
+	clouds.Color = rgb(70, 60, 90)
+	clouds.Parent = terrain
+end
+
+------------------------------------------------------------------ hôtels
+
+-- Fenêtre éclairée (ou sombre) avec cadre, rebord et croisillons.
+-- `cf` : centre de la fenêtre, avant = -Z (vers l'extérieur du mur)
+local function window(parent: Instance, cf: CFrame, width: number, height: number, lit: boolean, frameColor: Color3)
+	decor({
+		Name = "WindowPane",
+		Size = Vector3.new(width, height, 0.15),
+		CFrame = cf,
+		Color = if lit then rgb(255, 200, 120) else rgb(20, 20, 30),
+		Material = if lit then Enum.Material.Neon else Enum.Material.Glass,
+		Reflectance = if lit then 0 else 0.4,
+		Parent = parent,
+	})
+	local function frame(name: string, size: Vector3, offset: CFrame)
+		decor({ Name = name, Size = size, CFrame = cf * offset, Color = frameColor, Material = Enum.Material.Wood, Parent = parent })
+	end
+	local t = 0.35
+	for _, side in { -1, 1 } do
+		frame("WindowFrame", Vector3.new(t, height + t * 2, 0.4), CFrame.new(side * (width / 2 + t / 2), 0, -0.1))
+		frame("WindowFrame", Vector3.new(width, t, 0.4), CFrame.new(0, side * (height / 2 + t / 2), -0.1))
+	end
+	frame("WindowSill", Vector3.new(width + 1, 0.3, 0.8), CFrame.new(0, -height / 2 - 0.45, -0.3))
+	-- Croisillons
+	frame("Mullion", Vector3.new(0.18, height, 0.25), CFrame.new(0, 0, -0.05))
+	frame("Mullion", Vector3.new(width, 0.18, 0.25), CFrame.new(0, height * 0.1, -0.05))
+end
+
+-- Silhouette sombre derrière une fenêtre éclairée
+local function silhouette(parent: Instance, cf: CFrame)
+	decor({ Name = "Silhouette", Size = Vector3.new(1.4, 1.6, 0.05), CFrame = cf * CFrame.new(0, -0.9, -0.1), Color = rgb(10, 8, 14), Parent = parent })
+	ball({ Name = "Silhouette", Color = rgb(10, 8, 14), Parent = parent }, 0.9, cf * CFrame.new(0, 0.4, -0.1))
+end
+
+local function decorateExterior(folder: Folder, at: (number, number, number) -> CFrame, layout: HotelLayout, wallColor: Color3)
+	local half = layout.Size / 2
+	local top = 1 + layout.WallHeight
+	local stone = rgb(150, 140, 135)
+	local trimColor = rgb(45, 30, 25)
+	local index = layout.Index
+
+	-- Toit plat du rez-de-chaussée (avec corniche)
 	decor({
 		Name = "Roof",
 		Size = Vector3.new(layout.Size + 2, 1, layout.Size + 2),
@@ -2008,8 +2781,308 @@ function MapDecor.decorateHotel(hotel: Model, origin: CFrame, layout: HotelLayou
 		CanCollide = true,
 		Parent = folder,
 	})
+	decor({
+		Name = "Cornice",
+		Size = Vector3.new(layout.Size + 3, 0.5, layout.Size + 3),
+		CFrame = at(0, top + 0.1, 0),
+		Color = stone,
+		Material = Enum.Material.Concrete,
+		Parent = folder,
+	})
 
-	-- Plafonniers (pas d'ombre : seule la lampe au-dessus du client en fait)
+	-- Piliers d'angle en pierre
+	for _, sx in { -1, 1 } do
+		for _, sz in { -1, 1 } do
+			decor({
+				Name = "CornerPillar",
+				Size = Vector3.new(2.4, layout.WallHeight + 1, 2.4),
+				CFrame = at(sx * (half + 0.4), (layout.WallHeight + 1) / 2, sz * (half + 0.4)),
+				Color = stone,
+				Material = Enum.Material.Concrete,
+				CanCollide = true,
+				Parent = folder,
+			})
+		end
+	end
+
+	-- Étages supérieurs (en retrait derrière l'enseigne)
+	local upperWidth = layout.Size - 4
+	local upperDepth = 40
+	local upperZ = -4
+	local upperBottom = top + 1
+	local upperHeight = 14
+	local upperFront = upperZ + upperDepth / 2
+	decor({
+		Name = "UpperFloors",
+		Size = Vector3.new(upperWidth, upperHeight, upperDepth),
+		CFrame = at(0, upperBottom + upperHeight / 2, upperZ),
+		Color = wallColor,
+		Material = Enum.Material.Brick,
+		CanCollide = true,
+		Parent = folder,
+	})
+	decor({
+		Name = "UpperCornice",
+		Size = Vector3.new(upperWidth + 2, 0.6, upperDepth + 2),
+		CFrame = at(0, upperBottom + upperHeight + 0.3, upperZ),
+		Color = stone,
+		Material = Enum.Material.Concrete,
+		Parent = folder,
+	})
+	-- Bandeau entre les deux étages
+	decor({
+		Name = "FloorBand",
+		Size = Vector3.new(upperWidth + 0.6, 0.5, upperDepth + 0.6),
+		CFrame = at(0, upperBottom + upperHeight / 2, upperZ),
+		Color = stone,
+		Material = Enum.Material.Concrete,
+		Parent = folder,
+	})
+
+	-- Fenêtres des étages : environ 2 sur 3 allumées, une silhouette par hôtel
+	local count = 0
+	for row, y in { upperBottom + 3.6, upperBottom + 10.4 } do
+		for column, x in { -20, -12, -4, 4, 12, 20 } do
+			count += 1
+			local lit = (index * 7 + column * 3 + row * 5) % 3 ~= 0
+			local cf = at(x, y, upperFront + 0.1) * CFrame.Angles(0, math.pi, 0)
+			window(folder, cf, 3.6, 3.6, lit, trimColor)
+			if lit and count == (index % 6) + 3 then
+				silhouette(folder, cf)
+			end
+		end
+		for _, side in { -1, 1 } do
+			for _, z in { -18, -8, 2, 10 } do
+				local lit = (index + row + z) % 3 ~= 0
+				local cf = at(side * (upperWidth / 2 + 0.1), y, z) * CFrame.Angles(0, side * math.rad(-90), 0)
+				window(folder, cf, 3.6, 3.6, lit, trimColor)
+			end
+		end
+	end
+
+	-- Toit à deux pans (pignons sur les côtés)
+	local roofBottom = upperBottom + upperHeight + 0.6
+	local roofHeight = 8
+	for _, side in { -1, 1 } do
+		local part = wedge({
+			Name = "GableRoof",
+			Size = Vector3.new(upperWidth + 3, roofHeight, upperDepth / 2 + 1),
+			CFrame = at(0, roofBottom + roofHeight / 2, upperZ + side * (upperDepth / 4 + 0.5))
+				* CFrame.Angles(0, if side > 0 then math.pi else 0, 0),
+			Color = rgb(40, 32, 45),
+			Material = Enum.Material.Slate,
+			CanCollide = true,
+		})
+		part.Parent = folder
+	end
+	decor({
+		Name = "RoofRidge",
+		Size = Vector3.new(upperWidth + 3.4, 0.6, 1),
+		CFrame = at(0, roofBottom + roofHeight + 0.1, upperZ),
+		Color = rgb(25, 20, 28),
+		Material = Enum.Material.Metal,
+		Parent = folder,
+	})
+	-- Lucarnes rondes sur les pignons
+	for _, side in { -1, 1 } do
+		local attic = decor({
+			Name = "AtticWindow",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.3, 3, 3),
+			CFrame = at(side * (upperWidth / 2 + 1.55), roofBottom + 2.6, upperZ),
+			Color = rgb(255, 120, 60),
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+		if side > 0 then
+			attic:SetAttribute("Flicker", true)
+		end
+	end
+	-- Cheminée qui fume
+	local chimney = decor({
+		Name = "Chimney",
+		Size = Vector3.new(3, 12, 3),
+		CFrame = at(15, roofBottom + 5, upperZ - 9),
+		Color = rgb(90, 50, 45),
+		Material = Enum.Material.Brick,
+		Parent = folder,
+	})
+	local smoke = Instance.new("Smoke")
+	smoke.Color = rgb(60, 55, 65)
+	smoke.Opacity = 0.15
+	smoke.RiseVelocity = 4
+	smoke.Size = 3
+	smoke.Parent = chimney
+
+	-- Balustrade de la terrasse (de part et d'autre de l'enseigne)
+	for _, side in { -1, 1 } do
+		local x0 = 13
+		local length = half - x0
+		decor({
+			Name = "Balustrade",
+			Size = Vector3.new(length, 0.4, 0.5),
+			CFrame = at(side * (x0 + length / 2), top + 2.8, half + 0.2),
+			Color = stone,
+			Material = Enum.Material.Concrete,
+			Parent = folder,
+		})
+		for i = 0, math.floor(length / 1.5) do
+			decor({
+				Name = "Baluster",
+				Size = Vector3.new(0.4, 1.8, 0.4),
+				CFrame = at(side * (x0 + i * 1.5), top + 1.9, half + 0.2),
+				Color = stone,
+				Material = Enum.Material.Concrete,
+				Parent = folder,
+			})
+		end
+	end
+
+	-- Rez-de-chaussée : fenêtres avec volets
+	local sideCenter = (layout.DoorWidth + (layout.Size - layout.DoorWidth) / 2) / 2
+	for _, side in { -1, 1 } do
+		local cf = at(side * sideCenter, 9, half + 0.6) * CFrame.Angles(0, math.pi, 0)
+		window(folder, cf, 8, 5, true, trimColor)
+		for _, s in { -1, 1 } do
+			decor({
+				Name = "Shutter",
+				Size = Vector3.new(2.2, 5.6, 0.2),
+				CFrame = cf * CFrame.new(s * 5.4, 0, -0.1),
+				Color = rgb(40, 60, 45),
+				Material = Enum.Material.WoodPlanks,
+				Parent = folder,
+			})
+		end
+		for _, z in { -12, 6 } do
+			window(folder, at(side * (half + 0.6), 9, z) * CFrame.Angles(0, side * math.rad(-90), 0), 7, 5, true, trimColor)
+		end
+	end
+
+	-- Porte : montants, auvent, marche, lanternes, haies
+	for _, side in { -1, 1 } do
+		decor({
+			Name = "DoorPillar",
+			Size = Vector3.new(1.2, layout.WallHeight - 4, 1.2),
+			CFrame = at(side * (layout.DoorWidth / 2 + 0.6), 1 + (layout.WallHeight - 4) / 2, half + 0.7),
+			Color = rgb(60, 35, 25),
+			Material = Enum.Material.Wood,
+			Parent = folder,
+		})
+		local px = side * (layout.DoorWidth / 2 + 2.5)
+		cylinder({ Name = "LanternPost", Color = rgb(30, 25, 30), Material = Enum.Material.Metal, Parent = folder }, 6.5, 0.5, at(px, 3.25, half + 2))
+		decor({
+			Name = "LanternGlass",
+			Size = Vector3.new(1.4, 1.8, 1.4),
+			CFrame = at(px, 7.4, half + 2),
+			Color = rgb(255, 220, 160),
+			Material = Enum.Material.Glass,
+			Transparency = 0.5,
+			Parent = folder,
+		})
+		decor({
+			Name = "LanternCap",
+			Size = Vector3.new(1.8, 0.4, 1.8),
+			CFrame = at(px, 8.5, half + 2),
+			Color = rgb(30, 25, 30),
+			Material = Enum.Material.Metal,
+			Parent = folder,
+		})
+		flame(folder, at(px, 7.2, half + 2), 0.6, 16, side > 0 and index % 2 == 0)
+		decor({
+			Name = "Hedge",
+			Size = Vector3.new(15, 2.6, 1.8),
+			CFrame = at(side * 18.5, 1.3, half + 2.2),
+			Color = rgb(35, 70, 40),
+			Material = Enum.Material.Grass,
+			CanCollide = true,
+			Parent = folder,
+		})
+	end
+	decor({
+		Name = "Awning",
+		Size = Vector3.new(layout.DoorWidth + 4, 0.5, 4),
+		CFrame = at(0, layout.WallHeight - 2.5, half + 2.2) * CFrame.Angles(math.rad(-12), 0, 0),
+		Color = rgb(130, 25, 45),
+		Material = Enum.Material.Fabric,
+		Parent = folder,
+	})
+	for i = -3, 3 do
+		decor({
+			Name = "AwningStripe",
+			Size = Vector3.new(1, 0.52, 4.02),
+			CFrame = at(i * 2.2, layout.WallHeight - 2.5, half + 2.2) * CFrame.Angles(math.rad(-12), 0, 0),
+			Color = rgb(235, 220, 200),
+			Material = Enum.Material.Fabric,
+			Parent = folder,
+		})
+	end
+	decor({
+		Name = "Step",
+		Size = Vector3.new(layout.DoorWidth + 2, 0.5, 3),
+		CFrame = at(0, 0.25, half + 2),
+		Color = stone,
+		Material = Enum.Material.Concrete,
+		CanCollide = true,
+		Parent = folder,
+	})
+	-- Allée pavée jusqu'à la place
+	decor({
+		Name = "Path",
+		Size = Vector3.new(layout.DoorWidth, 0.3, 10),
+		CFrame = at(0, 0.15, half + 8.5),
+		Color = rgb(105, 100, 105),
+		Material = Enum.Material.Cobblestone,
+		CanCollide = true,
+		Parent = folder,
+	})
+end
+
+local function decorateInterior(folder: Folder, at: (number, number, number) -> CFrame, layout: HotelLayout)
+	local half = layout.Size / 2
+	local top = 1 + layout.WallHeight
+	local inner = half - 0.6 -- doublage contre la face intérieure des murs
+	local gold = rgb(200, 160, 70)
+	local paper = rgb(85, 28, 38)
+	local wainscot = rgb(60, 35, 25)
+
+	-- Papier peint, lambris et frises dorées. Chaque mur : { x, z, longueur, rotation }
+	local doorEdge = layout.DoorWidth / 2
+	local frontLength = inner - doorEdge
+	local walls = {
+		{ 0, -inner, inner * 2, 0 },
+		{ -inner, 0, inner * 2, math.rad(90) },
+		{ inner, 0, inner * 2, math.rad(-90) },
+		{ -(doorEdge + frontLength / 2), inner, frontLength, math.pi },
+		{ doorEdge + frontLength / 2, inner, frontLength, math.pi },
+	}
+	for _, w in walls do
+		local base = at(w[1], 0, w[2]) * CFrame.Angles(0, w[4], 0)
+		local length = w[3]
+		decor({ Name = "Wallpaper", Size = Vector3.new(length, top - 5, 0.2), CFrame = base * CFrame.new(0, 5 + (top - 5) / 2, 0), Color = paper, Material = Enum.Material.Fabric, Parent = folder })
+		decor({ Name = "Wainscot", Size = Vector3.new(length, 4, 0.3), CFrame = base * CFrame.new(0, 3, 0), Color = wainscot, Material = Enum.Material.WoodPlanks, Parent = folder })
+		decor({ Name = "WallTrim", Size = Vector3.new(length, 0.3, 0.4), CFrame = base * CFrame.new(0, 5.1, 0), Color = gold, Material = Enum.Material.Foil, Parent = folder })
+		decor({ Name = "CeilingTrim", Size = Vector3.new(length, 0.5, 0.5), CFrame = base * CFrame.new(0, top - 0.3, 0), Color = gold, Material = Enum.Material.Foil, Parent = folder })
+	end
+	decor({ Name = "Wallpaper", Size = Vector3.new(layout.DoorWidth, 4, 0.2), CFrame = at(0, top - 2, inner), Color = paper, Material = Enum.Material.Fabric, Parent = folder })
+
+	-- Fenêtres de façade vues de l'intérieur (lumière de lune)
+	local sideCenter = (layout.DoorWidth + (layout.Size - layout.DoorWidth) / 2) / 2
+	for _, side in { -1, 1 } do
+		decor({
+			Name = "InnerWindow",
+			Size = Vector3.new(8, 5, 0.1),
+			CFrame = at(side * sideCenter, 9, inner - 0.15),
+			Color = rgb(120, 140, 200),
+			Material = Enum.Material.Neon,
+			Transparency = 0.35,
+			Parent = folder,
+		})
+	end
+
+	-- Plafond : poutres et plafonniers
+	for _, z in { -20, -6, 8, 22 } do
+		decor({ Name = "CeilingBeam", Size = Vector3.new(layout.Size - 1, 0.8, 1), CFrame = at(0, top - 0.4, z), Color = rgb(50, 30, 22), Material = Enum.Material.Wood, Parent = folder })
+	end
 	for _, x in { -14, 14 } do
 		for _, z in { -14, 2 } do
 			local panel = decor({
@@ -2020,136 +3093,99 @@ function MapDecor.decorateHotel(hotel: Model, origin: CFrame, layout: HotelLayou
 				Material = Enum.Material.Neon,
 				Parent = folder,
 			})
-			light(panel, WARM_LIGHT, 26, 1.3)
+			light(panel, WARM_LIGHT, 26, 1.1)
 		end
 	end
 
-	-- Tapis rouge de la porte au comptoir
-	decor({
-		Name = "Carpet",
-		Size = Vector3.new(8, 0.1, 13),
-		CFrame = at(0, 1.05, 21),
-		Color = rgb(120, 20, 35),
-		Material = Enum.Material.Fabric,
-		Parent = folder,
-	})
+	-- Lustre au-dessus du hall
+	local chandelierY = top - 3.5
+	local hub = at(0, chandelierY, -2)
+	decor({ Name = "ChandelierChain", Size = Vector3.new(0.2, 3, 0.2), CFrame = at(0, top - 1.5, -2), Color = gold, Material = Enum.Material.Metal, Parent = folder })
+	local body = ball({ Name = "Chandelier", Color = gold, Material = Enum.Material.Foil, Parent = folder }, 1.2, hub)
+	light(body, WARM_LIGHT, 30, 1.2)
+	body:SetAttribute("Flicker", true)
+	for i = 0, 7 do
+		local angle = math.rad(i * 45)
+		local arm = hub * CFrame.Angles(0, angle, 0)
+		decor({ Name = "ChandelierArm", Size = Vector3.new(0.15, 0.15, 2.2), CFrame = arm * CFrame.new(0, 0, -1.1), Color = gold, Material = Enum.Material.Metal, Parent = folder })
+		cylinder({ Name = "Candle", Color = rgb(240, 235, 220), Material = Enum.Material.SmoothPlastic, Parent = folder }, 0.6, 0.25, arm * CFrame.new(0, 0.3, -2.2))
+		ball({ Name = "CandleFlame", Color = rgb(255, 190, 90), Material = Enum.Material.Neon, Parent = folder }, 0.25, arm * CFrame.new(0, 0.75, -2.2))
+	end
 
-	-- Comptoir : plateau en marbre, sonnette, registre, petite lampe
-	decor({
-		Name = "CounterTop",
-		Size = Vector3.new(15, 0.4, 3),
-		CFrame = at(0, 5.2, 12),
-		Color = rgb(225, 220, 230),
-		Material = Enum.Material.Marble,
-		CanCollide = true,
-		Parent = folder,
-	})
-	decor({
-		Name = "Bell",
-		Shape = Enum.PartType.Ball,
-		Size = Vector3.new(0.7, 0.7, 0.7),
-		CFrame = at(3, 5.7, 12),
-		Color = rgb(230, 180, 60),
-		Material = Enum.Material.Metal,
-		Parent = folder,
-	})
-	decor({
-		Name = "Ledger",
-		Size = Vector3.new(1.8, 0.25, 1.2),
-		CFrame = at(-2.5, 5.55, 12) * CFrame.Angles(0, math.rad(10), 0),
-		Color = rgb(90, 30, 30),
-		Material = Enum.Material.Fabric,
-		Parent = folder,
-	})
-	local lamp = decor({
-		Name = "DeskLamp",
-		Shape = Enum.PartType.Ball,
-		Size = Vector3.new(0.8, 0.8, 0.8),
-		CFrame = at(-6, 6, 12),
-		Color = rgb(255, 210, 140),
-		Material = Enum.Material.Neon,
-		Parent = folder,
-	})
+	-- Tapis du hall (bordure dorée) et tapis rouge de l'entrée
+	decor({ Name = "RugBorder", Size = Vector3.new(34, 0.06, 16), CFrame = at(0, 1.03, -2), Color = gold, Material = Enum.Material.Fabric, Parent = folder })
+	decor({ Name = "Rug", Size = Vector3.new(32, 0.08, 14), CFrame = at(0, 1.04, -2), Color = rgb(90, 15, 30), Material = Enum.Material.Fabric, Parent = folder })
+	decor({ Name = "Carpet", Size = Vector3.new(8, 0.1, 13), CFrame = at(0, 1.05, 21), Color = rgb(120, 20, 35), Material = Enum.Material.Fabric, Parent = folder })
+	for _, side in { -1, 1 } do
+		decor({ Name = "CarpetEdge", Size = Vector3.new(0.4, 0.11, 13), CFrame = at(side * 3.6, 1.05, 21), Color = gold, Material = Enum.Material.Fabric, Parent = folder })
+	end
+
+	-- Comptoir : plateau en marbre, frise dorée, panneaux, sonnette, registre, lampe
+	decor({ Name = "CounterTop", Size = Vector3.new(15, 0.4, 3), CFrame = at(0, 5.2, 12), Color = rgb(225, 220, 230), Material = Enum.Material.Marble, CanCollide = true, Parent = folder })
+	decor({ Name = "CounterTrim", Size = Vector3.new(14.2, 0.3, 0.1), CFrame = at(0, 4.7, 13.3), Color = gold, Material = Enum.Material.Foil, Parent = folder })
+	for _, x in { -4.6, 0, 4.6 } do
+		decor({ Name = "CounterPanel", Size = Vector3.new(3.8, 2.4, 0.1), CFrame = at(x, 2.9, 13.3), Color = rgb(85, 50, 35), Material = Enum.Material.Wood, Parent = folder })
+	end
+	ball({ Name = "Bell", Color = rgb(230, 180, 60), Material = Enum.Material.Metal, Parent = folder }, 0.7, at(3, 5.7, 12))
+	decor({ Name = "Ledger", Size = Vector3.new(1.8, 0.25, 1.2), CFrame = at(-2.5, 5.55, 12) * CFrame.Angles(0, math.rad(10), 0), Color = rgb(90, 30, 30), Material = Enum.Material.Fabric, Parent = folder })
+	decor({ Name = "Quill", Size = Vector3.new(0.08, 0.08, 1.1), CFrame = at(-1.3, 5.65, 12) * CFrame.Angles(0, math.rad(40), math.rad(10)), Color = rgb(240, 240, 240), Parent = folder })
+	cylinder({ Name = "LampFoot", Color = gold, Material = Enum.Material.Metal, Parent = folder }, 0.9, 0.2, at(-6, 5.85, 12))
+	local lamp = ball({ Name = "DeskLamp", Color = rgb(255, 210, 140), Material = Enum.Material.Neon, Parent = folder }, 0.8, at(-6, 6.5, 12))
 	light(lamp, WARM_LIGHT, 10, 1)
+	lamp:SetAttribute("Flicker", true)
 
 	-- Plantes dans les coins près de l'entrée
 	for _, x in { -(half - 3), half - 3 } do
-		standingCylinder({
-			Name = "Pot",
-			Color = rgb(90, 55, 40),
-			Material = Enum.Material.Concrete,
-			Parent = folder,
-		}, 2.5, 2.5, origin * Vector3.new(x, 2.25, half - 3))
-		decor({
-			Name = "Leaves",
-			Shape = Enum.PartType.Ball,
-			Size = Vector3.new(3.5, 3.5, 3.5),
-			CFrame = at(x, 4.6, half - 3),
-			Color = rgb(40, 95, 50),
-			Material = Enum.Material.Grass,
-			Parent = folder,
-		})
+		cylinder({ Name = "Pot", Color = rgb(90, 55, 40), Material = Enum.Material.Concrete, Parent = folder }, 2.5, 2.5, at(x, 2.25, half - 3))
+		ball({ Name = "Leaves", Color = rgb(40, 95, 50), Material = Enum.Material.Grass, Parent = folder }, 3.5, at(x, 4.6, half - 3))
+		ball({ Name = "Leaves", Color = rgb(30, 80, 45), Material = Enum.Material.Grass, Parent = folder }, 2.4, at(x * 0.97, 6, half - 3.4))
 	end
 
-	-- Façade : fenêtres lumineuses, auvent, montants de porte, lanternes
-	local sideCenter = (layout.DoorWidth + (layout.Size - layout.DoorWidth) / 2) / 2
-	for _, side in { -1, 1 } do
-		decor({
-			Name = "Window",
-			Size = Vector3.new(8, 5, 0.2),
-			CFrame = at(side * sideCenter, 9, half + 0.6),
-			Color = rgb(255, 200, 120),
-			Material = Enum.Material.Neon,
-			Transparency = 0.25,
-			Parent = folder,
-		})
-		decor({
-			Name = "DoorPillar",
-			Size = Vector3.new(1, layout.WallHeight - 4, 1),
-			CFrame = at(side * (layout.DoorWidth / 2 + 0.5), 1 + (layout.WallHeight - 4) / 2, half + 0.6),
-			Color = rgb(60, 35, 25),
-			Material = Enum.Material.Wood,
-			Parent = folder,
-		})
-		standingCylinder({
-			Name = "LanternPost",
-			Color = rgb(30, 25, 30),
-			Material = Enum.Material.Metal,
-			Parent = folder,
-		}, 6, 0.5, origin * Vector3.new(side * (layout.DoorWidth / 2 + 2.5), 4, half + 2))
-		local flame = decor({
-			Name = "Lantern",
-			Shape = Enum.PartType.Ball,
-			Size = Vector3.new(1.2, 1.2, 1.2),
-			CFrame = at(side * (layout.DoorWidth / 2 + 2.5), 7.5, half + 2),
-			Color = rgb(255, 150, 60),
-			Material = Enum.Material.Neon,
-			Parent = folder,
-		})
-		light(flame, rgb(255, 150, 70), 14, 1.5)
-	end
-	-- Fenêtres sur les côtés
-	for _, side in { -1, 1 } do
-		for _, z in { -12, 6 } do
-			decor({
-				Name = "SideWindow",
-				Size = Vector3.new(0.2, 5, 7),
-				CFrame = at(side * (half + 0.6), 9, z),
-				Color = rgb(255, 200, 120),
-				Material = Enum.Material.Neon,
-				Transparency = 0.25,
-				Parent = folder,
-			})
-		end
-	end
+	-- Horloge de parquet et canapé de velours, contre la façade
+	decor({ Name = "Clock", Size = Vector3.new(2.4, 8, 1.6), CFrame = at(-9.5, 5, inner - 1), Color = rgb(55, 30, 20), Material = Enum.Material.Wood, CanCollide = true, Parent = folder })
 	decor({
-		Name = "Awning",
-		Size = Vector3.new(layout.DoorWidth + 4, 0.5, 4),
-		CFrame = at(0, layout.WallHeight - 2.5, half + 2.2) * CFrame.Angles(math.rad(-12), 0, 0),
-		Color = rgb(130, 25, 45),
-		Material = Enum.Material.Fabric,
+		Name = "ClockFace",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.1, 1.8, 1.8),
+		CFrame = at(-9.5, 7.5, inner - 1.85) * CFrame.Angles(0, math.rad(90), 0),
+		Color = rgb(240, 230, 200),
+		Material = Enum.Material.SmoothPlastic,
 		Parent = folder,
 	})
+	decor({ Name = "ClockHand", Size = Vector3.new(0.1, 0.8, 0.05), CFrame = at(-9.5, 7.8, inner - 1.92) * CFrame.Angles(0, 0, math.rad(30)), Color = rgb(20, 20, 20), Parent = folder })
+	decor({ Name = "SofaSeat", Size = Vector3.new(6, 1.4, 2.4), CFrame = at(17, 1.7, inner - 2), Color = rgb(110, 20, 50), Material = Enum.Material.Fabric, CanCollide = true, Parent = folder })
+	decor({ Name = "SofaBack", Size = Vector3.new(6, 2.4, 0.6), CFrame = at(17, 3.2, inner - 0.9), Color = rgb(110, 20, 50), Material = Enum.Material.Fabric, Parent = folder })
+	for _, s in { -1, 1 } do
+		decor({ Name = "SofaArm", Size = Vector3.new(0.6, 2, 2.4), CFrame = at(17 + s * 3, 2.4, inner - 2), Color = rgb(90, 15, 40), Material = Enum.Material.Fabric, Parent = folder })
+	end
+
+	-- Portraits aux yeux lumineux sur les murs latéraux (près de l'entrée)
+	for _, side in { -1, 1 } do
+		for _, z in { 14, 22 } do
+			-- Avant (-Z) tourné vers l'intérieur de l'hôtel
+			local base = at(side * (inner - 0.2), 10, z) * CFrame.Angles(0, side * math.rad(90), 0)
+			decor({ Name = "PortraitFrame", Size = Vector3.new(4, 5, 0.3), CFrame = base, Color = gold, Material = Enum.Material.Foil, Parent = folder })
+			decor({ Name = "Portrait", Size = Vector3.new(3.2, 4.2, 0.1), CFrame = base * CFrame.new(0, 0, -0.18), Color = rgb(30, 25, 35), Material = Enum.Material.SmoothPlastic, Parent = folder })
+			decor({ Name = "PortraitFigure", Size = Vector3.new(1.6, 1.6, 0.05), CFrame = base * CFrame.new(0, -1.2, -0.24), Color = rgb(12, 10, 16), Parent = folder })
+			ball({ Name = "PortraitFigure", Color = rgb(12, 10, 16), Material = Enum.Material.SmoothPlastic, Parent = folder }, 1.2, base * CFrame.new(0, 0.3, -0.2))
+			for _, ex in { -0.22, 0.22 } do
+				ball({ Name = "PortraitEye", Color = rgb(255, 30, 30), Material = Enum.Material.Neon, Parent = folder }, 0.15, base * CFrame.new(ex, 0.4, -0.78))
+			end
+		end
+	end
+end
+
+function MapDecor.decorateHotel(hotel: Model, origin: CFrame, layout: HotelLayout)
+	local folder = Instance.new("Folder")
+	folder.Name = "Decor"
+	folder.Parent = hotel
+
+	local function at(x: number, y: number, z: number): CFrame
+		return origin * CFrame.new(x, y, z)
+	end
+
+	decorateExterior(folder, at, layout, MapDecor.wallColor(layout.Index))
+	decorateInterior(folder, at, layout)
 
 	-- Cadre néon autour de l'enseigne
 	local sign = hotel:FindFirstChild("Sign")
@@ -2163,111 +3199,263 @@ function MapDecor.decorateHotel(hotel: Model, origin: CFrame, layout: HotelLayou
 			Parent = folder,
 		})
 	end
+
+	-- Brume devant l'entrée
+	mist(folder, at(0, 1, layout.Size / 2 + 9), Vector3.new(40, 1, 10), 2)
 end
 
-function MapDecor.decoratePlaza(map: Folder)
+------------------------------------------------------------------ place
+
+local function fountain(folder: Folder)
+	local stone = rgb(150, 145, 155)
+	-- Bassin : anneau de pierre (l'eau est en terrain)
+	local segments = 20
+	local radius = 8.6
+	for i = 0, segments - 1 do
+		local angle = (i / segments) * math.pi * 2
+		local cf = CFrame.lookAt(Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius), Vector3.new(0, 0, 0))
+		decor({ Name = "FountainWall", Size = Vector3.new(2.9, 2.2, 1.2), CFrame = cf * CFrame.new(0, 1.1, 0), Color = stone, Material = Enum.Material.Cobblestone, CanCollide = true, Parent = folder })
+		decor({ Name = "FountainRim", Size = Vector3.new(3.1, 0.35, 1.8), CFrame = cf * CFrame.new(0, 2.35, 0), Color = rgb(200, 195, 205), Material = Enum.Material.Marble, Parent = folder })
+	end
+	cylinder({ Name = "FountainFloor", Color = rgb(60, 70, 80), Material = Enum.Material.Slate, Parent = folder }, 0.2, 16.4, CFrame.new(0, 0.3, 0))
+	local glow = decor({ Name = "FountainGlow", Size = Vector3.new(1, 1, 1), CFrame = CFrame.new(0, 0.6, 0), Transparency = 1, Parent = folder })
+	light(glow, rgb(90, 200, 255), 16, 1.5)
+
+	-- Colonne à deux vasques
+	cylinder({ Name = "FountainPillar", Color = stone, Material = Enum.Material.Marble, CanCollide = true, Parent = folder }, 3, 3, CFrame.new(0, 1.5, 0))
+	cylinder({ Name = "FountainBowl", Color = rgb(200, 195, 205), Material = Enum.Material.Marble, Parent = folder }, 0.6, 7, CFrame.new(0, 3.3, 0))
+	cylinder({ Name = "FountainBowlWater", Color = rgb(80, 180, 230), Material = Enum.Material.Glass, Transparency = 0.3, Parent = folder }, 0.1, 6.2, CFrame.new(0, 3.62, 0))
+	cylinder({ Name = "FountainPillar", Color = stone, Material = Enum.Material.Marble, Parent = folder }, 3, 1.2, CFrame.new(0, 5.1, 0))
+	local topBowl = cylinder({ Name = "FountainBowl", Color = rgb(200, 195, 205), Material = Enum.Material.Marble, Parent = folder }, 0.4, 3.5, CFrame.new(0, 6.8, 0))
+	local orb = ball({ Name = "FountainOrb", Color = rgb(150, 90, 255), Material = Enum.Material.Neon, Parent = folder }, 2, CFrame.new(0, 8.2, 0))
+	light(orb, rgb(170, 110, 255), 32, 2)
+
+	-- Jet d'eau : gouttes qui montent puis retombent. La vasque est un cylindre
+	-- couché puis redressé : son « haut » local (axe X) pointe vers le ciel.
+	local jet = Instance.new("ParticleEmitter")
+	jet.Name = "WaterJet"
+	jet.EmissionDirection = Enum.NormalId.Right
+	jet.Color = ColorSequence.new(rgb(170, 220, 255))
+	jet.LightEmission = 0.4
+	jet.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0.1) })
+	jet.Transparency = NumberSequence.new(0.2, 0.8)
+	jet.Lifetime = NumberRange.new(0.8, 1.1)
+	jet.Rate = 90
+	jet.Speed = NumberRange.new(7, 9)
+	jet.SpreadAngle = Vector2.new(22, 22)
+	jet.Acceleration = Vector3.new(0, -24, 0)
+	jet.Parent = topBowl
+end
+
+local function bench(folder: Folder, cf: CFrame)
+	local wood = rgb(85, 55, 35)
+	local iron = rgb(30, 28, 32)
+	decor({ Name = "BenchSeat", Size = Vector3.new(6, 0.3, 1.8), CFrame = cf * CFrame.new(0, 1.7, 0), Color = wood, Material = Enum.Material.WoodPlanks, Parent = folder })
+	decor({ Name = "BenchBack", Size = Vector3.new(6, 1.6, 0.25), CFrame = cf * CFrame.new(0, 2.8, 0.85) * CFrame.Angles(math.rad(-10), 0, 0), Color = wood, Material = Enum.Material.WoodPlanks, Parent = folder })
+	for _, x in { -2.6, 2.6 } do
+		decor({ Name = "BenchLeg", Size = Vector3.new(0.25, 1.7, 1.6), CFrame = cf * CFrame.new(x, 0.85, 0), Color = iron, Material = Enum.Material.Metal, Parent = folder })
+	end
+end
+
+local function lampPost(folder: Folder, x: number, z: number, flicker: boolean)
+	local iron = rgb(28, 25, 32)
+	decor({ Name = "LampBase", Size = Vector3.new(1.4, 1.2, 1.4), CFrame = CFrame.new(x, 0.6, z), Color = iron, Material = Enum.Material.Metal, CanCollide = true, Parent = folder })
+	cylinder({ Name = "LampPost", Color = iron, Material = Enum.Material.Metal, CanCollide = true, Parent = folder }, 10, 0.6, CFrame.new(x, 6, z))
+	decor({ Name = "LampGlass", Size = Vector3.new(1.6, 2, 1.6), CFrame = CFrame.new(x, 12, z), Color = rgb(255, 220, 160), Material = Enum.Material.Glass, Transparency = 0.45, Parent = folder })
+	decor({ Name = "LampCap", Size = Vector3.new(2.2, 0.4, 2.2), CFrame = CFrame.new(x, 13.2, z), Color = iron, Material = Enum.Material.Metal, Parent = folder })
+	decor({ Name = "LampCap", Size = Vector3.new(1.2, 0.6, 1.2), CFrame = CFrame.new(x, 13.6, z), Color = iron, Material = Enum.Material.Metal, Parent = folder })
+	local bulb = ball({ Name = "LampBulb", Color = rgb(255, 210, 150), Material = Enum.Material.Neon, Parent = folder }, 1, CFrame.new(x, 12, z))
+	light(bulb, WARM_LIGHT, 30, 1.6)
+	if flicker then
+		bulb:SetAttribute("Flicker", true)
+	end
+end
+
+-- Grille en fer forgé le long d'un segment (barreaux, deux traverses)
+local function fence(folder: Folder, from: Vector3, to: Vector3, height: number)
+	local length = (to - from).Magnitude
+	if length < 0.5 then
+		return
+	end
+	local cf = CFrame.lookAt(from, to)
+	local iron = rgb(25, 22, 28)
+	for _, y in { 0.8, height - 0.3 } do
+		decor({
+			Name = "FenceRail",
+			Size = Vector3.new(0.2, 0.2, length),
+			CFrame = cf * CFrame.new(0, y, -length / 2),
+			Color = iron,
+			Material = Enum.Material.Metal,
+			CanCollide = true,
+			Parent = folder,
+		})
+	end
+	local bars = math.max(math.floor(length / 1.5), 1)
+	for i = 0, bars do
+		local barHeight = if i % 5 == 0 then height + 0.6 else height
+		decor({
+			Name = "FenceBar",
+			Size = Vector3.new(0.18, barHeight, 0.18),
+			CFrame = cf * CFrame.new(0, barHeight / 2, -i * length / bars),
+			Color = iron,
+			Material = Enum.Material.Metal,
+			Parent = folder,
+		})
+	end
+end
+
+local function deadTree(folder: Folder, base: Vector3, seed: number)
+	local bark = rgb(55, 42, 36)
+	cylinder({ Name = "TreeTrunk", Color = bark, Material = Enum.Material.Wood, CanCollide = true, Parent = folder }, 8, 2.2, CFrame.new(base + Vector3.new(0, 4, 0)))
+	cylinder({ Name = "TreeTrunk", Color = bark, Material = Enum.Material.Wood, Parent = folder }, 6, 1.4, CFrame.new(base + Vector3.new(0, 10.5, 0)))
+	for b = 1, 4 do
+		local yaw = math.rad(seed * 37 + b * 90)
+		local branch = CFrame.new(base + Vector3.new(0, 6 + b * 2, 0)) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(math.rad(50), 0, 0)
+		decor({ Name = "TreeBranch", Size = Vector3.new(0.6, 5, 0.6), CFrame = branch * CFrame.new(0, 2.5, 0), Color = bark, Material = Enum.Material.Wood, Parent = folder })
+		for t = -1, 1, 2 do
+			local twig = branch * CFrame.new(0, 4.6, 0) * CFrame.Angles(0, 0, math.rad(t * 35))
+			decor({ Name = "TreeTwig", Size = Vector3.new(0.35, 2.6, 0.35), CFrame = twig * CFrame.new(0, 1.3, 0), Color = bark, Material = Enum.Material.Wood, Parent = folder })
+		end
+	end
+end
+
+local function graveyard(folder: Folder, centerX: number)
+	-- Les tombes regardent la place (avant = -Z)
+	local towardPlaza = if centerX < 0 then math.rad(-90) else math.rad(90)
+	local stone = rgb(105, 105, 115)
+	for col, dx in { -8, 0, 8 } do
+		for row, dz in { -13, -4.5, 4.5, 13 } do
+			local seed = col * 4 + row
+			local base = CFrame.new(centerX + dx, 0, dz) * CFrame.Angles(0, towardPlaza, 0) * CFrame.Angles(0, 0, math.rad((seed % 5 - 2) * 3))
+			if seed % 3 == 0 then
+				decor({ Name = "GraveCross", Size = Vector3.new(0.6, 4.4, 0.6), CFrame = base * CFrame.new(0, 2.2, 0), Color = stone, Material = Enum.Material.Slate, CanCollide = true, Parent = folder })
+				decor({ Name = "GraveCross", Size = Vector3.new(2.4, 0.6, 0.6), CFrame = base * CFrame.new(0, 3.2, 0), Color = stone, Material = Enum.Material.Slate, Parent = folder })
+			else
+				decor({ Name = "Grave", Size = Vector3.new(3, 2.6, 0.8), CFrame = base * CFrame.new(0, 1.3, 0), Color = stone, Material = Enum.Material.Slate, CanCollide = true, Parent = folder })
+				decor({
+					Name = "GraveTop",
+					Shape = Enum.PartType.Cylinder,
+					Size = Vector3.new(0.8, 3, 3),
+					CFrame = base * CFrame.new(0, 2.6, 0) * CFrame.Angles(0, math.rad(90), 0),
+					Color = stone,
+					Material = Enum.Material.Slate,
+					Parent = folder,
+				})
+			end
+			-- Tertre de terre devant la tombe
+			decor({ Name = "GraveMound", Size = Vector3.new(2.6, 0.5, 4.5), CFrame = base * CFrame.new(0, 0.2, -2.8), Color = rgb(55, 42, 32), Material = Enum.Material.Ground, Parent = folder })
+			if seed % 4 == 1 then
+				local candle = base * CFrame.new(1.2, 0, -1)
+				cylinder({ Name = "Candle", Color = rgb(235, 230, 215), Material = Enum.Material.SmoothPlastic, Parent = folder }, 0.8, 0.35, candle * CFrame.new(0, 0.4, 0))
+				flame(folder, candle * CFrame.new(0, 0.95, 0), 0.25, 8, true)
+			end
+		end
+	end
+
+	-- Grille basse avec un portail côté place
+	local x0, x1 = centerX - 15, centerX + 15
+	local gateX = if centerX < 0 then x1 else x0
+	local backX = if centerX < 0 then x0 else x1
+	fence(folder, Vector3.new(backX, 0, -20), Vector3.new(backX, 0, 20), 3.5)
+	fence(folder, Vector3.new(x0, 0, -20), Vector3.new(x1, 0, -20), 3.5)
+	fence(folder, Vector3.new(x0, 0, 20), Vector3.new(x1, 0, 20), 3.5)
+	fence(folder, Vector3.new(gateX, 0, -20), Vector3.new(gateX, 0, -4), 3.5)
+	fence(folder, Vector3.new(gateX, 0, 4), Vector3.new(gateX, 0, 20), 3.5)
+
+	-- Mausolée derrière la grille du fond, porte vers la place
+	local outward = if centerX < 0 then -1 else 1
+	local m = CFrame.new(backX + outward * 7, 0, 0) * CFrame.Angles(0, towardPlaza, 0)
+	decor({ Name = "Mausoleum", Size = Vector3.new(10, 9, 8), CFrame = m * CFrame.new(0, 4.5, 0), Color = rgb(120, 118, 125), Material = Enum.Material.Concrete, CanCollide = true, Parent = folder })
+	decor({ Name = "MausoleumDoor", Size = Vector3.new(3, 5.5, 0.2), CFrame = m * CFrame.new(0, 2.75, -4.05), Color = rgb(15, 12, 18), Material = Enum.Material.SmoothPlastic, Parent = folder })
+	decor({ Name = "MausoleumRoof", Size = Vector3.new(11, 1, 9), CFrame = m * CFrame.new(0, 9.5, 0), Color = rgb(90, 88, 95), Material = Enum.Material.Slate, Parent = folder })
+	for _, s in { -1, 1 } do
+		cylinder({ Name = "MausoleumColumn", Color = rgb(170, 165, 175), Material = Enum.Material.Marble, Parent = folder }, 9, 1, m * CFrame.new(s * 3.8, 4.5, -4.6))
+	end
+	local lamp = ball({ Name = "MausoleumLight", Color = rgb(80, 255, 140), Material = Enum.Material.Neon, Parent = folder }, 0.8, m * CFrame.new(0, 7, -4.4))
+	light(lamp, rgb(80, 255, 140), 18, 1.5)
+	lamp:SetAttribute("Flicker", true)
+
+	-- Brume épaisse et feux follets
+	mist(folder, CFrame.new(centerX, 1, 0), Vector3.new(30, 1, 40), 4)
+	local wispZone = decor({ Name = "WispZone", Size = Vector3.new(26, 4, 36), CFrame = CFrame.new(centerX, 3, 0), Transparency = 1, Parent = folder })
+	wisps(wispZone, rgb(120, 255, 170), 3)
+end
+
+-- `hotelXs` : position X de chaque porte d'hôtel (ouvertures dans la grille)
+function MapDecor.decoratePlaza(map: Folder, hotelXs: { number })
 	local folder = Instance.new("Folder")
 	folder.Name = "Decor"
 	folder.Parent = map
 
-	-- Fontaine au centre de la place
-	standingCylinder({
-		Name = "FountainBasin",
-		Color = rgb(120, 115, 125),
-		Material = Enum.Material.Cobblestone,
-		CanCollide = true,
-		Parent = folder,
-	}, 2, 18, Vector3.new(0, 1, 0))
-	standingCylinder({
-		Name = "FountainWater",
-		Color = rgb(90, 200, 255),
-		Material = Enum.Material.Neon,
-		Transparency = 0.35,
-		Parent = folder,
-	}, 0.2, 15, Vector3.new(0, 2.05, 0))
-	standingCylinder({
-		Name = "FountainPillar",
-		Color = rgb(150, 145, 155),
-		Material = Enum.Material.Marble,
-		CanCollide = true,
-		Parent = folder,
-	}, 6, 2, Vector3.new(0, 4, 0))
-	local orb = decor({
-		Name = "FountainOrb",
-		Shape = Enum.PartType.Ball,
-		Size = Vector3.new(3, 3, 3),
-		CFrame = CFrame.new(0, 8.5, 0),
-		Color = rgb(150, 90, 255),
-		Material = Enum.Material.Neon,
-		Parent = folder,
-	})
-	light(orb, rgb(170, 110, 255), 30, 2)
+	fountain(folder)
+
+	-- Bancs autour de la fontaine, tournés vers elle
+	for i = 0, 3 do
+		local angle = math.rad(45 + i * 90)
+		local position = Vector3.new(math.cos(angle) * 16, 0, math.sin(angle) * 16)
+		-- Avant (-Z) vers la fontaine, dossier (+Z) côté extérieur
+		bench(folder, CFrame.lookAt(position, Vector3.new(0, 0, 0)))
+	end
 
 	-- Lampadaires
+	local n = 0
 	for _, x in { -105, -35, 35, 105 } do
 		for _, z in { -50, 50 } do
-			standingCylinder({
-				Name = "LampPost",
-				Color = rgb(30, 25, 35),
-				Material = Enum.Material.Metal,
-				CanCollide = true,
-				Parent = folder,
-			}, 10, 0.8, Vector3.new(x, 5, z))
-			local bulb = decor({
-				Name = "LampBulb",
-				Shape = Enum.PartType.Ball,
-				Size = Vector3.new(1.8, 1.8, 1.8),
-				CFrame = CFrame.new(x, 10.6, z),
-				Color = rgb(255, 210, 150),
-				Material = Enum.Material.Neon,
-				Parent = folder,
-			})
-			light(bulb, WARM_LIGHT, 28, 1.6)
+			n += 1
+			lampPost(folder, x, z, n % 3 == 0)
 		end
 	end
 
-	-- Arbres morts et tombes autour de la place (hors des chemins)
-	local treeSpots = {
-		Vector3.new(-170, 0, -40), Vector3.new(-160, 0, 60), Vector3.new(170, 0, -60), Vector3.new(165, 0, 45),
-		Vector3.new(-120, 0, -175), Vector3.new(30, 0, -180), Vector3.new(-40, 0, 180), Vector3.new(120, 0, 175),
-	}
-	for index, base in treeSpots do
-		standingCylinder({
-			Name = "TreeTrunk",
-			Color = rgb(55, 40, 35),
-			Material = Enum.Material.Wood,
-			CanCollide = true,
-			Parent = folder,
-		}, 14, 2, base + Vector3.new(0, 7, 0))
-		for b = 1, 3 do
-			local angle = math.rad(index * 47 + b * 120)
-			decor({
-				Name = "TreeBranch",
-				Size = Vector3.new(0.6, 6, 0.6),
-				CFrame = CFrame.new(base + Vector3.new(0, 10 + b, 0))
-					* CFrame.Angles(0, angle, 0)
-					* CFrame.Angles(math.rad(50), 0, 0)
-					* CFrame.new(0, 3, 0),
-				Color = rgb(55, 40, 35),
-				Material = Enum.Material.Wood,
-				Parent = folder,
-			})
+	-- Grille autour de la place : une ouverture devant chaque hôtel
+	-- et un portail vers chaque cimetière
+	local halfX, halfZ, gap = 110, 65, 9
+	local openings = table.clone(hotelXs)
+	table.sort(openings)
+	for _, z in { -halfZ, halfZ } do
+		local cursor = -halfX
+		for _, hx in openings do
+			fence(folder, Vector3.new(cursor, 0, z), Vector3.new(hx - gap, 0, z), 3.6)
+			cursor = hx + gap
+		end
+		fence(folder, Vector3.new(cursor, 0, z), Vector3.new(halfX, 0, z), 3.6)
+	end
+	for _, x in { -halfX, halfX } do
+		fence(folder, Vector3.new(x, 0, -halfZ), Vector3.new(x, 0, -gap), 3.6)
+		fence(folder, Vector3.new(x, 0, gap), Vector3.new(x, 0, halfZ), 3.6)
+		for _, z in { -gap, gap } do
+			decor({ Name = "GatePillar", Size = Vector3.new(1.8, 5, 1.8), CFrame = CFrame.new(x, 2.5, z), Color = rgb(120, 115, 125), Material = Enum.Material.Concrete, CanCollide = true, Parent = folder })
+			flame(folder, CFrame.new(x, 5.6, z), 0.5, 12, false)
 		end
 	end
-	local graves = {
-		Vector3.new(-150, 0, 0), Vector3.new(-150, 0, 12), Vector3.new(-150, 0, -12),
-		Vector3.new(150, 0, 0), Vector3.new(150, 0, 12), Vector3.new(150, 0, -12),
+
+	-- Buissons dans les coins de la place
+	for _, x in { -92, 92 } do
+		for _, z in { -57, 57 } do
+			ball({ Name = "Bush", Color = rgb(35, 70, 40), Material = Enum.Material.Grass, Parent = folder }, 4, CFrame.new(x, 1.5, z))
+			ball({ Name = "Bush", Color = rgb(30, 60, 38), Material = Enum.Material.Grass, Parent = folder }, 3, CFrame.new(x + 2.2, 1.1, z + 0.8))
+		end
+	end
+
+	-- Arbres morts tout autour
+	local treeSpots = {
+		Vector3.new(-175, 0, -45), Vector3.new(-165, 0, 55), Vector3.new(175, 0, -55), Vector3.new(168, 0, 48),
+		Vector3.new(-125, 0, -175), Vector3.new(30, 0, -185), Vector3.new(-40, 0, 185), Vector3.new(125, 0, 178),
+		Vector3.new(-200, 0, 0), Vector3.new(200, 0, 10), Vector3.new(-135, 0, 110), Vector3.new(140, 0, -115),
+		Vector3.new(-115, 0, 175), Vector3.new(105, 0, -180), Vector3.new(-30, 0, -190), Vector3.new(45, 0, 190),
 	}
-	for _, base in graves do
-		decor({
-			Name = "Grave",
-			Size = Vector3.new(3, 4, 0.8),
-			CFrame = CFrame.new(base + Vector3.new(0, 2, 0)) * CFrame.Angles(0, math.rad(90), math.rad(4)),
-			Color = rgb(100, 100, 110),
-			Material = Enum.Material.Slate,
-			CanCollide = true,
-			Parent = folder,
-		})
+	for i, spot in treeSpots do
+		deadTree(folder, spot, i)
+	end
+
+	-- Cimetières à l'est et à l'ouest
+	graveyard(folder, -150)
+	graveyard(folder, 150)
+
+	-- Brume sur la place
+	for _, x in { -55, 55 } do
+		for _, z in { -32, 32 } do
+			mist(folder, CFrame.new(x, 1, z), Vector3.new(100, 1, 55), 3)
+		end
 	end
 end
 
@@ -2275,7 +3463,7 @@ return MapDecor
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="33">
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">Notify</string>
             <string name="Source"><![CDATA[--!strict
@@ -2296,7 +3484,7 @@ return Notify
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="35">
           <Properties>
             <string name="Name">PartFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -2356,7 +3544,7 @@ return PartFactory
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">RigAnimator</string>
             <string name="Source"><![CDATA[--!strict
@@ -2441,7 +3629,7 @@ return RigAnimator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="36">
+        <Item class="ModuleScript" referent="37">
           <Properties>
             <string name="Name">RigFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -2530,11 +3718,11 @@ return RigFactory
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="37">
+      <Item class="Folder" referent="38">
         <Properties>
           <string name="Name">Services</string>
         </Properties>
-        <Item class="ModuleScript" referent="38">
+        <Item class="ModuleScript" referent="39">
           <Properties>
             <string name="Name">AnomalyService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2561,6 +3749,7 @@ local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local IncomeCalculator = require(Server:WaitForChild("Modules"):WaitForChild("IncomeCalculator"))
 local RigFactory = require(Server:WaitForChild("Modules"):WaitForChild("RigFactory"))
 local RigAnimator = require(Server:WaitForChild("Modules"):WaitForChild("RigAnimator"))
+local AnomalyLooks = require(Server:WaitForChild("Modules"):WaitForChild("AnomalyLooks"))
 local HotelService = require(script.Parent:WaitForChild("HotelService"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 
@@ -2612,6 +3801,20 @@ local function findFreeCell(data: any, capacity: number): number?
 	return nil
 end
 
+-- Liseré autour du pad : couleur de la rareté (néon) ou éteint
+local function setTrim(cell: Model, color: Color3, glowing: boolean)
+	local trims = cell:FindFirstChild("Trim")
+	if not trims then
+		return
+	end
+	for _, strip in trims:GetChildren() do
+		if strip:IsA("BasePart") then
+			strip.Color = color
+			strip.Material = if glowing then Enum.Material.Neon else Enum.Material.SmoothPlastic
+		end
+	end
+end
+
 -- Met à jour l'aspect des cellules vides / verrouillées
 local function refreshCellVisuals(player: Player, hotel: Model)
 	local data = PlayerDataService.GetData(player)
@@ -2632,9 +3835,12 @@ local function refreshCellVisuals(player: Player, hotel: Model)
 			if pad and pad:IsA("BasePart") then
 				pad.Color = if unlocked then Color3.fromRGB(70, 90, 110) else Color3.fromRGB(35, 35, 40)
 			end
-			if label and not occupied[index] then
-				label.Text = if unlocked then "Cellule libre" else "🔒 Verrouillée"
-				label.TextColor3 = Color3.new(1, 1, 1)
+			if not occupied[index] then
+				if label then
+					label.Text = if unlocked then "Cellule libre" else "🔒 Verrouillée"
+					label.TextColor3 = Color3.new(1, 1, 1)
+				end
+				setTrim(cell, if unlocked then Color3.fromRGB(60, 80, 110) else Color3.fromRGB(30, 30, 35), false)
 			end
 		end
 	end
@@ -2652,6 +3858,7 @@ local function resetCellVisuals(hotel: Model)
 			if pad and pad:IsA("BasePart") then
 				pad.Color = Color3.fromRGB(60, 60, 70)
 			end
+			setTrim(cell, Color3.fromRGB(40, 40, 50), false)
 		end
 	end
 end
@@ -2692,6 +3899,10 @@ function AnomalyService.BuildRig(anomalyId: string, mutationId: Types.MutationId
 	local def = AnomalyConfig.ById[anomalyId]
 	local rig = RigFactory.newRig()
 	RigAppearance.apply(rig, def.TrueForm)
+	if def.Scale and def.Scale ~= 1 then
+		rig:ScaleTo(def.Scale)
+	end
+	AnomalyLooks.apply(rig, def.Look, def.TrueForm, def.EyeColor)
 	local mutation = MutationConfig.Mutations[mutationId]
 	if mutation and mutation.Color and mutation.Material then
 		RigAppearance.applyMaterial(rig, mutation.Color, mutation.Material)
@@ -2753,6 +3964,7 @@ local function spawnModel(player: Player, hotel: Model, uid: string, owned: Type
 		label.Text = `{def.DisplayName}{mutationText}\n{rarity.DisplayName} • {Format.money(income)}/s`
 		label.TextColor3 = rarity.Color
 	end
+	setTrim(cell, RarityConfig[def.Rarity].Color, true)
 
 	local playerModels = models[player]
 	if playerModels then
@@ -2912,7 +4124,7 @@ return AnomalyService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="39">
+        <Item class="ModuleScript" referent="40">
           <Properties>
             <string name="Name">CatalogService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2972,7 +4184,7 @@ return CatalogService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="41">
           <Properties>
             <string name="Name">DebugService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3132,7 +4344,7 @@ return DebugService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="41">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">GuestService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3620,7 +4832,7 @@ return GuestService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="43">
           <Properties>
             <string name="Name">HotelService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3755,7 +4967,7 @@ return HotelService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="43">
+        <Item class="ModuleScript" referent="44">
           <Properties>
             <string name="Name">IncomeService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3843,7 +5055,7 @@ return IncomeService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="44">
+        <Item class="ModuleScript" referent="45">
           <Properties>
             <string name="Name">LeaderboardService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3997,7 +5209,7 @@ return LeaderboardService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="45">
+        <Item class="ModuleScript" referent="46">
           <Properties>
             <string name="Name">LockService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4134,7 +5346,7 @@ return LockService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="46">
+        <Item class="ModuleScript" referent="47">
           <Properties>
             <string name="Name">MonetizationService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4318,7 +5530,7 @@ return MonetizationService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="47">
+        <Item class="ModuleScript" referent="48">
           <Properties>
             <string name="Name">PlayerDataService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4505,7 +5717,7 @@ return PlayerDataService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="48">
+        <Item class="ModuleScript" referent="49">
           <Properties>
             <string name="Name">ShopService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4599,7 +5811,7 @@ return ShopService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="49">
+        <Item class="ModuleScript" referent="50">
           <Properties>
             <string name="Name">StealService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4859,7 +6071,7 @@ return StealService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="50">
+        <Item class="ModuleScript" referent="51">
           <Properties>
             <string name="Name">TutorialService</string>
             <string name="Source"><![CDATA[--!strict
@@ -4904,11 +6116,11 @@ return TutorialService
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="51">
+      <Item class="Folder" referent="52">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="52">
+        <Item class="ModuleScript" referent="53">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -4972,11 +6184,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="53">
+      <Item class="Folder" referent="54">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="54">
+        <Item class="ModuleScript" referent="55">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -7103,23 +8315,141 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="55">
+  <Item class="StarterPlayer" referent="56">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="56">
+    <Item class="StarterPlayerScripts" referent="57">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="57">
+      <Item class="Folder" referent="58">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="58">
+        <Item class="Folder" referent="59">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="59">
+          <Item class="ModuleScript" referent="60">
+            <Properties>
+              <string name="Name">AmbienceController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Effets d'ambiance, calculés seulement sur l'écran du joueur (rien ne passe
+-- par le réseau) :
+--   * lumières qui grésillent (pièces avec l'attribut Flicker)
+--   * anomalies qui flottent dans leur cellule (modèles avec l'attribut Hover)
+--   * éclairs de temps en temps
+
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+
+local LIGHTNING_MIN_DELAY = 50
+local LIGHTNING_MAX_DELAY = 110
+local HOVER_BOB = 0.25 -- amplitude du balancement (studs)
+local HOVER_SPEED = 1.6
+
+local AmbienceController = {}
+
+type Hovering = { root: BasePart, base: CFrame, height: number, phase: number }
+local hovering: { [Model]: Hovering } = {}
+local flickering: { [BasePart]: boolean } = {}
+
+-- Grésillement : de longs moments allumée, puis quelques clignotements rapides
+local function flicker(part: BasePart)
+	if flickering[part] then
+		return
+	end
+	flickering[part] = true
+	task.spawn(function()
+		local lights: { [Light]: number } = {}
+		for _, child in part:GetChildren() do
+			if child:IsA("Light") then
+				lights[child] = child.Brightness
+			end
+		end
+		local transparency = part.Transparency
+		while part.Parent do
+			task.wait(4 + math.random() * 10)
+			for _ = 1, math.random(2, 6) do
+				for lightObject in lights do
+					lightObject.Brightness = 0.05
+				end
+				part.Transparency = math.min(transparency + 0.7, 1)
+				task.wait(0.03 + math.random() * 0.1)
+				for lightObject, brightness in lights do
+					lightObject.Brightness = brightness
+				end
+				part.Transparency = transparency
+				task.wait(0.04 + math.random() * 0.15)
+			end
+		end
+		flickering[part] = nil
+	end)
+end
+
+local function track(instance: Instance)
+	if instance:IsA("BasePart") and instance:GetAttribute("Flicker") then
+		flicker(instance)
+	elseif instance:IsA("Model") then
+		local height = instance:GetAttribute("Hover")
+		local root = instance:WaitForChild("HumanoidRootPart", 5)
+		if typeof(height) == "number" and root and root:IsA("BasePart") and root.Anchored then
+			hovering[instance] = { root = root, base = root.CFrame, height = height, phase = math.random() * math.pi * 2 }
+		end
+	end
+end
+
+local function lightningStrike()
+	local exposure = Lighting.ExposureCompensation
+	local ambient = Lighting.OutdoorAmbient
+	for _, duration in { 0.07, 0.05, 0.12 } do
+		Lighting.ExposureCompensation = exposure + 2
+		Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 255)
+		task.wait(duration)
+		Lighting.ExposureCompensation = exposure
+		Lighting.OutdoorAmbient = ambient
+		task.wait(0.08 + math.random() * 0.1)
+	end
+end
+
+function AmbienceController.Start(_self: typeof(AmbienceController))
+	workspace.DescendantAdded:Connect(function(instance)
+		if instance:GetAttribute("Flicker") or instance:GetAttribute("Hover") then
+			task.spawn(track, instance)
+		end
+	end)
+	for _, instance in workspace:GetDescendants() do
+		if instance:GetAttribute("Flicker") or instance:GetAttribute("Hover") then
+			task.spawn(track, instance)
+		end
+	end
+
+	RunService.RenderStepped:Connect(function()
+		local now = os.clock()
+		for model, entry in hovering do
+			if not model.Parent or not entry.root.Parent or not entry.root.Anchored then
+				hovering[model] = nil
+			else
+				local offset = entry.height + math.sin(now * HOVER_SPEED + entry.phase) * HOVER_BOB
+				entry.root.CFrame = entry.base + Vector3.new(0, offset, 0)
+			end
+		end
+	end)
+
+	task.spawn(function()
+		while true do
+			task.wait(LIGHTNING_MIN_DELAY + math.random() * (LIGHTNING_MAX_DELAY - LIGHTNING_MIN_DELAY))
+			lightningStrike()
+		end
+	end)
+end
+
+return AmbienceController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="61">
             <Properties>
               <string name="Name">CatalogController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7182,7 +8512,7 @@ local function buildGui()
 	header = UI.new("TextLabel", {
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, -50, 0, 40),
-		Font = Enum.Font.FredokaOne,
+		Font = Enum.Font.Creepster,
 		TextScaled = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Color3.fromRGB(220, 180, 255),
@@ -7302,7 +8632,7 @@ return CatalogController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="60">
+          <Item class="ModuleScript" referent="62">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7534,7 +8864,7 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="61">
+          <Item class="ModuleScript" referent="63">
             <Properties>
               <string name="Name">LockController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7583,7 +8913,7 @@ return LockController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="62">
+          <Item class="ModuleScript" referent="64">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7626,7 +8956,7 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="63">
+          <Item class="ModuleScript" referent="65">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -7862,7 +9192,7 @@ local function buildGui()
 		Size = UDim2.new(0.9, 0, 0.18, 0),
 		BackgroundColor3 = Color3.fromRGB(15, 10, 20),
 		BackgroundTransparency = 0.2,
-		Font = Enum.Font.FredokaOne,
+		Font = Enum.Font.Creepster,
 		TextScaled = true,
 		TextColor3 = Color3.new(1, 1, 1),
 		Text = "",
@@ -8124,7 +9454,7 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="64">
+          <Item class="ModuleScript" referent="66">
             <Properties>
               <string name="Name">ShopController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8350,7 +9680,7 @@ local function buildGui()
 	UI.new("TextLabel", {
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, -50, 0, 36),
-		Font = Enum.Font.FredokaOne,
+		Font = Enum.Font.Creepster,
 		TextScaled = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Color3.fromRGB(255, 220, 90),
@@ -8409,7 +9739,7 @@ return ShopController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="65">
+          <Item class="ModuleScript" referent="67">
             <Properties>
               <string name="Name">SoundController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8492,7 +9822,7 @@ return SoundController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="66">
+          <Item class="ModuleScript" referent="68">
             <Properties>
               <string name="Name">TutorialController</string>
               <string name="Source"><![CDATA[--!strict
@@ -8661,7 +9991,7 @@ return TutorialController
             </Properties>
           </Item>
         </Item>
-        <Item class="LocalScript" referent="67">
+        <Item class="LocalScript" referent="69">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -8679,11 +10009,11 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="68">
+        <Item class="Folder" referent="70">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="69">
+          <Item class="ModuleScript" referent="71">
             <Properties>
               <string name="Name">HudBar</string>
               <string name="Source"><![CDATA[--!strict
@@ -8715,7 +10045,7 @@ return HudBar
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="70">
+          <Item class="ModuleScript" referent="72">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -8779,7 +10109,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="71">
+  <Item class="Workspace" referent="73">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

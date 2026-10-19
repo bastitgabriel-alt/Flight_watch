@@ -87,6 +87,8 @@ local function robloxRequire(node)
 			script = node, game = game, Color3 = Color3, Random = Random, require = robloxRequire,
 			Vector3 = S.Vector3, CFrame = S.CFrame, Instance = S.Instance, Enum = S.Enum,
 			UDim2 = S.UDim2, UDim = S.UDim, workspace = S.workspace,
+			ColorSequence = S.ColorSequence, NumberSequence = S.NumberSequence,
+			NumberSequenceKeypoint = S.NumberSequenceKeypoint, NumberRange = S.NumberRange, Vector2 = S.Vector2,
 			task = { spawn = function(f, ...) f(...) end, wait = function() return 0 end },
 		}, { __index = _G })
 		local fn = __load(source, path, env)
@@ -141,6 +143,18 @@ test("12 anomalies sur 5 raretés, indices valides", function()
 		count += 1
 	end
 	eq(count, 5, "raretés utilisées")
+end)
+
+test("Chaque anomalie a une forme monstrueuse valide", function()
+	local AnomalyLooks = robloxRequire(server.Modules.AnomalyLooks)
+	for _, def in AnomalyConfig.List do
+		assert(def.Look and #def.Look > 0, def.Id .. " : aucun trait (Look)")
+		for _, trait in def.Look do
+			assert(AnomalyLooks.Traits[trait], def.Id .. " : trait inconnu " .. trait)
+		end
+		-- Assez petit pour tenir sous le panneau de la cellule
+		assert((def.Scale or 1) <= 1.3, def.Id .. " : trop grand pour la cellule")
+	end
 end)
 
 test("Format des nombres", function()
@@ -418,7 +432,9 @@ test("Décor de la place : loin des hôtels, du spawn et du classement", functio
 	local spawnPos = map.PlazaSpawn.Position + V.new(0, ROOT_HEIGHT, 0)
 	for _, part in map.Decor:GetChildren() do
 		assert(not S.pointInPart(spawnPos, part, 3), "apparition dans " .. part.Name)
-		assert((part.Position - map.Leaderboard.Position).Magnitude > 12, part.Name .. " devant le classement")
+		-- Rien entre le classement et la place
+		local local_ = map.Leaderboard.CFrame:PointToObjectSpace(part.Position)
+		assert(not (local_.Z < 0 and local_.Z > -25 and math.abs(local_.X) < 15), part.Name .. " devant le classement")
 		for _, hotel in hotels do
 			local p = part.Position
 			p = V.new(p.X, hotel.Floor.Position.Y + 2, p.Z)
@@ -426,6 +442,14 @@ test("Décor de la place : loin des hôtels, du spawn et du classement", functio
 		end
 	end
 	assert(#map.Decor:GetChildren() > 20, "décor manquant")
+	local parts = 0
+	for _, d in map:GetDescendants() do
+		if d:IsA("BasePart") then
+			parts += 1
+		end
+	end
+	print(string.format("  Pièces dans la carte : %d", parts))
+	assert(parts < 8000, "carte trop lourde pour les téléphones")
 end)
 
 print(string.format("\n%d test(s) réussi(s), %d échec(s)", passed, failed))
