@@ -3,7 +3,7 @@
 
 local GameConfig = {
 	-- UserIds Roblox autorisés à utiliser les commandes debug/admin
-	AdminUserIds = {} :: { number },
+	AdminUserIds = { 11839060088 } :: { number },
 
 	-- Dans Roblox Studio, tout le monde peut utiliser les commandes debug
 	DebugInStudio = true,

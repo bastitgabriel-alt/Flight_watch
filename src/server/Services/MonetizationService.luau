@@ -115,6 +115,46 @@ local function processReceipt(receipt: any): Enum.ProductPurchaseDecision
 	return Enum.ProductPurchaseDecision.NotProcessedYet
 end
 
+-- Au démarrage : vérifie que chaque ID correspond au bon achat (par son nom sur Roblox)
+-- et l'écrit dans Output. Aide à repérer deux IDs inversés.
+local EXPECTED_WORDS: { [string]: string } = {
+	DoubleMoney = "argent",
+	ExtraCells = "cellule",
+	MoneyPack = "sac",
+	LuckyNight = "nuit",
+}
+
+local function checkIds()
+	local function check(key: string, id: number, infoType: Enum.InfoType)
+		if id == 0 then
+			return
+		end
+		local ok, info = pcall(function()
+			return MarketplaceService:GetProductInfo(id, infoType)
+		end)
+		if not ok or not info then
+			warn(`[Monetization] Impossible de lire l'achat {key} ({id})`)
+			return
+		end
+		local name = string.lower(info.Name or "")
+		if string.find(name, EXPECTED_WORDS[key], 1, true) then
+			print(`[Monetization] OK : {key} = « {info.Name} » ({id})`)
+		else
+			warn(`[Monetization] ATTENTION : {key} ({id}) s'appelle « {info.Name} » sur Roblox`)
+		end
+	end
+	for key, pass in MonetizationConfig.GamePasses do
+		check(key, pass.Id, Enum.InfoType.GamePass)
+	end
+	for key, product in MonetizationConfig.Products do
+		check(key, product.Id, Enum.InfoType.Product)
+	end
+end
+
+function MonetizationService.Start(_self: typeof(MonetizationService))
+	checkIds()
+end
+
 function MonetizationService.Init(_self: typeof(MonetizationService))
 	PlayerDataService.DataLoaded:Connect(function(player, data)
 		player:SetAttribute("LuckyUntil", data.LuckyUntil)
