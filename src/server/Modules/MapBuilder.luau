@@ -178,14 +178,15 @@ local function buildHotel(index: number, origin: CFrame, parent: Instance)
 	-- Repères (le client regarde le comptoir, donc vers -Z local)
 	local facingCounter = CFrame.identity -- LookVector = -Z local
 	makeMarker("GuestSpawn", origin * CFrame.new(0, 1, half + 8) * facingCounter, hotel)
-	makeMarker("GuestSpot", origin * CFrame.new(0, 1, 15.5) * facingCounter, hotel)
+	-- Assez loin du comptoir pour que la caméra se glisse entre les deux
+	makeMarker("GuestSpot", origin * CFrame.new(0, 1, 19.5) * facingCounter, hotel)
 	makeMarker("GuestExit", origin * CFrame.new(half + 10, 1, half + 8), hotel)
 	makeMarker("OwnerSpawn", origin * CFrame.new(0, 1, 7) * CFrame.Angles(0, math.pi, 0), hotel)
 	local lobby = makeMarker("Lobby", origin * CFrame.new(0, 1, 0), hotel)
 	lobby.Size = Vector3.new(40, 1, 16) -- zone où erre une anomalie échappée
 
 	-- Lumière au-dessus du client : rend son ombre bien visible
-	local lightHolder = makeMarker("GuestLight", origin * CFrame.new(0, 12, 16), hotel)
+	local lightHolder = makeMarker("GuestLight", origin * CFrame.new(0, 12, 20), hotel)
 	local light = Instance.new("PointLight")
 	light.Range = 18
 	light.Brightness = 2

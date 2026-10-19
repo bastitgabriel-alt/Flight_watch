@@ -88,6 +88,7 @@ local function onChatted(player: Player, message: string)
 	local name = string.lower(table.remove(words, 1) or "")
 	local command = commands[name]
 	if command then
+		print(`[Debug] {player.Name} : !{name} {table.concat(words, " ")}`)
 		command(player, words)
 	end
 end

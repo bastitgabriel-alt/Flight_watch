@@ -297,11 +297,12 @@ local function focusCamera(guest: Model?)
 	cameraFocused = true
 	camera.CameraType = Enum.CameraType.Scriptable
 	setOwnCharacterHidden(true)
-	local eye = root.Position + root.CFrame.LookVector * 11 + Vector3.new(0, 4, 0)
+	-- Caméra entre le comptoir et le client (rien ne cache ses pieds ni son ombre)
+	local eye = root.Position + root.CFrame.LookVector * 5.5 + Vector3.new(0, 1.5, 0)
 	-- On vise à droite du client pour qu'il apparaisse dans la moitié gauche
 	local toGuest = (root.Position - eye) * Vector3.new(1, 0, 1)
 	local right = toGuest.Unit:Cross(Vector3.yAxis)
-	local target = root.Position - Vector3.new(0, 1.5, 0) + right * 5
+	local target = root.Position - Vector3.new(0, 1.2, 0) + right * 3
 	TweenService:Create(camera, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
 		CFrame = CFrame.lookAt(eye, target),
 	}):Play()
