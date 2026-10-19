@@ -244,8 +244,8 @@ local function showPhoto(appearance: Types.Appearance)
 		local photoCamera = Instance.new("Camera")
 		photoCamera.FieldOfView = 40
 		-- Cadrage tête et épaules, de face
-		local target = head.Position - Vector3.new(0, 0.6, 0)
-		photoCamera.CFrame = CFrame.lookAt(target + head.CFrame.LookVector * 5, target)
+		local target = head.Position - Vector3.new(0, 0.5, 0)
+		photoCamera.CFrame = CFrame.lookAt(target + head.CFrame.LookVector * 4.5, target)
 		photoCamera.Parent = photoFrame
 		photoFrame.CurrentCamera = photoCamera
 	end
@@ -272,7 +272,21 @@ local function showRegistry(names: { string })
 	end
 end
 
--- La caméra cadre le client : on voit ses yeux et le sol autour de lui (ombre)
+-- Rend son propre personnage invisible (localement) pour ne pas gêner la vue
+local function setOwnCharacterHidden(hidden: boolean)
+	local character = player.Character
+	if not character then
+		return
+	end
+	for _, descendant in character:GetDescendants() do
+		if descendant:IsA("BasePart") or descendant:IsA("Decal") then
+			descendant.LocalTransparencyModifier = if hidden then 1 else 0
+		end
+	end
+end
+
+-- La caméra cadre le client en entier dans le haut de l'écran :
+-- on voit ses yeux ET le sol autour de ses pieds (ombre), au-dessus du panneau
 local function focusCamera(guest: Model?)
 	local root = guest and guest:FindFirstChild("HumanoidRootPart")
 	if not root or not root:IsA("BasePart") then
@@ -280,9 +294,9 @@ local function focusCamera(guest: Model?)
 	end
 	cameraFocused = true
 	camera.CameraType = Enum.CameraType.Scriptable
-	local eye = root.Position + root.CFrame.LookVector * 9 + Vector3.new(0, 3, 0)
-	-- On vise un peu sous les pieds pour que le client reste au-dessus du panneau
-	local target = root.Position - Vector3.new(0, 3.5, 0)
+	setOwnCharacterHidden(true)
+	local eye = root.Position + root.CFrame.LookVector * 12 + Vector3.new(0, 7, 0)
+	local target = root.Position - Vector3.new(0, 4, 0)
 	TweenService:Create(camera, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
 		CFrame = CFrame.lookAt(eye, target),
 	}):Play()
@@ -292,6 +306,7 @@ local function restoreCamera()
 	if cameraFocused then
 		cameraFocused = false
 		camera.CameraType = Enum.CameraType.Custom
+		setOwnCharacterHidden(false)
 	end
 end
 

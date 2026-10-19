@@ -6,7 +6,7 @@
 --   Hotel{n} (attribut HotelIndex)
 --     GuestSpawn, GuestSpot, GuestExit, OwnerSpawn, Lobby  (repères invisibles)
 --     DoorBarrier, Sign (SurfaceGui > OwnerLabel)
---     Cells > Cell{n} > Pad, Spot, Label (BillboardGui > Text)
+--     Cells > Cell{n} > Pad, Spot, Label (SurfaceGui > Text)
 
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -79,15 +79,24 @@ local function buildCell(index: number, origin: CFrame, localCFrame: CFrame, par
 	})
 
 	-- Où l'anomalie se tient : sur le pad, tournée vers l'ouverture
-	local spot = makeMarker("Spot", cf * CFrame.new(0, 0.4, 0), cell)
+	makeMarker("Spot", cf * CFrame.new(0, 0.4, 0), cell)
 
-	local billboard = Instance.new("BillboardGui")
-	billboard.Name = "Label"
-	billboard.Size = UDim2.fromOffset(160, 50)
-	billboard.StudsOffsetWorldSpace = Vector3.new(0, 7.5, 0)
-	billboard.MaxDistance = 60
-	billboard.AlwaysOnTop = false
-	billboard.Parent = spot
+	-- Panneau au-dessus de la vitre (nom, rareté, revenu). Un panneau fixe
+	-- plutôt qu'une étiquette flottante : les 16 textes ne se chevauchent pas.
+	local sign = makePart({
+		Name = "Label",
+		Size = Vector3.new(CELL_WIDTH - 0.5, 2, 0.2),
+		CFrame = cf * CFrame.new(0, 9.5, -(CELL_WIDTH / 2 - 0.4)),
+		Color = Color3.fromRGB(20, 15, 25),
+		Material = Enum.Material.SmoothPlastic,
+		CastShadow = false,
+		Parent = cell,
+	})
+	local surface = Instance.new("SurfaceGui")
+	surface.Face = Enum.NormalId.Front -- côté ouverture de la cellule
+	surface.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	surface.PixelsPerStud = 50
+	surface.Parent = sign
 
 	local text = Instance.new("TextLabel")
 	text.Name = "Text"
@@ -96,9 +105,8 @@ local function buildCell(index: number, origin: CFrame, localCFrame: CFrame, par
 	text.TextScaled = true
 	text.Font = Enum.Font.GothamBold
 	text.TextColor3 = Color3.new(1, 1, 1)
-	text.TextStrokeTransparency = 0.3
 	text.Text = ""
-	text.Parent = billboard
+	text.Parent = surface
 
 	cell.PrimaryPart = pad
 	cell.Parent = parent
