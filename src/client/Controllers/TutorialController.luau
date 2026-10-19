@@ -76,9 +76,9 @@ function TutorialController.Start(_self: typeof(TutorialController))
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 	local banner = UI.new("TextLabel", {
-		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 52),
-		Size = UDim2.new(0.6, 0, 0, 70),
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -95),
+		Size = UDim2.new(0.5, 0, 0, 70),
 		BackgroundColor3 = Color3.fromRGB(255, 200, 60),
 		Font = Enum.Font.GothamBold,
 		TextScaled = true,
@@ -95,6 +95,19 @@ function TutorialController.Start(_self: typeof(TutorialController))
 	local function show(step: number)
 		banner.Text = `({step}/3) {STEPS[step]}`
 	end
+
+	-- Placement : au-dessus de la barre du bas ; pendant la réception (panneau à
+	-- droite, barre cachée), en bas de la moitié gauche pour ne rien cacher
+	local receptionGui = player:WaitForChild("PlayerGui"):WaitForChild("Reception") :: ScreenGui
+	local function place()
+		if receptionGui.Enabled then
+			banner.Position = UDim2.new(0.29, 0, 1, -12)
+		else
+			banner.Position = UDim2.new(0.5, 0, 1, -95)
+		end
+	end
+	receptionGui:GetPropertyChangedSignal("Enabled"):Connect(place)
+	place()
 
 	-- Étape 1 : recevoir
 	while not player:GetAttribute("HotelIndex") do

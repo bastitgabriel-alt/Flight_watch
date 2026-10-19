@@ -140,7 +140,7 @@ local function buildGui()
 	local card = UI.new("Frame", {
 		Name = "IdCard",
 		Position = UDim2.fromScale(0, 0.165),
-		Size = UDim2.new(1, 0, 0.31, 0),
+		Size = UDim2.new(1, 0, 0.255, 0),
 		BackgroundColor3 = Color3.fromRGB(235, 225, 200),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -177,8 +177,8 @@ local function buildGui()
 	-- Registre des réservations (à droite)
 	local registry = UI.new("Frame", {
 		Name = "Registry",
-		Position = UDim2.fromScale(0, 0.49),
-		Size = UDim2.new(1, 0, 0.22, 0),
+		Position = UDim2.fromScale(0, 0.43),
+		Size = UDim2.new(1, 0, 0.285, 0),
 		BackgroundColor3 = Color3.fromRGB(245, 240, 225),
 		Parent = panel,
 	}, { UI.corner(10), UI.padding(6) })
@@ -288,7 +288,7 @@ local function showRegistry(names: { string })
 			TextColor3 = Color3.fromRGB(30, 30, 60),
 			Text = `• {name}`,
 			Parent = registryList,
-		})
+		}, { UI.textSize(11, 20) })
 	end
 end
 
@@ -359,6 +359,14 @@ local function describeTools(info: Types.ReceptionInfo): string
 	return table.concat(parts, "   •   ")
 end
 
+local function setBottomBarVisible(visible: boolean)
+	local hud = player.PlayerGui:FindFirstChild("Hud")
+	local bar = hud and hud:FindFirstChild("BottomBar")
+	if bar and bar:IsA("GuiObject") then
+		bar.Visible = visible
+	end
+end
+
 function ReceptionController.Open(info: Types.ReceptionInfo)
 	current = info
 	speechLabel.Text = `« Bonsoir, je suis {info.Name}. J'ai réservé une chambre. »`
@@ -369,6 +377,7 @@ function ReceptionController.Open(info: Types.ReceptionInfo)
 	setButtonsEnabled(true)
 	gui.Enabled = true
 	ProximityPromptService.Enabled = false -- l'invite cacherait le client
+	setBottomBarVisible(false) -- la barre du bas passerait sous le panneau
 	focusCamera(info.Guest)
 end
 
@@ -376,6 +385,7 @@ function ReceptionController.Close()
 	current = nil
 	gui.Enabled = false
 	ProximityPromptService.Enabled = true
+	setBottomBarVisible(true)
 	restoreCamera()
 end
 
