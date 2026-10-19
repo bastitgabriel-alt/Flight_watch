@@ -11,6 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local Types = require(Shared:WaitForChild("Types"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
+local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
@@ -358,13 +359,16 @@ local function showResult(token: number, outcome: string, details: { [string]: a
 	if outcome == "Captured" then
 		text, color = `Anomalie capturée : {name} !`, if rarity then rarity.Color else Color3.new(1, 1, 1)
 	elseif outcome == "CapturedSold" then
-		text, color = `{name} capturée et revendue {Format.money(details.Amount or 0)}`, Color3.fromRGB(255, 220, 90)
+		text = `Cellules pleines ! {name} revendue {Format.money(details.Amount or 0)}`
+		color = Color3.fromRGB(255, 220, 90)
 	elseif outcome == "Escaped" then
-		text, color = `C'était une anomalie : {name}\nIndices : {clues}`, Color3.fromRGB(255, 90, 90)
+		local percent = math.floor((1 - EconomyConfig.EscapedIncomeMultiplier) * 100 + 0.5)
+		text = `C'était une anomalie : {name} ! Revenus -{percent}% pendant {EconomyConfig.EscapedDuration} s\nIndices : {clues}`
+		color = Color3.fromRGB(255, 90, 90)
 	elseif outcome == "Served" then
-		text, color = "Vrai client, bien vu !", Color3.fromRGB(90, 255, 120)
+		text, color = `Vrai client, bien vu ! Pourboire +{Format.money(details.Amount or 0)}`, Color3.fromRGB(90, 255, 120)
 	elseif outcome == "WrongCapture" then
-		text, color = "C'était un vrai client...", Color3.fromRGB(255, 90, 90)
+		text, color = `C'était un vrai client... -{Format.money(details.Amount or 0)}`, Color3.fromRGB(255, 90, 90)
 	else
 		text, color = "Trop lent, le client est parti.", Color3.fromRGB(220, 220, 220)
 	end

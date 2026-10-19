@@ -38,19 +38,19 @@ local function buildGui()
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 
-	-- Panneau d'argent en haut au centre
+	-- Panneau d'argent à gauche (le centre de l'écran reste libre pour voir le client)
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
-		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 6),
-		Size = UDim2.new(0.5, 0, 0, 70),
+		AnchorPoint = Vector2.new(0, 0.5),
+		Position = UDim2.new(0, 10, 0.32, 0),
+		Size = UDim2.new(0.3, 0, 0, 70),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
 		Parent = gui,
 	}, {
 		UI.corner(16),
 		UI.stroke(Color3.fromRGB(255, 200, 80), 2),
-		UI.new("UISizeConstraint", { MinSize = Vector2.new(200, 60), MaxSize = Vector2.new(340, 80) }),
+		UI.new("UISizeConstraint", { MinSize = Vector2.new(150, 56), MaxSize = Vector2.new(260, 76) }),
 	})
 	moneyScale = UI.new("UIScale", { Parent = panel })
 
@@ -81,7 +81,7 @@ local function buildGui()
 	toastList = UI.new("Frame", {
 		Name = "Toasts",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 84),
+		Position = UDim2.new(0.5, 0, 0, 8),
 		Size = UDim2.new(0.9, 0, 0, 200),
 		BackgroundTransparency = 1,
 		Parent = gui,

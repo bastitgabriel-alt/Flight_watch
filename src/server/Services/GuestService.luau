@@ -18,8 +18,6 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
-local RarityConfig = require(Config:WaitForChild("RarityConfig"))
-local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
@@ -244,7 +242,6 @@ local function resolve(session: Session, guest: Guest, decision: string)
 
 	if profile.IsAnomaly then
 		local def = AnomalyConfig.ById[profile.AnomalyId :: string]
-		local rarity = RarityConfig[def.Rarity]
 		details.AnomalyName = def.DisplayName
 		details.Rarity = def.Rarity
 		details.Mutation = profile.Mutation
@@ -254,25 +251,17 @@ local function resolve(session: Session, guest: Guest, decision: string)
 			local cell = AnomalyService.AddAnomaly(player, def.Id, profile.Mutation)
 			if cell then
 				outcome = "Captured"
-				Notify.send(player, `Capturée : {def.DisplayName} ({rarity.DisplayName}) !`, rarity.Color)
 			else
 				outcome = "CapturedSold"
 				local amount = IncomeCalculator.anomalyIncome(def.Id, profile.Mutation) * EconomyConfig.FullCellsSellSeconds
 				details.Amount = amount
 				PlayerDataService.AddMoney(player, amount)
-				Notify.send(player, `Cellules pleines ! {def.DisplayName} revendue {Format.money(amount)}`, "Info")
 			end
 			revealAndVanish(session, guest.model, def)
 		else
 			outcome = "Escaped"
 			data.Stats.Escaped += 1
 			IncomeService.ApplyDebuff(player, EconomyConfig.EscapedIncomeMultiplier, EconomyConfig.EscapedDuration)
-			local percent = math.floor((1 - EconomyConfig.EscapedIncomeMultiplier) * 100 + 0.5)
-			Notify.send(
-				player,
-				`{def.DisplayName} s'est infiltrée ! Revenus -{percent}% pendant {EconomyConfig.EscapedDuration} s`,
-				"Bad"
-			)
 			startWanderer(session, guest.model, def)
 		end
 	else
@@ -282,7 +271,6 @@ local function resolve(session: Session, guest: Guest, decision: string)
 			details.Amount = tip
 			data.Stats.GuestsServed += 1
 			PlayerDataService.AddMoney(player, tip)
-			Notify.send(player, `Pourboire : +{Format.money(tip)}`, "Good")
 			walkAway(session, guest.model, true)
 		elseif decision == "Capture" then
 			outcome = "WrongCapture"
@@ -291,11 +279,9 @@ local function resolve(session: Session, guest: Guest, decision: string)
 			details.Amount = penalty
 			data.Stats.WrongCaptures += 1
 			PlayerDataService.AddMoney(player, -penalty)
-			Notify.send(player, `C'était un vrai client ! -{Format.money(penalty)}`, "Bad")
 			walkAway(session, guest.model, false)
 		else
 			outcome = "Left"
-			Notify.send(player, "Le client est parti, lassé d'attendre.", "Info")
 			walkAway(session, guest.model, false)
 		end
 	end

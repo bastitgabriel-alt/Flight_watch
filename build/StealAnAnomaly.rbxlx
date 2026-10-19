@@ -2052,8 +2052,6 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
-local RarityConfig = require(Config:WaitForChild("RarityConfig"))
-local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
@@ -2278,7 +2276,6 @@ local function resolve(session: Session, guest: Guest, decision: string)
 
 	if profile.IsAnomaly then
 		local def = AnomalyConfig.ById[profile.AnomalyId :: string]
-		local rarity = RarityConfig[def.Rarity]
 		details.AnomalyName = def.DisplayName
 		details.Rarity = def.Rarity
 		details.Mutation = profile.Mutation
@@ -2288,25 +2285,17 @@ local function resolve(session: Session, guest: Guest, decision: string)
 			local cell = AnomalyService.AddAnomaly(player, def.Id, profile.Mutation)
 			if cell then
 				outcome = "Captured"
-				Notify.send(player, `Capturée : {def.DisplayName} ({rarity.DisplayName}) !`, rarity.Color)
 			else
 				outcome = "CapturedSold"
 				local amount = IncomeCalculator.anomalyIncome(def.Id, profile.Mutation) * EconomyConfig.FullCellsSellSeconds
 				details.Amount = amount
 				PlayerDataService.AddMoney(player, amount)
-				Notify.send(player, `Cellules pleines ! {def.DisplayName} revendue {Format.money(amount)}`, "Info")
 			end
 			revealAndVanish(session, guest.model, def)
 		else
 			outcome = "Escaped"
 			data.Stats.Escaped += 1
 			IncomeService.ApplyDebuff(player, EconomyConfig.EscapedIncomeMultiplier, EconomyConfig.EscapedDuration)
-			local percent = math.floor((1 - EconomyConfig.EscapedIncomeMultiplier) * 100 + 0.5)
-			Notify.send(
-				player,
-				`{def.DisplayName} s'est infiltrée ! Revenus -{percent}% pendant {EconomyConfig.EscapedDuration} s`,
-				"Bad"
-			)
 			startWanderer(session, guest.model, def)
 		end
 	else
@@ -2316,7 +2305,6 @@ local function resolve(session: Session, guest: Guest, decision: string)
 			details.Amount = tip
 			data.Stats.GuestsServed += 1
 			PlayerDataService.AddMoney(player, tip)
-			Notify.send(player, `Pourboire : +{Format.money(tip)}`, "Good")
 			walkAway(session, guest.model, true)
 		elseif decision == "Capture" then
 			outcome = "WrongCapture"
@@ -2325,11 +2313,9 @@ local function resolve(session: Session, guest: Guest, decision: string)
 			details.Amount = penalty
 			data.Stats.WrongCaptures += 1
 			PlayerDataService.AddMoney(player, -penalty)
-			Notify.send(player, `C'était un vrai client ! -{Format.money(penalty)}`, "Bad")
 			walkAway(session, guest.model, false)
 		else
 			outcome = "Left"
-			Notify.send(player, "Le client est parti, lassé d'attendre.", "Info")
 			walkAway(session, guest.model, false)
 		end
 	end
@@ -5133,19 +5119,19 @@ local function buildGui()
 		Parent = player:WaitForChild("PlayerGui"),
 	})
 
-	-- Panneau d'argent en haut au centre
+	-- Panneau d'argent à gauche (le centre de l'écran reste libre pour voir le client)
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
-		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 6),
-		Size = UDim2.new(0.5, 0, 0, 70),
+		AnchorPoint = Vector2.new(0, 0.5),
+		Position = UDim2.new(0, 10, 0.32, 0),
+		Size = UDim2.new(0.3, 0, 0, 70),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
 		Parent = gui,
 	}, {
 		UI.corner(16),
 		UI.stroke(Color3.fromRGB(255, 200, 80), 2),
-		UI.new("UISizeConstraint", { MinSize = Vector2.new(200, 60), MaxSize = Vector2.new(340, 80) }),
+		UI.new("UISizeConstraint", { MinSize = Vector2.new(150, 56), MaxSize = Vector2.new(260, 76) }),
 	})
 	moneyScale = UI.new("UIScale", { Parent = panel })
 
@@ -5176,7 +5162,7 @@ local function buildGui()
 	toastList = UI.new("Frame", {
 		Name = "Toasts",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 84),
+		Position = UDim2.new(0.5, 0, 0, 8),
 		Size = UDim2.new(0.9, 0, 0, 200),
 		BackgroundTransparency = 1,
 		Parent = gui,
@@ -5345,6 +5331,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local Types = require(Shared:WaitForChild("Types"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
+local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
@@ -5692,13 +5679,16 @@ local function showResult(token: number, outcome: string, details: { [string]: a
 	if outcome == "Captured" then
 		text, color = `Anomalie capturée : {name} !`, if rarity then rarity.Color else Color3.new(1, 1, 1)
 	elseif outcome == "CapturedSold" then
-		text, color = `{name} capturée et revendue {Format.money(details.Amount or 0)}`, Color3.fromRGB(255, 220, 90)
+		text = `Cellules pleines ! {name} revendue {Format.money(details.Amount or 0)}`
+		color = Color3.fromRGB(255, 220, 90)
 	elseif outcome == "Escaped" then
-		text, color = `C'était une anomalie : {name}\nIndices : {clues}`, Color3.fromRGB(255, 90, 90)
+		local percent = math.floor((1 - EconomyConfig.EscapedIncomeMultiplier) * 100 + 0.5)
+		text = `C'était une anomalie : {name} ! Revenus -{percent}% pendant {EconomyConfig.EscapedDuration} s\nIndices : {clues}`
+		color = Color3.fromRGB(255, 90, 90)
 	elseif outcome == "Served" then
-		text, color = "Vrai client, bien vu !", Color3.fromRGB(90, 255, 120)
+		text, color = `Vrai client, bien vu ! Pourboire +{Format.money(details.Amount or 0)}`, Color3.fromRGB(90, 255, 120)
 	elseif outcome == "WrongCapture" then
-		text, color = "C'était un vrai client...", Color3.fromRGB(255, 90, 90)
+		text, color = `C'était un vrai client... -{Format.money(details.Amount or 0)}`, Color3.fromRGB(255, 90, 90)
 	else
 		text, color = "Trop lent, le client est parti.", Color3.fromRGB(220, 220, 220)
 	end
