@@ -170,6 +170,11 @@ local function updateIncomeText()
 	else
 		incomeLabel.TextColor3 = Color3.fromRGB(200, 255, 200)
 	end
+	local luckyUntil = player:GetAttribute("LuckyUntil") :: number?
+	local luckyLeft = if luckyUntil then luckyUntil - workspace:GetServerTimeNow() else 0
+	if luckyLeft > 0 then
+		text ..= `  🍀 {math.floor(luckyLeft / 60)}:{string.format("%02d", math.floor(luckyLeft % 60))}`
+	end
 	incomeLabel.Text = text
 end
 

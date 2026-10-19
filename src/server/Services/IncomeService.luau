@@ -44,8 +44,9 @@ function IncomeService.GetIncome(player: Player): number
 	if not data then
 		return 0
 	end
-	-- Le gamepass « Argent x2 » s'ajoutera ici à l'étape 9
-	local multiplier = data.RebirthMultiplier * getDebuffMultiplier(player)
+	-- Gamepass « Argent x2 » : attribut posé par MonetizationService
+	local passMultiplier = if player:GetAttribute("Pass_DoubleMoney") then 2 else 1
+	local multiplier = data.RebirthMultiplier * getDebuffMultiplier(player) * passMultiplier
 	return IncomeCalculator.total(data.Anomalies, multiplier)
 end
 

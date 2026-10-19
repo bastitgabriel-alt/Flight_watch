@@ -350,6 +350,16 @@ test("Carte : hôtels et cellules ne se chevauchent pas", function()
 	end
 end)
 
+test("Panneau du classement : sur la place, loin des hôtels", function()
+	local board = map.Leaderboard
+	assert(board, "panneau manquant")
+	assert(S.pointInPart(board.Position - V.new(0, 8.5, 0), map.Plaza, 0.5), "panneau hors de la place")
+	for _, hotel in hotels do
+		assert((hotel.Floor.Position - board.Position).Magnitude > 50, "panneau trop près de " .. hotel.Name)
+	end
+	assert((map.PlazaSpawn.Position - board.Position).Magnitude > 30, "panneau sur le point d'apparition")
+end)
+
 test("Réception : la caméra voit le client en entier, à gauche du panneau", function()
 	for _, hotel in hotels do
 		local root = hotel.GuestSpot.CFrame + V.new(0, ROOT_HEIGHT, 0)

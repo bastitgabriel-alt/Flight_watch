@@ -284,6 +284,41 @@ function MapBuilder.build(): Folder
 	spawn.Color = Color3.fromRGB(80, 40, 90)
 	spawn.Parent = map
 
+	-- Panneau du classement mondial, au bord ouest de la place, tourné vers le centre
+	local board = makePart({
+		Name = "Leaderboard",
+		Size = Vector3.new(26, 16, 1),
+		CFrame = CFrame.lookAt(Vector3.new(-104, 9, 0), Vector3.new(0, 9, 0)),
+		Color = Color3.fromRGB(25, 18, 30),
+		Material = Enum.Material.SmoothPlastic,
+		Parent = map,
+	})
+	local boardGui = Instance.new("SurfaceGui")
+	boardGui.Face = Enum.NormalId.Front
+	boardGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	boardGui.PixelsPerStud = 30
+	boardGui.Parent = board
+	local boardTitle = Instance.new("TextLabel")
+	boardTitle.Size = UDim2.fromScale(1, 0.16)
+	boardTitle.BackgroundTransparency = 1
+	boardTitle.TextScaled = true
+	boardTitle.Font = Enum.Font.Creepster
+	boardTitle.TextColor3 = Color3.fromRGB(255, 220, 120)
+	boardTitle.Text = "Meilleurs revenus"
+	boardTitle.Parent = boardGui
+	local boardLines = Instance.new("TextLabel")
+	boardLines.Name = "Lines"
+	boardLines.Position = UDim2.fromScale(0.05, 0.18)
+	boardLines.Size = UDim2.fromScale(0.9, 0.78)
+	boardLines.BackgroundTransparency = 1
+	boardLines.TextScaled = true
+	boardLines.TextXAlignment = Enum.TextXAlignment.Left
+	boardLines.TextYAlignment = Enum.TextYAlignment.Top
+	boardLines.Font = Enum.Font.GothamBold
+	boardLines.TextColor3 = Color3.new(1, 1, 1)
+	boardLines.Text = "Chargement..."
+	boardLines.Parent = boardGui
+
 	local hotels = Instance.new("Folder")
 	hotels.Name = "Hotels"
 	hotels.Parent = map

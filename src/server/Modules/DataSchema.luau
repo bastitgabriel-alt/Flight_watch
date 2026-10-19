@@ -44,6 +44,9 @@ local TEMPLATE = {
 	LoginStreak = 0,
 	GamepassCache = {}, -- { [gamepassId en texte] = true }
 	ProcessedReceipts = {}, -- { [purchaseId] = true } achats Robux déjà traités
+	ReceiptOrder = {}, -- ordre des achats (pour ne garder que les derniers)
+	LuckyUntil = 0, -- os.time() de fin de la « Nuit chanceuse »
+	CatalogRewards = {}, -- { [palier en texte] = true } récompenses du catalogue reçues
 	TutorialDone = false,
 }
 

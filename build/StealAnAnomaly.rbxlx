@@ -176,6 +176,26 @@ return {
         </Item>
         <Item class="ModuleScript" referent="4">
           <Properties>
+            <string name="Name">CatalogConfig</string>
+            <string name="Source"><![CDATA[--!strict
+-- Catalogue des anomalies (Anomalydex) : récompenses quand on en découvre assez.
+
+local CatalogConfig = {
+	-- Récompense versée une seule fois en atteignant Count anomalies découvertes
+	Rewards = {
+		{ Count = 3, Money = 500 },
+		{ Count = 6, Money = 5000 },
+		{ Count = 9, Money = 50000 },
+		{ Count = 12, Money = 500000 },
+	},
+}
+
+return CatalogConfig
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="5">
+          <Properties>
             <string name="Name">EconomyConfig</string>
             <string name="Source"><![CDATA[--!strict
 -- Chiffres d'économie. Modifie-les librement pour équilibrer le jeu.
@@ -209,7 +229,7 @@ return EconomyConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="5">
+        <Item class="ModuleScript" referent="6">
           <Properties>
             <string name="Name">GameConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -237,7 +257,7 @@ return GameConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="6">
+        <Item class="ModuleScript" referent="7">
           <Properties>
             <string name="Name">GuestConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -297,7 +317,52 @@ return GuestConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="7">
+        <Item class="ModuleScript" referent="8">
+          <Properties>
+            <string name="Name">MonetizationConfig</string>
+            <string name="Source"><![CDATA[--!strict
+-- Gamepasses et produits Robux.
+-- Id = 0 : pas encore créé sur le Creator Hub (le bouton est caché dans la boutique).
+-- Une fois créés, colle ici les numéros (voir le README, section « Monétisation »).
+
+local MonetizationConfig = {
+	GamePasses = {
+		DoubleMoney = {
+			Id = 0,
+			DisplayName = "Argent x2",
+			Description = "Tes anomalies rapportent deux fois plus, pour toujours.",
+		},
+		ExtraCells = {
+			Id = 0,
+			DisplayName = "+3 cellules",
+			Description = "Trois cellules de confinement en plus, pour toujours.",
+			Cells = 3,
+		},
+	},
+
+	Products = {
+		MoneyPack = {
+			Id = 0,
+			DisplayName = "Sac d'argent",
+			Description = "15 minutes de revenus d'un coup (minimum 1 000 $).",
+			IncomeSeconds = 900,
+			Minimum = 1000,
+		},
+		LuckyNight = {
+			Id = 0,
+			DisplayName = "Nuit chanceuse",
+			Description = "Anomalies rares 3 fois plus fréquentes pendant 10 minutes.",
+			Duration = 600,
+			RarityLuck = 3,
+		},
+	},
+}
+
+return MonetizationConfig
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="9">
           <Properties>
             <string name="Name">MutationConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -338,7 +403,7 @@ return {
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="8">
+        <Item class="ModuleScript" referent="10">
           <Properties>
             <string name="Name">RarityConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -414,7 +479,7 @@ return RarityConfig
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="9">
+        <Item class="ModuleScript" referent="11">
           <Properties>
             <string name="Name">ShopConfig</string>
             <string name="Source"><![CDATA[--!strict
@@ -504,7 +569,7 @@ return ShopConfig
           </Properties>
         </Item>
       </Item>
-      <Item class="ModuleScript" referent="10">
+      <Item class="ModuleScript" referent="12">
         <Properties>
           <string name="Name">Remotes</string>
           <string name="Source"><![CDATA[--!strict
@@ -584,7 +649,7 @@ return Remotes
 ]]></string>
         </Properties>
       </Item>
-      <Item class="ModuleScript" referent="11">
+      <Item class="ModuleScript" referent="13">
         <Properties>
           <string name="Name">Types</string>
           <string name="Source"><![CDATA[--!strict
@@ -675,11 +740,11 @@ return {}
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="12">
+      <Item class="Folder" referent="14">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="13">
+        <Item class="ModuleScript" referent="15">
           <Properties>
             <string name="Name">Format</string>
             <string name="Source"><![CDATA[--!strict
@@ -725,7 +790,7 @@ return Format
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="14">
+        <Item class="ModuleScript" referent="16">
           <Properties>
             <string name="Name">Loader</string>
             <string name="Source"><![CDATA[--!strict
@@ -787,7 +852,7 @@ return Loader
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="15">
+        <Item class="ModuleScript" referent="17">
           <Properties>
             <string name="Name">ReceptionCamera</string>
             <string name="Source"><![CDATA[--!strict
@@ -814,7 +879,7 @@ return ReceptionCamera
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="16">
+        <Item class="ModuleScript" referent="18">
           <Properties>
             <string name="Name">RigAppearance</string>
             <string name="Source"><![CDATA[--!strict
@@ -923,7 +988,7 @@ return RigAppearance
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="17">
+        <Item class="ModuleScript" referent="19">
           <Properties>
             <string name="Name">Signal</string>
             <string name="Source"><![CDATA[--!strict
@@ -978,15 +1043,15 @@ return Signal
       </Item>
     </Item>
   </Item>
-  <Item class="ServerScriptService" referent="18">
+  <Item class="ServerScriptService" referent="20">
     <Properties>
       <string name="Name">ServerScriptService</string>
     </Properties>
-    <Item class="Folder" referent="19">
+    <Item class="Folder" referent="21">
       <Properties>
         <string name="Name">Server</string>
       </Properties>
-      <Item class="Script" referent="20">
+      <Item class="Script" referent="22">
         <Properties>
           <string name="Name">Main</string>
           <token name="RunContext">0</token>
@@ -1009,11 +1074,11 @@ print("[Serveur] Serveur prêt")
 ]]></string>
         </Properties>
       </Item>
-      <Item class="Folder" referent="21">
+      <Item class="Folder" referent="23">
         <Properties>
           <string name="Name">Modules</string>
         </Properties>
-        <Item class="ModuleScript" referent="22">
+        <Item class="ModuleScript" referent="24">
           <Properties>
             <string name="Name">CollisionGroups</string>
             <string name="Source"><![CDATA[--!strict
@@ -1071,7 +1136,7 @@ return CollisionGroups
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="23">
+        <Item class="ModuleScript" referent="25">
           <Properties>
             <string name="Name">DataSchema</string>
             <string name="Source"><![CDATA[--!strict
@@ -1120,6 +1185,9 @@ local TEMPLATE = {
 	LoginStreak = 0,
 	GamepassCache = {}, -- { [gamepassId en texte] = true }
 	ProcessedReceipts = {}, -- { [purchaseId] = true } achats Robux déjà traités
+	ReceiptOrder = {}, -- ordre des achats (pour ne garder que les derniers)
+	LuckyUntil = 0, -- os.time() de fin de la « Nuit chanceuse »
+	CatalogRewards = {}, -- { [palier en texte] = true } récompenses du catalogue reçues
 	TutorialDone = false,
 }
 
@@ -1150,7 +1218,7 @@ return DataSchema
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="24">
+        <Item class="ModuleScript" referent="26">
           <Properties>
             <string name="Name">GuestGenerator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1411,7 +1479,7 @@ return GuestGenerator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="25">
+        <Item class="ModuleScript" referent="27">
           <Properties>
             <string name="Name">IncomeCalculator</string>
             <string name="Source"><![CDATA[--!strict
@@ -1453,7 +1521,7 @@ return IncomeCalculator
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="26">
+        <Item class="ModuleScript" referent="28">
           <Properties>
             <string name="Name">MapBuilder</string>
             <string name="Source"><![CDATA[--!strict
@@ -1742,6 +1810,41 @@ function MapBuilder.build(): Folder
 	spawn.Color = Color3.fromRGB(80, 40, 90)
 	spawn.Parent = map
 
+	-- Panneau du classement mondial, au bord ouest de la place, tourné vers le centre
+	local board = makePart({
+		Name = "Leaderboard",
+		Size = Vector3.new(26, 16, 1),
+		CFrame = CFrame.lookAt(Vector3.new(-104, 9, 0), Vector3.new(0, 9, 0)),
+		Color = Color3.fromRGB(25, 18, 30),
+		Material = Enum.Material.SmoothPlastic,
+		Parent = map,
+	})
+	local boardGui = Instance.new("SurfaceGui")
+	boardGui.Face = Enum.NormalId.Front
+	boardGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	boardGui.PixelsPerStud = 30
+	boardGui.Parent = board
+	local boardTitle = Instance.new("TextLabel")
+	boardTitle.Size = UDim2.fromScale(1, 0.16)
+	boardTitle.BackgroundTransparency = 1
+	boardTitle.TextScaled = true
+	boardTitle.Font = Enum.Font.Creepster
+	boardTitle.TextColor3 = Color3.fromRGB(255, 220, 120)
+	boardTitle.Text = "Meilleurs revenus"
+	boardTitle.Parent = boardGui
+	local boardLines = Instance.new("TextLabel")
+	boardLines.Name = "Lines"
+	boardLines.Position = UDim2.fromScale(0.05, 0.18)
+	boardLines.Size = UDim2.fromScale(0.9, 0.78)
+	boardLines.BackgroundTransparency = 1
+	boardLines.TextScaled = true
+	boardLines.TextXAlignment = Enum.TextXAlignment.Left
+	boardLines.TextYAlignment = Enum.TextYAlignment.Top
+	boardLines.Font = Enum.Font.GothamBold
+	boardLines.TextColor3 = Color3.new(1, 1, 1)
+	boardLines.Text = "Chargement..."
+	boardLines.Parent = boardGui
+
 	local hotels = Instance.new("Folder")
 	hotels.Name = "Hotels"
 	hotels.Parent = map
@@ -1773,7 +1876,7 @@ return MapBuilder
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="27">
+        <Item class="ModuleScript" referent="29">
           <Properties>
             <string name="Name">Notify</string>
             <string name="Source"><![CDATA[--!strict
@@ -1794,7 +1897,7 @@ return Notify
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="28">
+        <Item class="ModuleScript" referent="30">
           <Properties>
             <string name="Name">RigFactory</string>
             <string name="Source"><![CDATA[--!strict
@@ -1883,11 +1986,11 @@ return RigFactory
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="29">
+      <Item class="Folder" referent="31">
         <Properties>
           <string name="Name">Services</string>
         </Properties>
-        <Item class="ModuleScript" referent="30">
+        <Item class="ModuleScript" referent="32">
           <Properties>
             <string name="Name">AnomalyService</string>
             <string name="Source"><![CDATA[--!strict
@@ -1907,6 +2010,7 @@ local GameConfig = require(Config:WaitForChild("GameConfig"))
 local MutationConfig = require(Config:WaitForChild("MutationConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
@@ -1919,6 +2023,8 @@ local AnomalyService = {}
 
 -- (player) : la liste des anomalies du joueur a changé (revenu à recalculer)
 AnomalyService.AnomaliesChanged = Signal.new()
+-- (player, anomalyId) : première capture de cette anomalie (catalogue)
+AnomalyService.Discovered = Signal.new()
 -- (thief, owner, uid) : un joueur a activé « Voler » sur une anomalie
 AnomalyService.StealRequested = Signal.new()
 
@@ -1942,8 +2048,9 @@ function AnomalyService.GetCellCapacity(player: Player): number
 	if not data then
 		return 0
 	end
-	-- Le gamepass « +3 cellules » s'ajoutera ici à l'étape 9
-	return math.min(GameConfig.MaxCells, data.CellsUnlocked)
+	-- Bonus du gamepass « +3 cellules » (attribut posé par MonetizationService)
+	local bonus = if player:GetAttribute("Pass_ExtraCells") then MonetizationConfig.GamePasses.ExtraCells.Cells else 0
+	return math.min(GameConfig.MaxCells, data.CellsUnlocked + bonus)
 end
 
 -- Premier numéro de cellule libre, ou nil si tout est plein
@@ -2077,7 +2184,9 @@ end
 
 -- Vérifie les données au chargement : anomalies inconnues, cellules en double
 local function repairData(player: Player, data: any)
-	local capacity = AnomalyService.GetCellCapacity(player)
+	-- Limite absolue (et pas la capacité actuelle) : la vérification du gamepass
+	-- « +3 cellules » peut arriver après, il ne faut pas déplacer ces anomalies
+	local capacity = GameConfig.MaxCells
 	local used: { [number]: boolean } = {}
 	local toPlace: { any } = {}
 	for uid, owned in data.Anomalies do
@@ -2092,7 +2201,7 @@ local function repairData(player: Player, data: any)
 	end
 	for _, owned in toPlace do
 		owned.Cell = 0
-		owned.Cell = findFreeCell(data, capacity) or 0
+		owned.Cell = findFreeCell(data, AnomalyService.GetCellCapacity(player)) or 0
 	end
 end
 
@@ -2132,7 +2241,10 @@ function AnomalyService.AddAnomaly(player: Player, anomalyId: string, mutation: 
 		return nil
 	end
 	-- Elle compte dans le catalogue même si elle ne rentre pas
-	data.Discovered[anomalyId] = true
+	if not data.Discovered[anomalyId] then
+		data.Discovered[anomalyId] = true
+		AnomalyService.Discovered:Fire(player, anomalyId)
+	end
 
 	local cellIndex = findFreeCell(data, AnomalyService.GetCellCapacity(player))
 	if not cellIndex then
@@ -2222,7 +2334,67 @@ return AnomalyService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="31">
+        <Item class="ModuleScript" referent="33">
+          <Properties>
+            <string name="Name">CatalogService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Catalogue des anomalies (Anomalydex) : publie les anomalies découvertes
+-- (attributs Disc_<Id>) et verse les récompenses de paliers.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
+local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
+local CatalogConfig = require(Config:WaitForChild("CatalogConfig"))
+local Format = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Format"))
+local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Notify"))
+local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local CatalogService = {}
+
+local function countDiscovered(data: any): number
+	local count = 0
+	for _, def in AnomalyConfig.List do
+		if data.Discovered[def.Id] then
+			count += 1
+		end
+	end
+	return count
+end
+
+-- Publie le catalogue et verse les récompenses pas encore reçues
+local function refresh(player: Player)
+	local data = PlayerDataService.GetData(player)
+	if not data then
+		return
+	end
+	for _, def in AnomalyConfig.List do
+		player:SetAttribute(`Disc_{def.Id}`, data.Discovered[def.Id] == true)
+	end
+	local count = countDiscovered(data)
+	player:SetAttribute("DiscoveredCount", count)
+	for _, reward in CatalogConfig.Rewards do
+		local key = tostring(reward.Count)
+		if count >= reward.Count and not data.CatalogRewards[key] then
+			data.CatalogRewards[key] = true
+			PlayerDataService.AddMoney(player, reward.Money)
+			Notify.send(player, `Catalogue : {reward.Count} anomalies découvertes ! +{Format.money(reward.Money)}`, "Good")
+		end
+	end
+end
+
+function CatalogService.Init(_self: typeof(CatalogService))
+	PlayerDataService.DataLoaded:Connect(refresh)
+	AnomalyService.Discovered:Connect(refresh)
+end
+
+return CatalogService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="34">
           <Properties>
             <string name="Name">DebugService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2232,6 +2404,8 @@ return AnomalyService
 --   !prochain anomalie        le prochain client sera une anomalie
 --   !prochain normal          le prochain client sera un vrai client
 --   !prochain TheOwner        le prochain client sera cette anomalie précise
+--   !pass DoubleMoney         simule un gamepass (DoubleMoney ou ExtraCells), jusqu'au départ
+--   !chance                   lance une « Nuit chanceuse » de 10 min
 --   !reset                    remet tes données à zéro
 
 local Players = game:GetService("Players")
@@ -2303,6 +2477,27 @@ commands.prochain = function(player, args)
 	Notify.send(player, "Prochain client réglé (debug)", "Info")
 end
 
+commands.pass = function(player, args)
+	local name = args[1]
+	if name ~= "DoubleMoney" and name ~= "ExtraCells" then
+		Notify.send(player, "Usage : !pass DoubleMoney | ExtraCells", "Bad")
+		return
+	end
+	player:SetAttribute(`Pass_{name}`, true)
+	AnomalyService.RefreshCells(player)
+	AnomalyService.AnomaliesChanged:Fire(player)
+	Notify.send(player, `Gamepass {name} simulé (debug)`, "Good")
+end
+
+commands.chance = function(player)
+	local data = PlayerDataService.GetData(player)
+	if data then
+		data.LuckyUntil = os.time() + 600
+		player:SetAttribute("LuckyUntil", data.LuckyUntil)
+		Notify.send(player, "Nuit chanceuse lancée (debug)", "Good")
+	end
+end
+
 commands.reset = function(player)
 	PlayerDataService.ResetData(player)
 end
@@ -2337,7 +2532,7 @@ return DebugService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="32">
+        <Item class="ModuleScript" referent="35">
           <Properties>
             <string name="Name">GuestService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2360,6 +2555,7 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
@@ -2662,8 +2858,13 @@ end
 
 -- Un client complet : arrivée, attente de la décision, résultat
 local function serveOneGuest(session: Session)
-	local options = session.forceNext
+	local options: GuestGenerator.Options = session.forceNext or {}
 	session.forceNext = nil
+	-- « Nuit chanceuse » (produit Robux) : anomalies rares plus fréquentes
+	local data = PlayerDataService.GetData(session.player)
+	if data and data.LuckyUntil > os.time() then
+		options.RarityLuck = MonetizationConfig.Products.LuckyNight.RarityLuck
+	end
 	local profile = GuestGenerator.generate(rng, options)
 
 	nextToken += 1
@@ -2808,7 +3009,7 @@ return GuestService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="33">
+        <Item class="ModuleScript" referent="36">
           <Properties>
             <string name="Name">HotelService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2942,7 +3143,7 @@ return HotelService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="34">
+        <Item class="ModuleScript" referent="37">
           <Properties>
             <string name="Name">IncomeService</string>
             <string name="Source"><![CDATA[--!strict
@@ -2991,8 +3192,9 @@ function IncomeService.GetIncome(player: Player): number
 	if not data then
 		return 0
 	end
-	-- Le gamepass « Argent x2 » s'ajoutera ici à l'étape 9
-	local multiplier = data.RebirthMultiplier * getDebuffMultiplier(player)
+	-- Gamepass « Argent x2 » : attribut posé par MonetizationService
+	local passMultiplier = if player:GetAttribute("Pass_DoubleMoney") then 2 else 1
+	local multiplier = data.RebirthMultiplier * getDebuffMultiplier(player) * passMultiplier
 	return IncomeCalculator.total(data.Anomalies, multiplier)
 end
 
@@ -3027,7 +3229,161 @@ return IncomeService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="35">
+        <Item class="ModuleScript" referent="38">
+          <Properties>
+            <string name="Name">LeaderboardService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Classements :
+--  - dans le serveur : liste des joueurs (en haut à droite) avec revenu/s et anomalies
+--  - mondial : panneau sur la place, meilleurs revenus/s de tous les temps
+--    (OrderedDataStore ; indisponible dans un fichier Studio non publié)
+
+local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Format = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Format"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local STAT_INCOME = "Revenu/s"
+local STAT_ANOMALIES = "Anomalies"
+local LOCAL_REFRESH = 2 -- secondes
+local GLOBAL_WRITE = 120 -- secondes entre deux envois d'un joueur au classement mondial
+local GLOBAL_READ = 60 -- secondes entre deux mises à jour du panneau
+local GLOBAL_SIZE = 10
+
+local LeaderboardService = {}
+
+local lastWritten: { [Player]: number } = {}
+local nameCache: { [number]: string } = {}
+
+local function setupLeaderstats(player: Player)
+	local folder = Instance.new("Folder")
+	folder.Name = "leaderstats" -- nom imposé par Roblox
+	local income = Instance.new("IntValue")
+	income.Name = STAT_INCOME
+	income.Parent = folder
+	local anomalies = Instance.new("IntValue")
+	anomalies.Name = STAT_ANOMALIES
+	anomalies.Parent = folder
+	folder.Parent = player
+end
+
+local function updateLeaderstats(player: Player)
+	local folder = player:FindFirstChild("leaderstats")
+	local data = PlayerDataService.GetData(player)
+	if not folder or not data then
+		return
+	end
+	local count = 0
+	for _ in data.Anomalies do
+		count += 1
+	end
+	local income = folder:FindFirstChild(STAT_INCOME)
+	local anomalies = folder:FindFirstChild(STAT_ANOMALIES)
+	if income and income:IsA("IntValue") then
+		income.Value = math.floor((player:GetAttribute("Income") :: number?) or 0)
+	end
+	if anomalies and anomalies:IsA("IntValue") then
+		anomalies.Value = count
+	end
+end
+
+local function getName(userId: number): string
+	if nameCache[userId] then
+		return nameCache[userId]
+	end
+	local ok, name = pcall(function()
+		return Players:GetNameFromUserIdAsync(userId)
+	end)
+	local result = if ok then name else "?"
+	nameCache[userId] = result
+	return result
+end
+
+local function getBoardLabel(): TextLabel?
+	local map = workspace:FindFirstChild("Map")
+	local board = map and map:FindFirstChild("Leaderboard")
+	local label = board and board:FindFirstChild("Lines", true)
+	return if label and label:IsA("TextLabel") then label else nil
+end
+
+function LeaderboardService.Init(_self: typeof(LeaderboardService))
+	PlayerDataService.DataLoaded:Connect(setupLeaderstats)
+	Players.PlayerRemoving:Connect(function(player)
+		lastWritten[player] = nil
+	end)
+end
+
+function LeaderboardService.Start(_self: typeof(LeaderboardService))
+	-- Classement du serveur
+	task.spawn(function()
+		while true do
+			for _, player in Players:GetPlayers() do
+				updateLeaderstats(player)
+			end
+			task.wait(LOCAL_REFRESH)
+		end
+	end)
+
+	-- Classement mondial
+	local ok, store = pcall(function()
+		return DataStoreService:GetOrderedDataStore("BestIncome_v1")
+	end)
+	local label = getBoardLabel()
+	if not ok then
+		if label then
+			label.Text = "Classement mondial disponible une fois le jeu publié"
+		end
+		return
+	end
+
+	local lastRead = 0
+	while true do
+		-- Envoi des revenus des joueurs (on garde leur meilleur score)
+		for _, player in Players:GetPlayers() do
+			local income = math.floor((player:GetAttribute("Income") :: number?) or 0)
+			local last = lastWritten[player] or 0
+			if income > 0 and os.clock() - last > GLOBAL_WRITE then
+				lastWritten[player] = os.clock()
+				pcall(function()
+					store:UpdateAsync(tostring(player.UserId), function(old)
+						return math.max(old or 0, income)
+					end)
+				end)
+			end
+		end
+
+		-- Mise à jour du panneau
+		if os.clock() - lastRead > GLOBAL_READ then
+			lastRead = os.clock()
+			local success, pages = pcall(function()
+				return store:GetSortedAsync(false, GLOBAL_SIZE)
+			end)
+			label = getBoardLabel()
+			if label then
+				if success then
+					local lines = {}
+					for rank, entry in pages:GetCurrentPage() do
+						local userId = tonumber(entry.key)
+						local name = if userId then getName(userId) else "?"
+						table.insert(lines, `{rank}. {name} — {Format.money(entry.value)}/s`)
+					end
+					label.Text = if #lines > 0 then table.concat(lines, "\n") else "Personne pour l'instant !"
+				else
+					label.Text = "Classement mondial disponible une fois le jeu publié"
+				end
+			end
+		end
+		task.wait(10)
+	end
+end
+
+return LeaderboardService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="39">
           <Properties>
             <string name="Name">LockService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3164,7 +3520,148 @@ return LockService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="36">
+        <Item class="ModuleScript" referent="40">
+          <Properties>
+            <string name="Name">MonetizationService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Achats Robux : gamepasses (permanents) et produits (répétables).
+-- Les gamepasses possédés sont publiés en attributs Pass_<nom> (lus par les autres services).
+-- ProcessReceipt est idempotent : chaque achat est enregistré dans les données
+-- et on ne confirme à Roblox (PurchaseGranted) qu'une fois la sauvegarde faite.
+
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
+local Format = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Format"))
+local Notify = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Modules"):WaitForChild("Notify"))
+local AnomalyService = require(script.Parent:WaitForChild("AnomalyService"))
+local IncomeService = require(script.Parent:WaitForChild("IncomeService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local MAX_RECEIPTS_KEPT = 100 -- achats mémorisés par joueur (anti-doublon)
+local SAVE_TIMEOUT = 15
+
+local MonetizationService = {}
+
+-- Applique les effets d'un gamepass possédé
+local function grantPass(player: Player, passName: string)
+	if player:GetAttribute(`Pass_{passName}`) then
+		return
+	end
+	player:SetAttribute(`Pass_{passName}`, true)
+	if passName == "ExtraCells" then
+		AnomalyService.RefreshCells(player)
+	end
+	AnomalyService.AnomaliesChanged:Fire(player) -- recalcule le revenu
+end
+
+local function passNameFromId(passId: number): string?
+	for name, pass in MonetizationConfig.GamePasses do
+		if pass.Id ~= 0 and pass.Id == passId then
+			return name
+		end
+	end
+	return nil
+end
+
+-- À la connexion : vérifie les gamepasses (avec le cache si Roblox ne répond pas)
+local function checkPasses(player: Player, data: any)
+	for name, pass in MonetizationConfig.GamePasses do
+		if pass.Id ~= 0 then
+			local key = tostring(pass.Id)
+			local ok, owns = pcall(function()
+				return MarketplaceService:UserOwnsGamePassAsync(player.UserId, pass.Id)
+			end)
+			if ok then
+				data.GamepassCache[key] = owns or nil
+			end
+			if data.GamepassCache[key] and player.Parent == Players then
+				grantPass(player, name)
+			end
+		end
+	end
+end
+
+-- Effet d'un produit acheté. Renvoie false si l'Id est inconnu.
+local function applyProduct(player: Player, data: any, productId: number): boolean
+	local products = MonetizationConfig.Products
+	if products.MoneyPack.Id ~= 0 and productId == products.MoneyPack.Id then
+		local pack = products.MoneyPack
+		local amount = math.max(pack.Minimum, math.floor(IncomeService.GetIncome(player) * pack.IncomeSeconds))
+		PlayerDataService.AddMoney(player, amount)
+		Notify.send(player, `Merci ! +{Format.money(amount)}`, "Good")
+		return true
+	elseif products.LuckyNight.Id ~= 0 and productId == products.LuckyNight.Id then
+		local night = products.LuckyNight
+		-- Si une nuit est déjà en cours, on prolonge
+		data.LuckyUntil = math.max(data.LuckyUntil, os.time()) + night.Duration
+		player:SetAttribute("LuckyUntil", data.LuckyUntil)
+		Notify.send(player, "Nuit chanceuse ! Anomalies rares x3 pendant 10 min", "Good")
+		return true
+	end
+	return false
+end
+
+local function processReceipt(receipt: any): Enum.ProductPurchaseDecision
+	local player = Players:GetPlayerByUserId(receipt.PlayerId)
+	local data = player and PlayerDataService.GetData(player)
+	if not player or not data then
+		-- Le joueur n'est pas (encore) là : Roblox réessaiera plus tard
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local purchaseId = tostring(receipt.PurchaseId)
+	if not data.ProcessedReceipts[purchaseId] then
+		if not applyProduct(player, data, receipt.ProductId) then
+			warn(`[Monetization] Produit inconnu : {receipt.ProductId}`)
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		data.ProcessedReceipts[purchaseId] = true
+		table.insert(data.ReceiptOrder, purchaseId)
+		while #data.ReceiptOrder > MAX_RECEIPTS_KEPT do
+			local oldest = table.remove(data.ReceiptOrder, 1)
+			data.ProcessedReceipts[oldest] = nil
+		end
+	end
+
+	-- On attend que l'achat soit réellement sauvegardé avant de confirmer
+	local saved = PlayerDataService.SaveAndWait(player, function(lastSaved)
+		return lastSaved.ProcessedReceipts ~= nil and lastSaved.ProcessedReceipts[purchaseId] == true
+	end, SAVE_TIMEOUT)
+	if saved then
+		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
+	return Enum.ProductPurchaseDecision.NotProcessedYet
+end
+
+function MonetizationService.Init(_self: typeof(MonetizationService))
+	PlayerDataService.DataLoaded:Connect(function(player, data)
+		player:SetAttribute("LuckyUntil", data.LuckyUntil)
+		checkPasses(player, data)
+	end)
+
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, purchased)
+		local name = passNameFromId(passId)
+		local data = PlayerDataService.GetData(player)
+		if purchased and name and data then
+			data.GamepassCache[tostring(passId)] = true
+			grantPass(player, name)
+			Notify.send(player, `Merci ! Gamepass « {MonetizationConfig.GamePasses[name].DisplayName} » activé`, "Good")
+		end
+	end)
+
+	MarketplaceService.ProcessReceipt = processReceipt
+end
+
+return MonetizationService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="41">
           <Properties>
             <string name="Name">PlayerDataService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3286,6 +3783,31 @@ function PlayerDataService.TrySpend(player: Player, amount: number): boolean
 	return true
 end
 
+-- Sauvegarde tout de suite et attend que check(dernières données sauvegardées)
+-- soit vrai. Sert aux achats Robux : on ne confirme qu'une fois l'achat sauvegardé.
+function PlayerDataService.SaveAndWait(player: Player, check: (any) -> boolean, timeout: number): boolean
+	local profile = profiles[player]
+	if not profile then
+		return false
+	end
+	if profile.LastSavedData and check(profile.LastSavedData) then
+		return true
+	end
+	local saved = false
+	local connection = profile.OnAfterSave:Connect(function(lastSavedData)
+		if check(lastSavedData) then
+			saved = true
+		end
+	end)
+	profile:Save()
+	local elapsed = 0
+	while not saved and elapsed < timeout and profile:IsActive() do
+		elapsed += task.wait(0.2)
+	end
+	connection:Disconnect()
+	return saved
+end
+
 -- Remet les données à zéro (commande debug) puis expulse le joueur
 function PlayerDataService.ResetData(player: Player)
 	local profile = profiles[player]
@@ -3317,7 +3839,7 @@ return PlayerDataService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="37">
+        <Item class="ModuleScript" referent="42">
           <Properties>
             <string name="Name">ShopService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3406,7 +3928,7 @@ return ShopService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="38">
+        <Item class="ModuleScript" referent="43">
           <Properties>
             <string name="Name">StealService</string>
             <string name="Source"><![CDATA[--!strict
@@ -3665,11 +4187,11 @@ return StealService
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="39">
+      <Item class="Folder" referent="44">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="40">
+        <Item class="ModuleScript" referent="45">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -3733,11 +4255,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="41">
+      <Item class="Folder" referent="46">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="42">
+        <Item class="ModuleScript" referent="47">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -5864,23 +6386,206 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="43">
+  <Item class="StarterPlayer" referent="48">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="44">
+    <Item class="StarterPlayerScripts" referent="49">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="45">
+      <Item class="Folder" referent="50">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="46">
+        <Item class="Folder" referent="51">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="47">
+          <Item class="ModuleScript" referent="52">
+            <Properties>
+              <string name="Name">CatalogController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Catalogue des anomalies (Anomalydex) : toutes les anomalies, en silhouette
+-- tant qu'elles n'ont pas été capturées, et la prochaine récompense.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
+local CatalogConfig = require(Config:WaitForChild("CatalogConfig"))
+local RarityConfig = require(Config:WaitForChild("RarityConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Util = script.Parent.Parent:WaitForChild("Util")
+local UI = require(Util:WaitForChild("UI"))
+local HudBar = require(Util:WaitForChild("HudBar"))
+
+local player = Players.LocalPlayer
+
+local CatalogController = {}
+
+local gui: ScreenGui
+local header: TextLabel
+local cards: { [string]: { frame: Frame, name: TextLabel, info: TextLabel, stroke: UIStroke } } = {}
+
+-- Anomalies triées par rareté puis par revenu
+local function sortedAnomalies()
+	local list = table.clone(AnomalyConfig.List)
+	table.sort(list, function(a, b)
+		local ra, rb = RarityConfig[a.Rarity].Order, RarityConfig[b.Rarity].Order
+		if ra ~= rb then
+			return ra < rb
+		end
+		return a.Income < b.Income
+	end)
+	return list
+end
+
+local function buildGui()
+	gui = UI.new("ScreenGui", {
+		Name = "Catalog",
+		ResetOnSpawn = false,
+		Enabled = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local window = UI.new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.45),
+		Size = UDim2.fromScale(0.8, 0.78),
+		BackgroundColor3 = Color3.fromRGB(25, 18, 30),
+		Parent = gui,
+	}, {
+		UI.corner(18),
+		UI.stroke(Color3.fromRGB(170, 80, 255), 2),
+		UI.padding(10),
+		UI.new("UISizeConstraint", { MaxSize = Vector2.new(720, 520), MinSize = Vector2.new(320, 260) }),
+	})
+	header = UI.new("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, -50, 0, 40),
+		Font = Enum.Font.FredokaOne,
+		TextScaled = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = Color3.fromRGB(220, 180, 255),
+		Text = "📖 Catalogue",
+		Parent = window,
+	})
+	UI.new("TextButton", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromScale(1, 0),
+		Size = UDim2.fromOffset(40, 40),
+		BackgroundColor3 = Color3.fromRGB(70, 60, 80),
+		Font = Enum.Font.GothamBold,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Text = "X",
+		Parent = window,
+	}, { UI.corner(8) }).Activated:Connect(function()
+		gui.Enabled = false
+	end)
+
+	local grid = UI.new("ScrollingFrame", {
+		Position = UDim2.fromOffset(0, 48),
+		Size = UDim2.new(1, 0, 1, -48),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		Parent = window,
+	}, {
+		UI.new("UIGridLayout", {
+			CellSize = UDim2.new(0.25, -8, 0, 96),
+			CellPadding = UDim2.fromOffset(8, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	for index, def in sortedAnomalies() do
+		local stroke = UI.stroke(Color3.fromRGB(60, 60, 60), 2)
+		local frame = UI.new("Frame", {
+			LayoutOrder = index,
+			BackgroundColor3 = Color3.fromRGB(40, 32, 48),
+			Parent = grid,
+		}, { UI.corner(10), UI.padding(6), stroke })
+		local name = UI.new("TextLabel", {
+			BackgroundTransparency = 1,
+			Size = UDim2.fromScale(1, 0.4),
+			Font = Enum.Font.GothamBold,
+			TextScaled = true,
+			TextWrapped = true,
+			TextColor3 = Color3.new(1, 1, 1),
+			Parent = frame,
+		}, { UI.textSize(8, 18) })
+		local info = UI.new("TextLabel", {
+			BackgroundTransparency = 1,
+			Position = UDim2.fromScale(0, 0.42),
+			Size = UDim2.fromScale(1, 0.58),
+			Font = Enum.Font.Gotham,
+			TextScaled = true,
+			TextWrapped = true,
+			TextColor3 = Color3.fromRGB(200, 190, 210),
+			Parent = frame,
+		}, { UI.textSize(7, 14) })
+		cards[def.Id] = { frame = frame, name = name, info = info, stroke = stroke }
+	end
+end
+
+local function refresh()
+	local count = 0
+	for _, def in AnomalyConfig.List do
+		local card = cards[def.Id]
+		local rarity = RarityConfig[def.Rarity]
+		if player:GetAttribute(`Disc_{def.Id}`) then
+			count += 1
+			card.name.Text = def.DisplayName
+			card.name.TextColor3 = rarity.Color
+			card.info.Text = `{rarity.DisplayName} • {Format.money(def.Income)}/s\n{def.Description}`
+			card.stroke.Color = rarity.Color
+			card.frame.BackgroundColor3 = Color3.fromRGB(40, 32, 48)
+		else
+			-- Silhouette : on ne montre que la rareté
+			card.name.Text = "???"
+			card.name.TextColor3 = Color3.fromRGB(120, 120, 120)
+			card.info.Text = `{rarity.DisplayName}\nPas encore capturée`
+			card.stroke.Color = Color3.fromRGB(60, 60, 60)
+			card.frame.BackgroundColor3 = Color3.fromRGB(15, 12, 18)
+		end
+	end
+	local nextReward = nil
+	for _, reward in CatalogConfig.Rewards do
+		if count < reward.Count then
+			nextReward = reward
+			break
+		end
+	end
+	header.Text = `📖 Catalogue {count}/{#AnomalyConfig.List}`
+		.. if nextReward then `  •  à {nextReward.Count} : +{Format.money(nextReward.Money)}` else "  •  complet !"
+end
+
+function CatalogController.Start(_self: typeof(CatalogController))
+	buildGui()
+	refresh()
+	local button = HudBar.addButton("Catalogue", 0, Color3.fromRGB(110, 60, 160))
+	button.Text = "📖 Catalogue"
+	button.Activated:Connect(function()
+		gui.Enabled = not gui.Enabled
+		refresh()
+	end)
+	player.AttributeChanged:Connect(function(name)
+		if string.sub(name, 1, 5) == "Disc_" then
+			refresh()
+		end
+	end)
+end
+
+return CatalogController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="53">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6055,6 +6760,11 @@ local function updateIncomeText()
 	else
 		incomeLabel.TextColor3 = Color3.fromRGB(200, 255, 200)
 	end
+	local luckyUntil = player:GetAttribute("LuckyUntil") :: number?
+	local luckyLeft = if luckyUntil then luckyUntil - workspace:GetServerTimeNow() else 0
+	if luckyLeft > 0 then
+		text ..= `  🍀 {math.floor(luckyLeft / 60)}:{string.format("%02d", math.floor(luckyLeft % 60))}`
+	end
 	incomeLabel.Text = text
 end
 
@@ -6098,7 +6808,7 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="48">
+          <Item class="ModuleScript" referent="54">
             <Properties>
               <string name="Name">LockController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6147,7 +6857,7 @@ return LockController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="49">
+          <Item class="ModuleScript" referent="55">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6190,7 +6900,7 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="50">
+          <Item class="ModuleScript" referent="56">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6678,7 +7388,7 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="51">
+          <Item class="ModuleScript" referent="57">
             <Properties>
               <string name="Name">ShopController</string>
               <string name="Source"><![CDATA[--!strict
@@ -6693,6 +7403,8 @@ local Config = Shared:WaitForChild("Config")
 local Remotes = require(Shared:WaitForChild("Remotes"))
 local GameConfig = require(Config:WaitForChild("GameConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
+local MarketplaceService = game:GetService("MarketplaceService")
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local Util = script.Parent.Parent:WaitForChild("Util")
 local UI = require(Util:WaitForChild("UI"))
@@ -6708,6 +7420,8 @@ type Row = {
 	order: number,
 	-- Renvoie : titre, description, prix (nil = rien à acheter), texte si pas de prix
 	describe: () -> (string, string, number?, string),
+	-- Achat en Robux (gamepass ou produit) au lieu de l'argent du jeu
+	robux: { kind: "Pass" | "Product", id: number, passName: string? }?,
 }
 
 local rows: { Row } = {}
@@ -6755,6 +7469,33 @@ local function buildRows()
 				return `{upgrade.DisplayName} (niv. {level}/{#upgrade.Prices})`, upgrade.Description, price, "MAX"
 			end,
 		})
+	end
+	-- Achats Robux (cachés tant que leur Id n'est pas renseigné dans MonetizationConfig)
+	for passName, pass in MonetizationConfig.GamePasses do
+		if pass.Id ~= 0 then
+			table.insert(rows, {
+				category = "Robux",
+				itemId = passName,
+				order = 30,
+				describe = function()
+					return `⭐ {pass.DisplayName}`, pass.Description, nil, "Acheté"
+				end,
+				robux = { kind = "Pass", id = pass.Id, passName = passName },
+			})
+		end
+	end
+	for _, product in MonetizationConfig.Products do
+		if product.Id ~= 0 then
+			table.insert(rows, {
+				category = "Robux",
+				itemId = tostring(product.Id),
+				order = 40,
+				describe = function()
+					return `⭐ {product.DisplayName}`, product.Description, nil, ""
+				end,
+				robux = { kind = "Product", id = product.Id },
+			})
+		end
 	end
 	table.sort(rows, function(a, b)
 		return a.order < b.order
@@ -6805,6 +7546,17 @@ local function createRowWidgets()
 			Parent = frame,
 		}, { UI.corner(10), UI.padding(4), UI.textSize(10, 22) })
 		button.Activated:Connect(function()
+			local robux = row.robux
+			if robux then
+				if robux.kind == "Pass" then
+					if not attribute(`Pass_{robux.passName}`) then
+						MarketplaceService:PromptGamePassPurchase(player, robux.id)
+					end
+				else
+					MarketplaceService:PromptProductPurchase(player, robux.id)
+				end
+				return
+			end
 			local _, _, price = row.describe()
 			if price then
 				Remotes.getEvent("ShopBuy"):FireServer(row.category, row.itemId)
@@ -6823,6 +7575,14 @@ local function refresh()
 	for _, w in widgets do
 		local title, _, price, doneText = w.row.describe()
 		w.title.Text = title
+		local robux = w.row.robux
+		if robux then
+			local owned = robux.kind == "Pass" and attribute(`Pass_{robux.passName}`) == true
+			w.button.Text = if owned then doneText else "Robux"
+			w.button.AutoButtonColor = not owned
+			w.button.BackgroundColor3 = if owned then Color3.fromRGB(70, 70, 80) else Color3.fromRGB(0, 150, 90)
+			continue
+		end
 		w.button.Text = if price then Format.money(price) else doneText
 		w.button.AutoButtonColor = price ~= nil
 		w.button.BackgroundColor3 = if price == nil
@@ -6902,7 +7662,8 @@ function ShopController.Start(_self: typeof(ShopController))
 
 	-- Mise à jour quand l'argent ou les possessions changent
 	player.AttributeChanged:Connect(function(name)
-		if name == "Money" or name == "CellsUnlocked" or string.sub(name, 1, 5) == "Tool_" or string.sub(name, 1, 4) == "Sec_" then
+		local prefix4, prefix5 = string.sub(name, 1, 4), string.sub(name, 1, 5)
+		if name == "Money" or name == "CellsUnlocked" or prefix5 == "Tool_" or prefix4 == "Sec_" or prefix5 == "Pass_" then
 			refresh()
 		end
 	end)
@@ -6913,7 +7674,7 @@ return ShopController
             </Properties>
           </Item>
         </Item>
-        <Item class="LocalScript" referent="52">
+        <Item class="LocalScript" referent="58">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -6931,11 +7692,11 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="53">
+        <Item class="Folder" referent="59">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="54">
+          <Item class="ModuleScript" referent="60">
             <Properties>
               <string name="Name">HudBar</string>
               <string name="Source"><![CDATA[--!strict
@@ -6967,7 +7728,7 @@ return HudBar
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="55">
+          <Item class="ModuleScript" referent="61">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -7031,7 +7792,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="56">
+  <Item class="Workspace" referent="62">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

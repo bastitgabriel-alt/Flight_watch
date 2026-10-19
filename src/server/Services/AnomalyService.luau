@@ -15,6 +15,7 @@ local GameConfig = require(Config:WaitForChild("GameConfig"))
 local MutationConfig = require(Config:WaitForChild("MutationConfig"))
 local RarityConfig = require(Config:WaitForChild("RarityConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
@@ -27,6 +28,8 @@ local AnomalyService = {}
 
 -- (player) : la liste des anomalies du joueur a changé (revenu à recalculer)
 AnomalyService.AnomaliesChanged = Signal.new()
+-- (player, anomalyId) : première capture de cette anomalie (catalogue)
+AnomalyService.Discovered = Signal.new()
 -- (thief, owner, uid) : un joueur a activé « Voler » sur une anomalie
 AnomalyService.StealRequested = Signal.new()
 
@@ -50,8 +53,9 @@ function AnomalyService.GetCellCapacity(player: Player): number
 	if not data then
 		return 0
 	end
-	-- Le gamepass « +3 cellules » s'ajoutera ici à l'étape 9
-	return math.min(GameConfig.MaxCells, data.CellsUnlocked)
+	-- Bonus du gamepass « +3 cellules » (attribut posé par MonetizationService)
+	local bonus = if player:GetAttribute("Pass_ExtraCells") then MonetizationConfig.GamePasses.ExtraCells.Cells else 0
+	return math.min(GameConfig.MaxCells, data.CellsUnlocked + bonus)
 end
 
 -- Premier numéro de cellule libre, ou nil si tout est plein
@@ -185,7 +189,9 @@ end
 
 -- Vérifie les données au chargement : anomalies inconnues, cellules en double
 local function repairData(player: Player, data: any)
-	local capacity = AnomalyService.GetCellCapacity(player)
+	-- Limite absolue (et pas la capacité actuelle) : la vérification du gamepass
+	-- « +3 cellules » peut arriver après, il ne faut pas déplacer ces anomalies
+	local capacity = GameConfig.MaxCells
 	local used: { [number]: boolean } = {}
 	local toPlace: { any } = {}
 	for uid, owned in data.Anomalies do
@@ -200,7 +206,7 @@ local function repairData(player: Player, data: any)
 	end
 	for _, owned in toPlace do
 		owned.Cell = 0
-		owned.Cell = findFreeCell(data, capacity) or 0
+		owned.Cell = findFreeCell(data, AnomalyService.GetCellCapacity(player)) or 0
 	end
 end
 
@@ -240,7 +246,10 @@ function AnomalyService.AddAnomaly(player: Player, anomalyId: string, mutation: 
 		return nil
 	end
 	-- Elle compte dans le catalogue même si elle ne rentre pas
-	data.Discovered[anomalyId] = true
+	if not data.Discovered[anomalyId] then
+		data.Discovered[anomalyId] = true
+		AnomalyService.Discovered:Fire(player, anomalyId)
+	end
 
 	local cellIndex = findFreeCell(data, AnomalyService.GetCellCapacity(player))
 	if not cellIndex then

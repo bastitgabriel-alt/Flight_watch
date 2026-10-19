@@ -117,6 +117,31 @@ function PlayerDataService.TrySpend(player: Player, amount: number): boolean
 	return true
 end
 
+-- Sauvegarde tout de suite et attend que check(dernières données sauvegardées)
+-- soit vrai. Sert aux achats Robux : on ne confirme qu'une fois l'achat sauvegardé.
+function PlayerDataService.SaveAndWait(player: Player, check: (any) -> boolean, timeout: number): boolean
+	local profile = profiles[player]
+	if not profile then
+		return false
+	end
+	if profile.LastSavedData and check(profile.LastSavedData) then
+		return true
+	end
+	local saved = false
+	local connection = profile.OnAfterSave:Connect(function(lastSavedData)
+		if check(lastSavedData) then
+			saved = true
+		end
+	end)
+	profile:Save()
+	local elapsed = 0
+	while not saved and elapsed < timeout and profile:IsActive() do
+		elapsed += task.wait(0.2)
+	end
+	connection:Disconnect()
+	return saved
+end
+
 -- Remet les données à zéro (commande debug) puis expulse le joueur
 function PlayerDataService.ResetData(player: Player)
 	local profile = profiles[player]

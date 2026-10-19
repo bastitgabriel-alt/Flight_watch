@@ -10,6 +10,8 @@ local Config = Shared:WaitForChild("Config")
 local Remotes = require(Shared:WaitForChild("Remotes"))
 local GameConfig = require(Config:WaitForChild("GameConfig"))
 local ShopConfig = require(Config:WaitForChild("ShopConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
+local MarketplaceService = game:GetService("MarketplaceService")
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local Util = script.Parent.Parent:WaitForChild("Util")
 local UI = require(Util:WaitForChild("UI"))
@@ -25,6 +27,8 @@ type Row = {
 	order: number,
 	-- Renvoie : titre, description, prix (nil = rien à acheter), texte si pas de prix
 	describe: () -> (string, string, number?, string),
+	-- Achat en Robux (gamepass ou produit) au lieu de l'argent du jeu
+	robux: { kind: "Pass" | "Product", id: number, passName: string? }?,
 }
 
 local rows: { Row } = {}
@@ -72,6 +76,33 @@ local function buildRows()
 				return `{upgrade.DisplayName} (niv. {level}/{#upgrade.Prices})`, upgrade.Description, price, "MAX"
 			end,
 		})
+	end
+	-- Achats Robux (cachés tant que leur Id n'est pas renseigné dans MonetizationConfig)
+	for passName, pass in MonetizationConfig.GamePasses do
+		if pass.Id ~= 0 then
+			table.insert(rows, {
+				category = "Robux",
+				itemId = passName,
+				order = 30,
+				describe = function()
+					return `⭐ {pass.DisplayName}`, pass.Description, nil, "Acheté"
+				end,
+				robux = { kind = "Pass", id = pass.Id, passName = passName },
+			})
+		end
+	end
+	for _, product in MonetizationConfig.Products do
+		if product.Id ~= 0 then
+			table.insert(rows, {
+				category = "Robux",
+				itemId = tostring(product.Id),
+				order = 40,
+				describe = function()
+					return `⭐ {product.DisplayName}`, product.Description, nil, ""
+				end,
+				robux = { kind = "Product", id = product.Id },
+			})
+		end
 	end
 	table.sort(rows, function(a, b)
 		return a.order < b.order
@@ -122,6 +153,17 @@ local function createRowWidgets()
 			Parent = frame,
 		}, { UI.corner(10), UI.padding(4), UI.textSize(10, 22) })
 		button.Activated:Connect(function()
+			local robux = row.robux
+			if robux then
+				if robux.kind == "Pass" then
+					if not attribute(`Pass_{robux.passName}`) then
+						MarketplaceService:PromptGamePassPurchase(player, robux.id)
+					end
+				else
+					MarketplaceService:PromptProductPurchase(player, robux.id)
+				end
+				return
+			end
 			local _, _, price = row.describe()
 			if price then
 				Remotes.getEvent("ShopBuy"):FireServer(row.category, row.itemId)
@@ -140,6 +182,14 @@ local function refresh()
 	for _, w in widgets do
 		local title, _, price, doneText = w.row.describe()
 		w.title.Text = title
+		local robux = w.row.robux
+		if robux then
+			local owned = robux.kind == "Pass" and attribute(`Pass_{robux.passName}`) == true
+			w.button.Text = if owned then doneText else "Robux"
+			w.button.AutoButtonColor = not owned
+			w.button.BackgroundColor3 = if owned then Color3.fromRGB(70, 70, 80) else Color3.fromRGB(0, 150, 90)
+			continue
+		end
 		w.button.Text = if price then Format.money(price) else doneText
 		w.button.AutoButtonColor = price ~= nil
 		w.button.BackgroundColor3 = if price == nil
@@ -219,7 +269,8 @@ function ShopController.Start(_self: typeof(ShopController))
 
 	-- Mise à jour quand l'argent ou les possessions changent
 	player.AttributeChanged:Connect(function(name)
-		if name == "Money" or name == "CellsUnlocked" or string.sub(name, 1, 5) == "Tool_" or string.sub(name, 1, 4) == "Sec_" then
+		local prefix4, prefix5 = string.sub(name, 1, 4), string.sub(name, 1, 5)
+		if name == "Money" or name == "CellsUnlocked" or prefix5 == "Tool_" or prefix4 == "Sec_" or prefix5 == "Pass_" then
 			refresh()
 		end
 	end)

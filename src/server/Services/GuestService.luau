@@ -18,6 +18,7 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local AnomalyConfig = require(Config:WaitForChild("AnomalyConfig"))
 local EconomyConfig = require(Config:WaitForChild("EconomyConfig"))
 local GuestConfig = require(Config:WaitForChild("GuestConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local RigAppearance = require(Shared:WaitForChild("Util"):WaitForChild("RigAppearance"))
 local GuestGenerator = require(Modules:WaitForChild("GuestGenerator"))
 local IncomeCalculator = require(Modules:WaitForChild("IncomeCalculator"))
@@ -320,8 +321,13 @@ end
 
 -- Un client complet : arrivée, attente de la décision, résultat
 local function serveOneGuest(session: Session)
-	local options = session.forceNext
+	local options: GuestGenerator.Options = session.forceNext or {}
 	session.forceNext = nil
+	-- « Nuit chanceuse » (produit Robux) : anomalies rares plus fréquentes
+	local data = PlayerDataService.GetData(session.player)
+	if data and data.LuckyUntil > os.time() then
+		options.RarityLuck = MonetizationConfig.Products.LuckyNight.RarityLuck
+	end
 	local profile = GuestGenerator.generate(rng, options)
 
 	nextToken += 1

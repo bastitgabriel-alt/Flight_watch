@@ -5,6 +5,8 @@
 --   !prochain anomalie        le prochain client sera une anomalie
 --   !prochain normal          le prochain client sera un vrai client
 --   !prochain TheOwner        le prochain client sera cette anomalie précise
+--   !pass DoubleMoney         simule un gamepass (DoubleMoney ou ExtraCells), jusqu'au départ
+--   !chance                   lance une « Nuit chanceuse » de 10 min
 --   !reset                    remet tes données à zéro
 
 local Players = game:GetService("Players")
@@ -74,6 +76,27 @@ commands.prochain = function(player, args)
 		return
 	end
 	Notify.send(player, "Prochain client réglé (debug)", "Info")
+end
+
+commands.pass = function(player, args)
+	local name = args[1]
+	if name ~= "DoubleMoney" and name ~= "ExtraCells" then
+		Notify.send(player, "Usage : !pass DoubleMoney | ExtraCells", "Bad")
+		return
+	end
+	player:SetAttribute(`Pass_{name}`, true)
+	AnomalyService.RefreshCells(player)
+	AnomalyService.AnomaliesChanged:Fire(player)
+	Notify.send(player, `Gamepass {name} simulé (debug)`, "Good")
+end
+
+commands.chance = function(player)
+	local data = PlayerDataService.GetData(player)
+	if data then
+		data.LuckyUntil = os.time() + 600
+		player:SetAttribute("LuckyUntil", data.LuckyUntil)
+		Notify.send(player, "Nuit chanceuse lancée (debug)", "Good")
+	end
 end
 
 commands.reset = function(player)
