@@ -2,6 +2,7 @@
 -- Sons (musique d'ambiance, sonnette, capture, alarme de vol, événements...)
 -- et petit « jumpscare » (flash rouge) quand une anomalie s'infiltre.
 
+local ContentProvider = game:GetService("ContentProvider")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
@@ -45,6 +46,20 @@ function SoundController.Start(_self: typeof(SoundController))
 		sound.Looped = entry.Looped == true
 		sound.Parent = SoundService
 		sounds[name] = sound
+		-- Nos sons ne se chargent que dans le jeu publié (pas dans un fichier ouvert
+		-- depuis l'ordinateur) : s'ils échouent, on met le son Roblox de secours.
+		if entry.Id ~= "" then
+			task.spawn(function()
+				ContentProvider:PreloadAsync({ sound }, function(_, status)
+					if status == Enum.AssetFetchStatus.Failure then
+						warn(`[Son] {name} n'a pas pu se charger ({entry.Id})`)
+						if entry.Fallback then
+							sound.SoundId = entry.Fallback
+						end
+					end
+				end)
+			end)
+		end
 	end
 
 	local gui = UI.new("ScreenGui", {
