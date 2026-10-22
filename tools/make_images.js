@@ -85,7 +85,11 @@ function blocky(o) {
       g += `<circle cx="0" cy="${hy + 8}" r="9" fill="#111"/>`;
       g += `<path d="M -18 ${hy + 38} l 6 14 l 6 -14 M 6 ${hy + 38} l 6 14 l 6 -14" fill="#fff"/>`;
     }
-    if (!o.faceless) {
+    if (o.calm) {
+      // Visage normal (déguisement)
+      g += `<circle cx="-20" cy="${hy - 10}" r="7" fill="#1a1a1a"/><circle cx="20" cy="${hy - 10}" r="7" fill="#1a1a1a"/>`;
+      g += `<path d="M -18 ${hy + 18} Q 0 ${hy + 30} 18 ${hy + 18}" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    } else if (!o.faceless) {
       g += `<circle cx="-20" cy="${hy - 10}" r="10" fill="${eyes}" filter="url(#glow)"/>`;
       g += `<circle cx="20" cy="${hy - 10}" r="10" fill="${eyes}" filter="url(#glow)"/>`;
       if (o.grin) {
@@ -286,10 +290,76 @@ function thumbCollection() {
   return page(W, H, b);
 }
 
+// ---------------------------------------------------------------- vidéo verticale 1080x1920
+const VW = 1080, VH = 1920;
+function lobbyBg(tint) {
+  let b = `<rect width="${VW}" height="${VH}" fill="#2a0c16"/>`;
+  for (let x = 0; x < VW; x += 120) b += `<rect x="${x}" y="0" width="60" height="${VH}" fill="#3a1222" opacity="0.7"/>`;
+  b += `<rect y="1350" width="${VW}" height="22" fill="#c8a046"/><rect y="1372" width="${VW}" height="548" fill="#2a1610"/>`;
+  b += `<g filter="url(#glow)">` + [...Array(8)].map((_, i) => `<circle cx="${400 + i * 40}" cy="${120 + (i % 2) * 12}" r="11" fill="#ffd27a"/>`).join("") + `</g>`;
+  if (tint) b += `<rect width="${VW}" height="${VH}" fill="${tint}" opacity="0.35"/>`;
+  return b;
+}
+function sceneQuestion() {
+  let b = lobbyBg();
+  b += blocky({ x: 540, y: 1250, s: 3, skin: "#e8b88a", shirt: "#1d5fa8", pants: "#222", calm: true });
+  b += `<rect x="0" y="1500" width="${VW}" height="420" fill="#4a2a18"/><rect x="0" y="1480" width="${VW}" height="40" fill="#e8e2ee"/>`;
+  b += title(540, 300, 120, "CE CLIENT...");
+  b += title(540, 450, 130, "EST-IL HUMAIN ?", "url(#purpletext)");
+  return page(VW, VH, b);
+}
+function sceneReveal() {
+  let b = lobbyBg("#ff0020");
+  b += blocky({ x: 540, y: 1250, s: 3, skin: "#e8b88a", shirt: "#1d5fa8", pants: "#222", eyes: "#ff1a1a", grin: true });
+  b += `<rect x="0" y="1500" width="${VW}" height="420" fill="#4a2a18"/><rect x="0" y="1480" width="${VW}" height="40" fill="#e8e2ee"/>`;
+  b += title(540, 380, 260, "NON !!", "url(#gold)");
+  return page(VW, VH, b);
+}
+function sceneCapture() {
+  let b = `<rect width="${VW}" height="${VH}" fill="url(#sky)"/>` + stars(VW, VH, 120, VH);
+  b += `<rect x="190" y="560" width="700" height="1000" rx="24" fill="#130b1c" stroke="#ff3c5a" stroke-width="14" filter="url(#glow)"/>`;
+  b += `<ellipse cx="540" cy="1460" rx="260" ry="40" fill="#ff3c5a" opacity="0.4" filter="url(#bigglow)"/>`;
+  b += blocky({ x: 540, y: 1200, s: 2, crown: true, halo: true, skin: "#ffd700", shirt: "#111", eyes: "#ff0000", grin: true });
+  for (let i = 0; i < 40; i++) b += `<circle cx="${200 + rand() * 680}" cy="${560 + rand() * 1000}" r="${3 + rand() * 7}" fill="#ffe680" filter="url(#glow)"/>`;
+  b += title(540, 300, 150, "CAPTURE-LES !");
+  b += `<text x="540" y="1700" text-anchor="middle" font-family="Fredoka" font-size="90" fill="#7dff8a" stroke="#000" stroke-width="10" paint-order="stroke">+$800 / seconde</text>`;
+  return page(VW, VH, b);
+}
+function sceneSteal() {
+  let b = `<rect width="${VW}" height="${VH}" fill="url(#bloodsky)"/>` + stars(VW, VH, 120, 900);
+  b += `<circle cx="760" cy="620" r="420" fill="url(#redglow)"/><circle cx="760" cy="620" r="230" fill="url(#redmoon)"/>`;
+  b += hotel(40, 900, 420, 420, "#12060c") + hotel(620, 940, 420, 380, "#12060c");
+  b += `<rect y="1320" width="${VW}" height="600" fill="#1a0a12"/>`;
+  b += blocky({ x: 540, y: 1560, s: 1.8, skin: "#e0a878", shirt: "#222222", pants: "#111", eyes: "#ffffff", arms: "up" });
+  b += `<circle cx="540" cy="1040" r="230" fill="url(#moonglow)"/>`;
+  b += blocky({ x: 540, y: 1080, s: 1.0, crown: true, halo: true, skin: "#ffd700", shirt: "#111", eyes: "#ff0000", grin: true });
+  b += title(540, 260, 140, "VOLE CELLES");
+  b += title(540, 410, 140, "DES AUTRES !");
+  return page(VW, VH, b);
+}
+function sceneOutro() {
+  let b = `<rect width="${VW}" height="${VH}" fill="url(#sky)"/>` + stars(VW, VH, 160, VH);
+  b += `<circle cx="780" cy="420" r="320" fill="url(#moonglow)"/><circle cx="780" cy="420" r="150" fill="url(#moon)"/>`;
+  b += hotel(60, 1300, 440, 420, "#140a20") + hotel(580, 1280, 440, 440, "#140a20");
+  b += blocky({ x: 540, y: 1380, s: 1.8, shirt: "#6a1f8a", eyes: "#ff1a2a", grin: true, cap: true, buttons: true });
+  b += `<rect y="1500" width="${VW}" height="420" fill="url(#fog)"/>`;
+  b += title(540, 700, 130, "STEAL AN", "url(#purpletext)");
+  b += title(540, 880, 190, "ANOMALY");
+  b += `<text x="540" y="1640" text-anchor="middle" font-family="Fredoka" font-size="72" fill="#fff" stroke="#1a0626" stroke-width="10" paint-order="stroke">Gratuit sur Roblox</text>`.replace('y="1640"', 'y="1790"');
+  b += `<text x="540" y="1870" text-anchor="middle" font-family="Fredoka" font-size="50" fill="#e0c8ff" stroke="#1a0626" stroke-width="8" paint-order="stroke">31 anomalies • Événements • Renaissances</text>`;
+  return page(VW, VH, b);
+}
+
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
-  const jobs = [
+  const jobs = process.argv[3] === "video" ? [
+    ["v1.png", VW, VH, sceneQuestion()],
+    ["v2.png", VW, VH, sceneReveal()],
+    ["v3.png", VW, VH, sceneCapture()],
+    ["v4.png", VW, VH, sceneSteal()],
+    ["v5.png", VW, VH, sceneOutro()],
+  ] : [
     ["Icon.png", 512, 512, icon()],
     ["Thumbnail1_Reception.png", 1920, 1080, thumbReception()],
     ["Thumbnail2_Vol.png", 1920, 1080, thumbSteal()],
