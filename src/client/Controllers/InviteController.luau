@@ -38,13 +38,13 @@ function InviteController.Start(_self: typeof(InviteController))
 	})
 	local button = UI.new("TextButton", {
 		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, -10, 0, 74),
-		Size = UDim2.fromOffset(230, 40),
+		Position = UDim2.new(1, -10, 0, 60),
+		Size = UDim2.fromOffset(180, 30),
 		BackgroundColor3 = Color3.fromRGB(40, 150, 90),
 		Font = Enum.Font.FredokaOne,
 		TextScaled = true,
 		TextColor3 = Color3.new(1, 1, 1),
-		Text = `📨 Invite un ami : +{Format.money(EconomyConfig.InviteRewardMin)}`,
+		Text = `📨 Inviter : +{Format.money(EconomyConfig.InviteRewardMin)}`,
 		Parent = gui,
 	}, { UI.corner(12), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6) })
 	button.Activated:Connect(openInvite)

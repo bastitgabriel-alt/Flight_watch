@@ -37,7 +37,7 @@ local function buildGui()
 	banner = UI.new("Frame", {
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.new(1, -10, 0, 10),
-		Size = UDim2.fromOffset(230, 58),
+		Size = UDim2.fromOffset(180, 44),
 		BackgroundColor3 = Color3.fromRGB(15, 10, 20),
 		BackgroundTransparency = 0.2,
 		Parent = gui,

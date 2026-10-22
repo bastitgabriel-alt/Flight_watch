@@ -45,7 +45,7 @@ local function buildGui()
 		Name = "BottomBar",
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -10),
-		Size = UDim2.new(1, 0, 0, 72),
+		Size = UDim2.new(1, 0, 0, 60),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	}, {
@@ -62,7 +62,7 @@ local function buildGui()
 	local barScale = UI.new("UIScale", { Parent = bar })
 	local camera = workspace.CurrentCamera
 	local function fitBar()
-		barScale.Scale = math.clamp((camera.ViewportSize.X - 20) / 700, 0.5, 1)
+		barScale.Scale = math.clamp((camera.ViewportSize.X - 20) / 600, 0.5, 1)
 	end
 	camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitBar)
 	fitBar()
@@ -70,7 +70,7 @@ local function buildGui()
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
 		LayoutOrder = 2,
-		Size = UDim2.fromOffset(210, 70),
+		Size = UDim2.fromOffset(180, 58),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
 		Parent = bar,

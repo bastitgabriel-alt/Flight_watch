@@ -4571,6 +4571,54 @@ local function getAssetsFolder(): Folder
 	return folder :: Folder
 end
 
+-- La tête par défaut de Roblox est un modèle 3D téléchargé à part : s'il ne se
+-- charge pas, les personnages apparaissent sans tête. On la remplace par la
+-- tête classique de Roblox (intégrée au jeu, toujours disponible).
+local function replaceHead(rig: Model)
+	local oldHead = rig:FindFirstChild("Head")
+	if not oldHead or not oldHead:IsA("BasePart") then
+		return
+	end
+	local head = Instance.new("Part")
+	head.Name = "Head"
+	head.Size = Vector3.new(oldHead.Size.X, oldHead.Size.Y, oldHead.Size.Z)
+	head.CFrame = oldHead.CFrame
+	head.Color = oldHead.Color
+	head.TopSurface = Enum.SurfaceType.Smooth
+	head.BottomSurface = Enum.SurfaceType.Smooth
+	head.CanCollide = false
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Head
+	mesh.Scale = Vector3.new(1.05, 1, 1.05)
+	mesh.Parent = head
+	-- Articulation du cou, points d'attache, visage : déplacés sur la nouvelle tête
+	for _, child in oldHead:GetChildren() do
+		if child:IsA("Attachment") or child:IsA("JointInstance") or child:IsA("Decal") then
+			child.Parent = head
+		end
+	end
+	for _, joint in rig:GetDescendants() do
+		if joint:IsA("JointInstance") then
+			if joint.Part0 == oldHead then
+				joint.Part0 = head
+			end
+			if joint.Part1 == oldHead then
+				joint.Part1 = head
+			end
+		end
+	end
+	local face = head:FindFirstChildWhichIsA("Decal")
+	if not face then
+		face = Instance.new("Decal")
+		face.Name = "face"
+		face.Face = Enum.NormalId.Front
+		face.Parent = head
+	end
+	face.Texture = "rbxasset://textures/face.png" -- visage classique, intégré au jeu
+	oldHead:Destroy()
+	head.Parent = rig
+end
+
 local function createTemplate(): Model
 	-- Un modèle déjà présent (fait à la main) est prioritaire
 	local existing = getAssetsFolder():FindFirstChild("GuestRig")
@@ -4599,6 +4647,8 @@ local function createTemplate(): Model
 			descendant:Destroy()
 		end
 	end
+
+	replaceHead(rig)
 
 	local humanoid = rig:FindFirstChildOfClass("Humanoid")
 	if humanoid then
@@ -10118,7 +10168,7 @@ local function buildGui()
 	banner = UI.new("Frame", {
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.new(1, -10, 0, 10),
-		Size = UDim2.fromOffset(230, 58),
+		Size = UDim2.fromOffset(180, 44),
 		BackgroundColor3 = Color3.fromRGB(15, 10, 20),
 		BackgroundTransparency = 0.2,
 		Parent = gui,
@@ -10374,7 +10424,7 @@ local function buildGui()
 		Name = "BottomBar",
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -10),
-		Size = UDim2.new(1, 0, 0, 72),
+		Size = UDim2.new(1, 0, 0, 60),
 		BackgroundTransparency = 1,
 		Parent = gui,
 	}, {
@@ -10391,7 +10441,7 @@ local function buildGui()
 	local barScale = UI.new("UIScale", { Parent = bar })
 	local camera = workspace.CurrentCamera
 	local function fitBar()
-		barScale.Scale = math.clamp((camera.ViewportSize.X - 20) / 700, 0.5, 1)
+		barScale.Scale = math.clamp((camera.ViewportSize.X - 20) / 600, 0.5, 1)
 	end
 	camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitBar)
 	fitBar()
@@ -10399,7 +10449,7 @@ local function buildGui()
 	local panel = UI.new("Frame", {
 		Name = "MoneyPanel",
 		LayoutOrder = 2,
-		Size = UDim2.fromOffset(210, 70),
+		Size = UDim2.fromOffset(180, 58),
 		BackgroundColor3 = Color3.fromRGB(20, 14, 26),
 		BackgroundTransparency = 0.15,
 		Parent = bar,
@@ -10603,13 +10653,13 @@ function InviteController.Start(_self: typeof(InviteController))
 	})
 	local button = UI.new("TextButton", {
 		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, -10, 0, 74),
-		Size = UDim2.fromOffset(230, 40),
+		Position = UDim2.new(1, -10, 0, 60),
+		Size = UDim2.fromOffset(180, 30),
 		BackgroundColor3 = Color3.fromRGB(40, 150, 90),
 		Font = Enum.Font.FredokaOne,
 		TextScaled = true,
 		TextColor3 = Color3.new(1, 1, 1),
-		Text = `📨 Invite un ami : +{Format.money(EconomyConfig.InviteRewardMin)}`,
+		Text = `📨 Inviter : +{Format.money(EconomyConfig.InviteRewardMin)}`,
 		Parent = gui,
 	}, { UI.corner(12), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6) })
 	button.Activated:Connect(openInvite)
@@ -12232,15 +12282,12 @@ function TutorialController.Start(_self: typeof(TutorialController))
 		banner.Text = `({step}/3) {STEPS[step]}`
 	end
 
-	-- Placement : au-dessus de la barre du bas ; pendant la réception (panneau à
-	-- droite, barre cachée), en bas de la moitié gauche pour ne rien cacher
+	-- Placement : au-dessus de la barre du bas, masqué pendant la réception
 	local receptionGui = player:WaitForChild("PlayerGui"):WaitForChild("Reception") :: ScreenGui
 	local function place()
-		if receptionGui.Enabled then
-			banner.Position = UDim2.new(0.29, 0, 1, -12)
-		else
-			banner.Position = UDim2.new(0.5, 0, 1, -95)
-		end
+		-- Pendant la réception, le bandeau cacherait le client : on le masque
+		banner.Visible = not receptionGui.Enabled
+		banner.Position = UDim2.new(0.5, 0, 1, -80)
 	end
 	receptionGui:GetPropertyChangedSignal("Enabled"):Connect(place)
 	place()
@@ -12463,14 +12510,14 @@ function HudBar.addButton(name: string, layoutOrder: number, color: Color3): Tex
 	return UI.new("TextButton", {
 		Name = name,
 		LayoutOrder = layoutOrder,
-		Size = UDim2.fromOffset(112, 64),
+		Size = UDim2.fromOffset(88, 54),
 		BackgroundColor3 = color,
 		Font = Enum.Font.FredokaOne,
 		TextScaled = true,
 		TextColor3 = Color3.new(1, 1, 1),
 		Text = name,
 		Parent = bar,
-	}, { UI.corner(14), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6), UI.textSize(12, 22) })
+	}, { UI.corner(14), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(5), UI.textSize(10, 18) })
 end
 
 return HudBar

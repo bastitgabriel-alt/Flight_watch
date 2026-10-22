@@ -96,15 +96,12 @@ function TutorialController.Start(_self: typeof(TutorialController))
 		banner.Text = `({step}/3) {STEPS[step]}`
 	end
 
-	-- Placement : au-dessus de la barre du bas ; pendant la réception (panneau à
-	-- droite, barre cachée), en bas de la moitié gauche pour ne rien cacher
+	-- Placement : au-dessus de la barre du bas, masqué pendant la réception
 	local receptionGui = player:WaitForChild("PlayerGui"):WaitForChild("Reception") :: ScreenGui
 	local function place()
-		if receptionGui.Enabled then
-			banner.Position = UDim2.new(0.29, 0, 1, -12)
-		else
-			banner.Position = UDim2.new(0.5, 0, 1, -95)
-		end
+		-- Pendant la réception, le bandeau cacherait le client : on le masque
+		banner.Visible = not receptionGui.Enabled
+		banner.Position = UDim2.new(0.5, 0, 1, -80)
 	end
 	receptionGui:GetPropertyChangedSignal("Enabled"):Connect(place)
 	place()
