@@ -526,6 +526,16 @@ local EconomyConfig = {
 	-- Montant = max(montant du jour, revenu par seconde x DailyIncomeSeconds x jour)
 	DailyRewards = { 500, 1500, 4000, 10000, 25000, 60000, 150000 },
 	DailyIncomeSeconds = 60,
+
+	-- Amis : +X % de revenus par ami présent sur le serveur (plafonné)
+	FriendBoostPerFriend = 0.1,
+	FriendBoostMax = 0.5,
+	-- Invitation : récompense quand un ami rejoint grâce à ton invitation.
+	-- Montant = max(InviteRewardMin, revenu par seconde x InviteRewardIncomeSeconds)
+	InviteRewardMin = 5000,
+	InviteRewardIncomeSeconds = 300,
+	InviteWelcomeBonus = 2000, -- offert à l'ami invité
+	InviteMaxRewarded = 50, -- nombre d'amis invités récompensés au maximum
 }
 
 return EconomyConfig
@@ -1075,6 +1085,7 @@ local EVENT_NAMES: { string } = {
 	"TutorialStep", -- client -> serveur : (numéro d'étape terminée)
 	"RebirthRequest", -- client -> serveur : renaître
 	"WelcomeBack", -- serveur -> client : (gains hors ligne, secondes, jour de série, récompense du jour)
+	"InviteSent", -- client -> serveur : le joueur a ouvert la fenêtre d'invitation (statistiques)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)
@@ -2763,6 +2774,7 @@ local TEMPLATE = {
 	LuckyUntil = 0, -- os.time() de fin de la « Nuit chanceuse »
 	CatalogRewards = {}, -- { [palier en texte] = true } récompenses du catalogue reçues
 	Firsts = {}, -- { [nom] = true } « premières fois » déjà envoyées aux statistiques
+	InvitedUsers = {}, -- { [UserId en texte] = true } amis venus grâce à une invitation
 	TutorialDone = false,
 }
 
@@ -6127,7 +6139,13 @@ function IncomeService.GetIncome(player: Player): number
 	local passMultiplier = if player:GetAttribute("Pass_DoubleMoney") then 2 else 1
 	local event = EventService.Current()
 	local eventMultiplier = if event then event.IncomeMultiplier or 1 else 1
-	local multiplier = RebirthConfig.incomeMultiplier(data.Rebirths) * getDebuffMultiplier(player) * passMultiplier * eventMultiplier
+	-- Bonus amis (attribut posé par SocialService)
+	local friendMultiplier = 1 + ((player:GetAttribute("FriendBoost") :: number?) or 0)
+	local multiplier = RebirthConfig.incomeMultiplier(data.Rebirths)
+		* getDebuffMultiplier(player)
+		* passMultiplier
+		* eventMultiplier
+		* friendMultiplier
 	return IncomeCalculator.total(data.Anomalies, multiplier)
 end
 
@@ -7093,6 +7111,139 @@ return ShopService
         </Item>
         <Item class="ModuleScript" referent="54">
           <Properties>
+            <string name="Name">SocialService</string>
+            <string name="Source"><![CDATA[--!strict
+-- Jouer avec ses amis rapporte plus :
+--   * bonus de revenus pour chaque ami présent sur le serveur (attribut FriendBoost)
+--   * récompense quand un ami rejoint le jeu grâce à ton invitation
+--     (Roblox indique qui a invité dans les données d'arrivée du joueur)
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local EconomyConfig = require(Shared:WaitForChild("Config"):WaitForChild("EconomyConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Server = ServerScriptService:WaitForChild("Server")
+local Notify = require(Server:WaitForChild("Modules"):WaitForChild("Notify"))
+local Analytics = require(Server:WaitForChild("Modules"):WaitForChild("Analytics"))
+local RateLimiter = require(Server:WaitForChild("Util"):WaitForChild("RateLimiter"))
+local IncomeService = require(script.Parent:WaitForChild("IncomeService"))
+local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+
+local SocialService = {}
+
+local friendships: { [Player]: { [Player]: boolean } } = {}
+local inviteLimiter = RateLimiter.new(2, 10)
+
+local function isFriend(a: Player, b: Player): boolean
+	local ok, result = pcall(function()
+		return a:IsFriendsWith(b.UserId)
+	end)
+	return ok and result == true
+end
+
+local function refreshBoost(player: Player)
+	local friends = friendships[player]
+	local count = 0
+	if friends then
+		for other in friends do
+			if other.Parent == Players then
+				count += 1
+			end
+		end
+	end
+	local boost = math.min(count * EconomyConfig.FriendBoostPerFriend, EconomyConfig.FriendBoostMax)
+	player:SetAttribute("FriendBoost", if boost > 0 then boost else nil)
+	player:SetAttribute("FriendsHere", count)
+end
+
+local function onPlayerAdded(player: Player)
+	friendships[player] = {}
+	for _, other in Players:GetPlayers() do
+		if other ~= player and friendships[other] and isFriend(player, other) then
+			friendships[player][other] = true
+			friendships[other][player] = true
+			refreshBoost(other)
+			Notify.send(other, `Ton ami {player.DisplayName} est là : +{math.floor(EconomyConfig.FriendBoostPerFriend * 100)} % de revenus !`, "Good")
+		end
+	end
+	refreshBoost(player)
+end
+
+local function onPlayerRemoving(player: Player)
+	local friends = friendships[player]
+	friendships[player] = nil
+	if friends then
+		for other in friends do
+			local theirs = friendships[other]
+			if theirs then
+				theirs[player] = nil
+				refreshBoost(other)
+			end
+		end
+	end
+end
+
+-- Le joueur arrive grâce à une invitation : on récompense celui qui l'a invité
+local function onDataLoaded(player: Player, data: any)
+	local ok, joinData = pcall(function()
+		return player:GetJoinData()
+	end)
+	local referrerId = if ok and joinData then joinData.ReferredByPlayerId else nil
+	if typeof(referrerId) ~= "number" or referrerId <= 0 or referrerId == player.UserId then
+		return
+	end
+	local referrer = Players:GetPlayerByUserId(referrerId)
+	local referrerData = referrer and PlayerDataService.GetData(referrer)
+	if not referrer or not referrerData then
+		return -- l'inviteur n'est plus sur ce serveur
+	end
+	local key = tostring(player.UserId)
+	local count = 0
+	for _ in referrerData.InvitedUsers do
+		count += 1
+	end
+	if referrerData.InvitedUsers[key] or count >= EconomyConfig.InviteMaxRewarded then
+		return
+	end
+	referrerData.InvitedUsers[key] = true
+	local reward = math.max(
+		EconomyConfig.InviteRewardMin,
+		math.floor(IncomeService.GetIncome(referrer) * EconomyConfig.InviteRewardIncomeSeconds)
+	)
+	PlayerDataService.AddMoney(referrer, reward)
+	Notify.send(referrer, `{player.DisplayName} a rejoint grâce à ton invitation ! +{Format.money(reward)}`, "Good")
+	if not data.Firsts.InvitedWelcome then
+		data.Firsts.InvitedWelcome = true
+		PlayerDataService.AddMoney(player, EconomyConfig.InviteWelcomeBonus)
+		Notify.send(player, `Cadeau de bienvenue de {referrer.DisplayName} : +{Format.money(EconomyConfig.InviteWelcomeBonus)}`, "Good")
+	end
+	Analytics.event(referrer, "InviteJoined")
+end
+
+function SocialService.Init(_self: typeof(SocialService))
+	Players.PlayerAdded:Connect(onPlayerAdded)
+	Players.PlayerRemoving:Connect(onPlayerRemoving)
+	for _, player in Players:GetPlayers() do
+		task.spawn(onPlayerAdded, player)
+	end
+	PlayerDataService.DataLoaded:Connect(onDataLoaded)
+	Remotes.getEvent("InviteSent").OnServerEvent:Connect(function(player)
+		if inviteLimiter:allow(player) then
+			Analytics.event(player, "InvitePrompt")
+		end
+	end)
+end
+
+return SocialService
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="55">
+          <Properties>
             <string name="Name">StealService</string>
             <string name="Source"><![CDATA[--!strict
 -- Vol entre joueurs : un voleur prend une anomalie dans la cellule d'un autre,
@@ -7351,7 +7502,7 @@ return StealService
 ]]></string>
           </Properties>
         </Item>
-        <Item class="ModuleScript" referent="55">
+        <Item class="ModuleScript" referent="56">
           <Properties>
             <string name="Name">TutorialService</string>
             <string name="Source"><![CDATA[--!strict
@@ -7396,11 +7547,11 @@ return TutorialService
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="56">
+      <Item class="Folder" referent="57">
         <Properties>
           <string name="Name">Util</string>
         </Properties>
-        <Item class="ModuleScript" referent="57">
+        <Item class="ModuleScript" referent="58">
           <Properties>
             <string name="Name">RateLimiter</string>
             <string name="Source"><![CDATA[--!strict
@@ -7464,11 +7615,11 @@ return RateLimiter
           </Properties>
         </Item>
       </Item>
-      <Item class="Folder" referent="58">
+      <Item class="Folder" referent="59">
         <Properties>
           <string name="Name">Vendor</string>
         </Properties>
-        <Item class="ModuleScript" referent="59">
+        <Item class="ModuleScript" referent="60">
           <Properties>
             <string name="Name">ProfileStore</string>
             <string name="Source"><![CDATA[-- ProfileStore 1.0.3 par loleris (MadStudio), licence Apache-2.0.
@@ -9595,23 +9746,23 @@ return ProfileStore
       </Item>
     </Item>
   </Item>
-  <Item class="StarterPlayer" referent="60">
+  <Item class="StarterPlayer" referent="61">
     <Properties>
       <string name="Name">StarterPlayer</string>
     </Properties>
-    <Item class="StarterPlayerScripts" referent="61">
+    <Item class="StarterPlayerScripts" referent="62">
       <Properties>
         <string name="Name">StarterPlayerScripts</string>
       </Properties>
-      <Item class="Folder" referent="62">
+      <Item class="Folder" referent="63">
         <Properties>
           <string name="Name">Client</string>
         </Properties>
-        <Item class="Folder" referent="63">
+        <Item class="Folder" referent="64">
           <Properties>
             <string name="Name">Controllers</string>
           </Properties>
-          <Item class="ModuleScript" referent="64">
+          <Item class="ModuleScript" referent="65">
             <Properties>
               <string name="Name">AmbienceController</string>
               <string name="Source"><![CDATA[--!strict
@@ -9734,7 +9885,7 @@ return AmbienceController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="65">
+          <Item class="ModuleScript" referent="66">
             <Properties>
               <string name="Name">CatalogController</string>
               <string name="Source"><![CDATA[--!strict
@@ -9925,7 +10076,7 @@ return CatalogController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="66">
+          <Item class="ModuleScript" referent="67">
             <Properties>
               <string name="Name">EventController</string>
               <string name="Source"><![CDATA[--!strict
@@ -10173,7 +10324,7 @@ return EventController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="67">
+          <Item class="ModuleScript" referent="68">
             <Properties>
               <string name="Name">HudController</string>
               <string name="Source"><![CDATA[--!strict
@@ -10362,6 +10513,10 @@ local function updateIncomeText()
 	if luckyLeft > 0 then
 		text ..= `  🍀 {math.floor(luckyLeft / 60)}:{string.format("%02d", math.floor(luckyLeft % 60))}`
 	end
+	local friendBoost = player:GetAttribute("FriendBoost") :: number?
+	if friendBoost and friendBoost > 0 then
+		text ..= `  👥 +{math.floor(friendBoost * 100 + 0.5)} %`
+	end
 	incomeLabel.Text = text
 end
 
@@ -10405,7 +10560,76 @@ return HudController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="68">
+          <Item class="ModuleScript" referent="69">
+            <Properties>
+              <string name="Name">InviteController</string>
+              <string name="Source"><![CDATA[--!strict
+-- Bouton « Inviter des amis » (en haut à droite, sous le bandeau des événements).
+-- Ouvre la fenêtre d'invitation de Roblox ; la récompense est donnée par le
+-- serveur quand l'ami rejoint (SocialService).
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SocialService = game:GetService("SocialService")
+local TweenService = game:GetService("TweenService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local EconomyConfig = require(Shared:WaitForChild("Config"):WaitForChild("EconomyConfig"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local UI = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("UI"))
+
+local player = Players.LocalPlayer
+
+local InviteController = {}
+
+local function openInvite()
+	local ok, canInvite = pcall(function()
+		return SocialService:CanSendGameInviteAsync(player)
+	end)
+	if ok and canInvite then
+		Remotes.getEvent("InviteSent"):FireServer()
+		pcall(function()
+			SocialService:PromptGameInvite(player)
+		end)
+	end
+end
+
+function InviteController.Start(_self: typeof(InviteController))
+	local gui = UI.new("ScreenGui", {
+		Name = "Invite",
+		ResetOnSpawn = false,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	local button = UI.new("TextButton", {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(1, -10, 0, 74),
+		Size = UDim2.fromOffset(230, 40),
+		BackgroundColor3 = Color3.fromRGB(40, 150, 90),
+		Font = Enum.Font.FredokaOne,
+		TextScaled = true,
+		TextColor3 = Color3.new(1, 1, 1),
+		Text = `📨 Invite un ami : +{Format.money(EconomyConfig.InviteRewardMin)}`,
+		Parent = gui,
+	}, { UI.corner(12), UI.stroke(Color3.new(0, 0, 0), 2), UI.padding(6) })
+	button.Activated:Connect(openInvite)
+
+	-- Petit battement pour attirer l'œil toutes les 20 secondes
+	local scale = UI.new("UIScale", { Parent = button })
+	task.spawn(function()
+		while true do
+			task.wait(20)
+			scale.Scale = 1.12
+			TweenService:Create(scale, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), { Scale = 1 }):Play()
+		end
+	end)
+end
+
+return InviteController
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="70">
             <Properties>
               <string name="Name">LockController</string>
               <string name="Source"><![CDATA[--!strict
@@ -10454,7 +10678,7 @@ return LockController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="69">
+          <Item class="ModuleScript" referent="71">
             <Properties>
               <string name="Name">PromptController</string>
               <string name="Source"><![CDATA[--!strict
@@ -10497,7 +10721,7 @@ return PromptController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="70">
+          <Item class="ModuleScript" referent="72">
             <Properties>
               <string name="Name">RebirthController</string>
               <string name="Source"><![CDATA[--!strict
@@ -10694,7 +10918,7 @@ return RebirthController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="71">
+          <Item class="ModuleScript" referent="73">
             <Properties>
               <string name="Name">ReceptionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -11064,6 +11288,13 @@ local function setBottomBarVisible(visible: boolean)
 	if bar and bar:IsA("GuiObject") then
 		bar.Visible = visible
 	end
+	-- Bandeau d'événement et bouton d'invitation (en haut à droite, sous le panneau)
+	for _, name in { "Events", "Invite" } do
+		local other = player.PlayerGui:FindFirstChild(name)
+		if other and other:IsA("ScreenGui") then
+			other.Enabled = visible
+		end
+	end
 end
 
 function ReceptionController.Open(info: Types.ReceptionInfo)
@@ -11192,7 +11423,7 @@ return ReceptionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="72">
+          <Item class="ModuleScript" referent="74">
             <Properties>
               <string name="Name">RigMotionController</string>
               <string name="Source"><![CDATA[--!strict
@@ -11473,7 +11704,7 @@ return RigMotionController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="73">
+          <Item class="ModuleScript" referent="75">
             <Properties>
               <string name="Name">ShopController</string>
               <string name="Source"><![CDATA[--!strict
@@ -11758,7 +11989,7 @@ return ShopController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="74">
+          <Item class="ModuleScript" referent="76">
             <Properties>
               <string name="Name">SoundController</string>
               <string name="Source"><![CDATA[--!strict
@@ -11900,7 +12131,7 @@ return SoundController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="75">
+          <Item class="ModuleScript" referent="77">
             <Properties>
               <string name="Name">TutorialController</string>
               <string name="Source"><![CDATA[--!strict
@@ -12068,7 +12299,7 @@ return TutorialController
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="76">
+          <Item class="ModuleScript" referent="78">
             <Properties>
               <string name="Name">WelcomeController</string>
               <string name="Source"><![CDATA[--!strict
@@ -12192,7 +12423,7 @@ return WelcomeController
             </Properties>
           </Item>
         </Item>
-        <Item class="LocalScript" referent="77">
+        <Item class="LocalScript" referent="79">
           <Properties>
             <string name="Name">Main</string>
             <string name="Source"><![CDATA[--!strict
@@ -12210,11 +12441,11 @@ print("[Client] Client prêt")
 ]]></string>
           </Properties>
         </Item>
-        <Item class="Folder" referent="78">
+        <Item class="Folder" referent="80">
           <Properties>
             <string name="Name">Util</string>
           </Properties>
-          <Item class="ModuleScript" referent="79">
+          <Item class="ModuleScript" referent="81">
             <Properties>
               <string name="Name">HudBar</string>
               <string name="Source"><![CDATA[--!strict
@@ -12246,7 +12477,7 @@ return HudBar
 ]]></string>
             </Properties>
           </Item>
-          <Item class="ModuleScript" referent="80">
+          <Item class="ModuleScript" referent="82">
             <Properties>
               <string name="Name">UI</string>
               <string name="Source"><![CDATA[--!strict
@@ -12310,7 +12541,7 @@ return UI
       </Item>
     </Item>
   </Item>
-  <Item class="Workspace" referent="81">
+  <Item class="Workspace" referent="83">
     <Properties>
       <string name="Name">Workspace</string>
       <bool name="NeedsPivotMigration">false</bool>

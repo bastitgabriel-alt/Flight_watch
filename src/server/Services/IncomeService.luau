@@ -51,7 +51,13 @@ function IncomeService.GetIncome(player: Player): number
 	local passMultiplier = if player:GetAttribute("Pass_DoubleMoney") then 2 else 1
 	local event = EventService.Current()
 	local eventMultiplier = if event then event.IncomeMultiplier or 1 else 1
-	local multiplier = RebirthConfig.incomeMultiplier(data.Rebirths) * getDebuffMultiplier(player) * passMultiplier * eventMultiplier
+	-- Bonus amis (attribut posé par SocialService)
+	local friendMultiplier = 1 + ((player:GetAttribute("FriendBoost") :: number?) or 0)
+	local multiplier = RebirthConfig.incomeMultiplier(data.Rebirths)
+		* getDebuffMultiplier(player)
+		* passMultiplier
+		* eventMultiplier
+		* friendMultiplier
 	return IncomeCalculator.total(data.Anomalies, multiplier)
 end
 

@@ -50,6 +50,7 @@ local TEMPLATE = {
 	LuckyUntil = 0, -- os.time() de fin de la « Nuit chanceuse »
 	CatalogRewards = {}, -- { [palier en texte] = true } récompenses du catalogue reçues
 	Firsts = {}, -- { [nom] = true } « premières fois » déjà envoyées aux statistiques
+	InvitedUsers = {}, -- { [UserId en texte] = true } amis venus grâce à une invitation
 	TutorialDone = false,
 }
 

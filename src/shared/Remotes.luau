@@ -21,6 +21,7 @@ local EVENT_NAMES: { string } = {
 	"TutorialStep", -- client -> serveur : (numéro d'étape terminée)
 	"RebirthRequest", -- client -> serveur : renaître
 	"WelcomeBack", -- serveur -> client : (gains hors ligne, secondes, jour de série, récompense du jour)
+	"InviteSent", -- client -> serveur : le joueur a ouvert la fenêtre d'invitation (statistiques)
 }
 
 -- Client -> serveur, avec réponse (à utiliser avec parcimonie)

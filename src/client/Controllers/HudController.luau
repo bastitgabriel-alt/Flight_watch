@@ -184,6 +184,10 @@ local function updateIncomeText()
 	if luckyLeft > 0 then
 		text ..= `  🍀 {math.floor(luckyLeft / 60)}:{string.format("%02d", math.floor(luckyLeft % 60))}`
 	end
+	local friendBoost = player:GetAttribute("FriendBoost") :: number?
+	if friendBoost and friendBoost > 0 then
+		text ..= `  👥 +{math.floor(friendBoost * 100 + 0.5)} %`
+	end
 	incomeLabel.Text = text
 end
 

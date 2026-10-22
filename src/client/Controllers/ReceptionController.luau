@@ -365,6 +365,13 @@ local function setBottomBarVisible(visible: boolean)
 	if bar and bar:IsA("GuiObject") then
 		bar.Visible = visible
 	end
+	-- Bandeau d'événement et bouton d'invitation (en haut à droite, sous le panneau)
+	for _, name in { "Events", "Invite" } do
+		local other = player.PlayerGui:FindFirstChild(name)
+		if other and other:IsA("ScreenGui") then
+			other.Enabled = visible
+		end
+	end
 end
 
 function ReceptionController.Open(info: Types.ReceptionInfo)

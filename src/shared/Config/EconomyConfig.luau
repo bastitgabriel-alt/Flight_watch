@@ -34,6 +34,16 @@ local EconomyConfig = {
 	-- Montant = max(montant du jour, revenu par seconde x DailyIncomeSeconds x jour)
 	DailyRewards = { 500, 1500, 4000, 10000, 25000, 60000, 150000 },
 	DailyIncomeSeconds = 60,
+
+	-- Amis : +X % de revenus par ami présent sur le serveur (plafonné)
+	FriendBoostPerFriend = 0.1,
+	FriendBoostMax = 0.5,
+	-- Invitation : récompense quand un ami rejoint grâce à ton invitation.
+	-- Montant = max(InviteRewardMin, revenu par seconde x InviteRewardIncomeSeconds)
+	InviteRewardMin = 5000,
+	InviteRewardIncomeSeconds = 300,
+	InviteWelcomeBonus = 2000, -- offert à l'ami invité
+	InviteMaxRewarded = 50, -- nombre d'amis invités récompensés au maximum
 }
 
 return EconomyConfig
